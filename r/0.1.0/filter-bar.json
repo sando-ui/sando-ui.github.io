@@ -1,0 +1,34 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "filter-bar",
+  "type": "registry:block",
+  "title": "Filter Bar",
+  "description": "A responsive row of select filters, active-filter tags, and a clear action.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/select",
+    "@sando-ui/tag-group",
+    "@sando-ui/button",
+    "@sando-ui/stack",
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/FilterBar.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/FilterBar.tsx",
+      "content": "// Block (composition) — responsive filters with active tags and a clear action.\n// Arranges only; composes Select/TagGroup/Button/Stack.\nimport type { Ref } from \"react\";\nimport { Select, SelectItem } from \"../components/Select\";\nimport { Tag, TagGroup } from \"../components/TagGroup\";\nimport { Button } from \"../components/Button\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./FilterBar.css\";\n\nexport interface FilterBarProps {\n  filters: {\n    name: string;\n    label: string;\n    options: { id: string; label: string }[];\n  }[];\n  /**\n   * The selected option id per filter `name`, making that filter's Select controlled. Pass it with\n   * `onChange` when the page resets filters itself (`onClear`): an uncontrolled Select keeps showing\n   * the old choice after a reset, and re-picking that choice fires no change.\n   */\n  values?: Record<string, string>;\n  onChange?: (name: string, value: string) => void;\n  onClear?: () => void;\n  activeTags?: { id: string; label: string }[];\n  className?: string;\n  ref?: Ref<HTMLDivElement>;\n}\n\nexport function FilterBar({\n  filters,\n  values,\n  onChange,\n  onClear,\n  activeTags,\n  className,\n  ref,\n}: FilterBarProps) {\n  return (\n    <Stack\n      ref={ref}\n      direction={{ small: \"column\", medium: \"row\" }}\n      gap=\"medium\"\n      // End, not centre: a Select's box sits under its label, so centring put the Clear button\n      // and the tags half a label higher than the field they act on.\n      align={{ small: \"stretch\", medium: \"end\" }}\n      className={className ? `sd-filterbar ${className}` : \"sd-filterbar\"}\n    >\n      {filters.map((filter) => (\n        <Select\n          key={filter.name}\n          className=\"sd-filterbar__filter\"\n          label={filter.label}\n          name={filter.name}\n          // Once `values` is passed every Select stays controlled: a missing key clears it (null)\n          // rather than handing back control (undefined) and keeping the old choice.\n          selectedKey={values === undefined ? undefined : (values[filter.name] ?? null)}\n          placeholder={`All ${filter.label.toLowerCase()}`}\n          onSelectionChange={(value) => {\n            if (value !== null) onChange?.(filter.name, String(value));\n          }}\n        >\n          {filter.options.map((option) => (\n            <SelectItem key={option.id} id={option.id}>\n              {option.label}\n            </SelectItem>\n          ))}\n        </Select>\n      ))}\n      {activeTags && activeTags.length > 0 && (\n        <TagGroup aria-label=\"Active filters\" className=\"sd-filterbar__tags\">\n          {activeTags.map((tag) => (\n            <Tag key={tag.id} id={tag.id}>\n              {tag.label}\n            </Tag>\n          ))}\n        </TagGroup>\n      )}\n      <Button type=\"button\" variant=\"secondary\" onPress={onClear}>\n        Clear\n      </Button>\n    </Stack>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/FilterBar.css",
+      "type": "registry:component",
+      "target": "src/blocks/FilterBar.css",
+      "content": "/* FilterBar.css — full-width responsive arrangement only. */\n.sd-filterbar {\n  width: 100%;\n}\n\n.sd-filterbar__filter {\n  min-width: 10rem;\n}\n\n.sd-filterbar__tags {\n  flex: 1;\n}\n"
+    }
+  ]
+}

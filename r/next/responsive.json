@@ -1,0 +1,18 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "responsive",
+  "type": "registry:lib",
+  "title": "Responsive helper",
+  "description": "Type + helper that expands responsive layout props into breakpoint custom properties. Shared by the layout primitives.",
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/layouts/responsive.ts",
+      "type": "registry:lib",
+      "target": "src/layouts/responsive.ts",
+      "content": "// Shared helper for the layout primitives (Stack/Grid/Container/LayoutGrid).\n// Expands a responsive layout prop into `--sd-layout-<name>-<breakpoint>` custom\n// properties, which each primitive's CSS consumes via a mobile-first fallback\n// cascade. Breakpoints: small (0+, the base) → medium (768px) → large (1024px). Tier\n// names match the Sys breakpoint ladder (tokens/sys/breakpoint.json) verbatim — one\n// vocabulary, no md/lg abbreviations and no separate `base` key. See block-contract.md § Responsive.\nimport type { CSSProperties } from \"react\";\n\n/** A layout value that can vary by breakpoint. A plain value applies at all widths;\n *  an object overrides per breakpoint (mobile-first: `small` is the base/mobile value,\n *  then `medium` at 768px, then `large` at 1024px). `medium`/`large` are optional —\n *  omit any tier to inherit the next-smaller one. */\nexport type Responsive<T> = T | { small?: T; medium?: T; large?: T };\n\n/** Expands a responsive prop into inline `--sd-layout-<name>-<breakpoint>` custom\n *  properties. `toValue` maps each token/enum to its CSS value. */\nexport function responsiveVars<T>(\n  name: string,\n  value: Responsive<T> | undefined,\n  toValue: (v: T) => string,\n): CSSProperties {\n  if (value === undefined || value === null) return {};\n  const vars: Record<string, string> = {};\n  if (typeof value === \"object\") {\n    const responsive = value as { small?: T; medium?: T; large?: T };\n    if (responsive.small !== undefined) vars[`--sd-layout-${name}-small`] = toValue(responsive.small);\n    if (responsive.medium !== undefined) vars[`--sd-layout-${name}-medium`] = toValue(responsive.medium);\n    if (responsive.large !== undefined) vars[`--sd-layout-${name}-large`] = toValue(responsive.large);\n  } else {\n    vars[`--sd-layout-${name}-small`] = toValue(value);\n  }\n  return vars as CSSProperties;\n}\n"
+    }
+  ]
+}

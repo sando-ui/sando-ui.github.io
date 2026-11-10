@@ -1,0 +1,30 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "product-grid",
+  "type": "registry:block",
+  "title": "Product Grid",
+  "description": "A responsive full-width grid of reusable product cards.",
+  "registryDependencies": [
+    "@sando-ui/grid",
+    "@sando-ui/responsive",
+    "@sando-ui/product-card",
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/ProductGrid.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/ProductGrid.tsx",
+      "content": "// Block (composition) — a responsive, full-width catalog of ProductCard Blocks.\nimport type { Ref } from \"react\";\nimport { Grid } from \"../layouts/Grid\";\nimport type { Responsive } from \"../layouts/responsive\";\nimport { ProductCard, type ProductCardProps } from \"./ProductCard\";\nimport \"./ProductGrid.css\";\n\nexport interface ProductGridProps {\n  products: (ProductCardProps & { id: string })[];\n  columns?: Responsive<number>;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function ProductGrid({\n  products,\n  columns = { small: 2, medium: 4 },\n  className,\n  ref,\n}: ProductGridProps) {\n  return (\n    <Grid\n      as=\"section\"\n      ref={ref}\n      columns={columns}\n      gap=\"medium\"\n      aria-label=\"Products\"\n      className={className ? `sd-productgrid ${className}` : \"sd-productgrid\"}\n    >\n      {products.map(({ id, ...product }) => (\n        <ProductCard key={id} {...product} />\n      ))}\n    </Grid>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/ProductGrid.css",
+      "type": "registry:component",
+      "target": "src/blocks/ProductGrid.css",
+      "content": "/* ProductGrid.css — .sd-productgrid (Block)\n   Arrangement only: the responsive Grid owns columns and gap. */\n.sd-productgrid {\n  width: 100%;\n}\n"
+    }
+  ]
+}

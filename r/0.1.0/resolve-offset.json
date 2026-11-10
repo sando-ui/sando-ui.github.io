@@ -1,0 +1,18 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "resolve-offset",
+  "type": "registry:lib",
+  "title": "resolveOffset",
+  "description": "Reads an overlay's stand-off token off the document root as the number of pixels React Aria's offset prop takes. Shared by the overlays that hang off a trigger: Popover and Tooltip.",
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/components/resolveOffset.ts",
+      "type": "registry:lib",
+      "target": "src/components/resolveOffset.ts",
+      "content": "// resolveOffset: reads an overlay's stand-off token as the NUMBER of pixels React Aria's `offset`\n// takes, since no `var()` can reach that prop. Shared by the two overlays that hang off a trigger,\n// Popover and Tooltip, each passing its own Cmp custom property.\n//\n// A literal is wrong for anyone who raises their font size: at a 16 / 20 / 24px root font size\n// `space.x-small` resolves to 8 / 10 / 12px, while a literal would hold the panel flat.\n//\n// A READ, never a probe element. A probe appended to measure used pixels is a DOM mutation during\n// render: React double-invokes render under StrictMode and gives no ordering guarantee for it under\n// concurrent features. `getComputedStyle` on the root returns the custom property already\n// substituted, so the only thing left is the unit, and `rem` and `px` are the two the token system\n// emits (Ref space is authored in rem). Anything else falls back rather than guessing, as does a\n// missing document (SSR) or an unresolvable property.\nconst OFFSET_FALLBACK = 8;\n\nexport function resolveOffset(property: string): number {\n  if (typeof document === \"undefined\") return OFFSET_FALLBACK;\n  const root = document.documentElement;\n  const raw = getComputedStyle(root).getPropertyValue(property).trim();\n  const value = Number.parseFloat(raw);\n  if (!Number.isFinite(value) || value <= 0) return OFFSET_FALLBACK;\n  if (raw.endsWith(\"px\")) return value;\n  if (raw.endsWith(\"rem\")) {\n    const rem = Number.parseFloat(getComputedStyle(root).fontSize);\n    return Number.isFinite(rem) && rem > 0 ? value * rem : OFFSET_FALLBACK;\n  }\n  return OFFSET_FALLBACK;\n}\n"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "calendar-view",
+  "type": "registry:block",
+  "title": "Calendar View",
+  "description": "A responsive month calendar paired with the selected day's agenda.",
+  "dependencies": [
+    "react-aria-components",
+    "@internationalized/date"
+  ],
+  "registryDependencies": [
+    "@sando-ui/calendar",
+    "@sando-ui/separator",
+    "@sando-ui/stack",
+    "@sando-ui/icons",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/CalendarView.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/CalendarView.tsx",
+      "content": "// Block (composition) — an interactive calendar paired with the selected date's agenda.\n// Calendar owns date behavior; Stack owns arrangement and Separator owns the agenda division.\nimport { getLocalTimeZone, parseDate, today } from \"@internationalized/date\";\nimport { useState } from \"react\";\nimport type { Ref } from \"react\";\nimport type { DateValue } from \"react-aria-components\";\nimport { Calendar } from \"../components/Calendar\";\nimport { Separator } from \"../components/Separator\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./CalendarView.css\";\n\nexport interface CalendarViewProps {\n  events?: { date: string; title: string }[];\n  onDateChange?: (date: string) => void;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function CalendarView({ events = [], onDateChange, className, ref }: CalendarViewProps) {\n  const [selectedDate, setSelectedDate] = useState<DateValue>(() =>\n    events[0]?.date ? parseDate(events[0].date) : today(getLocalTimeZone()),\n  );\n  const selectedDateString = selectedDate.toString();\n  const selectedEvents = events.filter((event) => event.date === selectedDateString);\n\n  const handleChange = (date: DateValue) => {\n    setSelectedDate(date);\n    onDateChange?.(date.toString());\n  };\n\n  return (\n    <Stack\n      as=\"section\"\n      ref={ref}\n      direction={{ small: \"column\", medium: \"row\" }}\n      gap=\"large\"\n      align=\"start\"\n      aria-label=\"Calendar and agenda\"\n      className={className ? `sd-calendarview ${className}` : \"sd-calendarview\"}\n    >\n      <Calendar aria-label=\"Choose a date\" value={selectedDate} onChange={handleChange} />\n      <Stack gap=\"small\" className=\"sd-calendarview__agenda\">\n        <>\n          <h2 className=\"sd-calendarview__heading sd-type-title-medium\">\n            Agenda for {selectedDateString}\n          </h2>\n        </>\n        <Separator />\n        {selectedEvents.length > 0 ? (\n          <Stack as=\"ul\" gap=\"small\" className=\"sd-calendarview__events\">\n            {selectedEvents.map((event, index) => (\n              <li key={`${event.date}-${event.title}-${index}`} className=\"sd-type-body-medium\">\n                {event.title}\n              </li>\n            ))}\n          </Stack>\n        ) : (\n          <>\n            <p className=\"sd-calendarview__empty sd-type-caption-medium\">No events scheduled.</p>\n          </>\n        )}\n      </Stack>\n    </Stack>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/CalendarView.css",
+      "type": "registry:component",
+      "target": "src/blocks/CalendarView.css",
+      "content": ".sd-calendarview {\n  width: 100%;\n}\n\n.sd-calendarview__agenda {\n  flex: 1;\n  min-width: 0;\n  width: 100%;\n}\n\n.sd-calendarview__heading,\n.sd-calendarview__empty {\n  margin: 0;\n}\n\n.sd-calendarview__events {\n  margin: 0;\n  padding-inline-start: var(--sd-space-large);\n}\n"
+    }
+  ]
+}

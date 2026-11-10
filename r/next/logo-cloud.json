@@ -1,0 +1,30 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "logo-cloud",
+  "type": "registry:block",
+  "title": "Logo Cloud",
+  "description": "A responsive full-width grid for consumer-supplied partner logo nodes with an optional heading.",
+  "registryDependencies": [
+    "@sando-ui/grid",
+    "@sando-ui/responsive",
+    "@sando-ui/stack",
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/LogoCloud.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/LogoCloud.tsx",
+      "content": "// Block (composition) — a labeled collection of partner logos.\n// Grid owns responsive logo arrangement; Stack owns section spacing and this Block owns the label structure.\nimport { useId } from \"react\";\nimport type { ReactNode, Ref } from \"react\";\nimport { Grid } from \"../layouts/Grid\";\nimport type { Responsive } from \"../layouts/responsive\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./LogoCloud.css\";\n\nexport interface LogoCloudProps {\n  /** Each mark as a bare `<img src alt>` or `<svg viewBox>`, with no size: the Block owns the box\n   *  and the mark is contained inside it (`prop-usage-contract.md` § Ratio). */\n  logos: ReactNode[];\n  /** The one box every mark shares: `wordmark` is 5 by 1, `symbol` is square. */\n  markShape?: \"wordmark\" | \"symbol\";\n  columns?: Responsive<number>;\n  label?: string;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function LogoCloud({\n  logos,\n  markShape = \"wordmark\",\n  columns = { small: 2, medium: 5 },\n  label,\n  className,\n  ref,\n}: LogoCloudProps) {\n  const labelId = useId();\n\n  return (\n    <Stack\n      as=\"section\"\n      ref={ref}\n      gap=\"large\"\n      aria-label={label ? undefined : \"Partner logos\"}\n      aria-labelledby={label ? labelId : undefined}\n      className={className ? `sd-logocloud ${className}` : \"sd-logocloud\"}\n    >\n      {/* One rung below the wordmarks it introduces — CONTRASTIVE, and the two are read together\n          (`naming-convention.md` § The size axis defaults to `medium`). Without it the eyebrow and\n          the logos are the same size and weight, with nothing to separate them. */}\n      {label && (\n        <h2 id={labelId} className=\"sd-logocloud__label sd-type-label-small\">\n          {label}\n        </h2>\n      )}\n      <Grid columns={columns} gap=\"large\" align=\"center\">\n        {logos.map((logo, index) => (\n          <div key={index} className=\"sd-logocloud__item\" data-mark-shape={markShape}>\n            {logo}\n          </div>\n        ))}\n      </Grid>\n    </Stack>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/LogoCloud.css",
+      "type": "registry:component",
+      "target": "src/blocks/LogoCloud.css",
+      "content": ".sd-logocloud {\n  width: 100%;\n}\n\n.sd-logocloud__label {\n  margin: 0;\n  text-align: center;\n}\n\n/* One box per mark (prop-usage-contract.md § Ratio): the box's HEIGHT is a Sys rung and its width\n   follows from the ratio, so marks of any drawn proportion read as one even row. Not the track\n   width: a square symbol sized by a 2-up track at 390 would stand ~170px tall. `max-inline-size`\n   keeps a wordmark box inside a narrow track. `justify-self`, because a stretched grid item would\n   take the track's width and drop the ratio. */\n.sd-logocloud__item {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  justify-self: center;\n  block-size: var(--sd-control-height-x-small);\n  aspect-ratio: 5;\n  max-inline-size: 100%;\n  min-width: 0;\n}\n\n.sd-logocloud__item[data-mark-shape=\"symbol\"] {\n  aspect-ratio: 1;\n}\n\n@media (min-width: 768px) {\n  .sd-logocloud__item {\n    block-size: var(--sd-control-height-small);\n  }\n}\n\n/* The mark fills the box and is contained in it, so the consumer passes no size. A direct child\n   only, the same reach as `.sd-list-box__item > [slot]`: the Block cannot class markup it does not\n   render. */\n.sd-logocloud__item > img,\n.sd-logocloud__item > svg {\n  inline-size: 100%;\n  block-size: 100%;\n  object-fit: contain;\n}\n"
+    }
+  ]
+}

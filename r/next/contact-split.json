@@ -1,0 +1,37 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "contact-split",
+  "type": "registry:block",
+  "title": "Contact Split",
+  "description": "A responsive contact section pairing a message form with contact information.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/button",
+    "@sando-ui/form",
+    "@sando-ui/grid",
+    "@sando-ui/stack",
+    "@sando-ui/text-field",
+    "@sando-ui/textarea",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/ContactSplit.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/ContactSplit.tsx",
+      "content": "// Block (composition) — a contact form paired with a contact-information section.\n// Grid/Stack own arrangement; Form/TextField/Textarea/Button own form behavior and Component look.\nimport { useId, type FormEvent, type ReactNode, type Ref } from \"react\";\nimport { Button } from \"../components/Button\";\nimport { Form } from \"../components/Form\";\nimport { Grid } from \"../layouts/Grid\";\nimport { Stack } from \"../layouts/Stack\";\nimport { Textarea } from \"../components/Textarea\";\nimport { TextField } from \"../components/TextField\";\nimport \"./ContactSplit.css\";\n\nexport interface ContactSplitProps {\n  onSubmit?: (data: Record<string, string>) => void;\n  isPending?: boolean;\n  info?: {\n    label: string;\n    value: ReactNode;\n  }[];\n  heading?: string;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function ContactSplit({\n  onSubmit,\n  isPending,\n  info = [],\n  heading = \"Get in touch\",\n  className,\n  ref,\n}: ContactSplitProps) {\n  const headingId = useId();\n\n  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {\n    event.preventDefault();\n    const data = new FormData(event.currentTarget);\n    onSubmit?.({\n      name: String(data.get(\"name\") ?? \"\"),\n      email: String(data.get(\"email\") ?? \"\"),\n      message: String(data.get(\"message\") ?? \"\"),\n    });\n  };\n\n  return (\n    <Grid\n      as=\"section\"\n      ref={ref}\n      aria-labelledby={headingId}\n      columns={{ small: 1, medium: 2 }}\n      gap={{ small: \"2x-large\", medium: \"large\" }}\n      className={className ? `sd-contactsplit ${className}` : \"sd-contactsplit\"}\n    >\n      {/* The heading names the whole section, so it comes first in reading order, above the form on a\n          phone and beside it from the medium step. */}\n      <Stack gap=\"large\" className=\"sd-contactsplit__info\">\n        <>\n          <h2 id={headingId} className=\"sd-contactsplit__heading sd-type-title-medium\">{heading}</h2>\n        </>\n        {info.length > 0 && (\n          <Stack as=\"dl\" gap=\"medium\" className=\"sd-contactsplit__list\">\n            {info.map((item, index) => (\n              <div key={`${item.label}-${index}`} className=\"sd-contactsplit__item\">\n                <dt className=\"sd-contactsplit__label sd-type-label-medium\">{item.label}</dt>\n                <dd className=\"sd-contactsplit__value sd-type-body-medium\">{item.value}</dd>\n              </div>\n            ))}\n          </Stack>\n        )}\n      </Stack>\n\n      <Form isPending={isPending} onSubmit={handleSubmit} className=\"sd-contactsplit__form\">\n        {/* `medium`: three labelled fields stacked, the field-field row. Each field's label sits\n            `x-small` above its control, and parting fields takes two rungs over that, as the other\n            full forms already do (token-contract.md § By relationship). */}\n        <Stack gap=\"medium\" className=\"sd-contactsplit__fields\">\n          <TextField label=\"Name\" name=\"name\" autoComplete=\"name\" isRequired />\n          <TextField\n            label=\"Email\"\n            name=\"email\"\n            type=\"email\"\n            autoComplete=\"email\"\n            isRequired\n          />\n          <Textarea label=\"Message\" name=\"message\" rows={6} isRequired />\n          <Button size=\"large\" type=\"submit\" variant=\"primary\" isPending={isPending}>\n            Send\n          </Button>\n        </Stack>\n      </Form>\n    </Grid>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/ContactSplit.css",
+      "type": "registry:component",
+      "target": "src/blocks/ContactSplit.css",
+      "content": ".sd-contactsplit {\n  width: 100%;\n}\n\n.sd-contactsplit__form,\n.sd-contactsplit__info {\n  min-width: 0;\n}\n\n.sd-contactsplit__heading,\n.sd-contactsplit__list,\n.sd-contactsplit__label,\n.sd-contactsplit__value {\n  margin: 0;\n}\n\n.sd-contactsplit__item {\n  display: grid;\n  gap: var(--sd-space-2x-small);\n}\n"
+    }
+  ]
+}

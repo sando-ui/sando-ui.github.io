@@ -1,0 +1,37 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "integrations-list",
+  "type": "registry:block",
+  "title": "Integrations List",
+  "description": "A responsive grid of connectable service cards with consumer-controlled connection switches.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/card",
+    "@sando-ui/grid",
+    "@sando-ui/responsive",
+    "@sando-ui/stack",
+    "@sando-ui/switch",
+    "@sando-ui/skeleton-list",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/IntegrationsList.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/IntegrationsList.tsx",
+      "content": "// Block (composition) — a responsive grid of connectable service cards.\n// Card and Switch own look/behavior; Grid and Stack own arrangement.\nimport type { Ref } from \"react\";\nimport { Card } from \"../components/Card\";\nimport { Grid } from \"../layouts/Grid\";\nimport type { Responsive } from \"../layouts/responsive\";\nimport { Stack } from \"../layouts/Stack\";\nimport { Switch } from \"../components/Switch\";\nimport { SkeletonList } from \"./SkeletonList\";\nimport \"./IntegrationsList.css\";\n\nexport interface IntegrationsListProps {\n  integrations: {\n    id: string;\n    name: string;\n    description?: string;\n    connected?: boolean;\n  }[];\n  onToggle?: (id: string, connected: boolean) => void;\n  columns?: Responsive<number>;\n  /** Renders skeleton placeholders while integrations are loading. */\n  isLoading?: boolean;\n  /** Message shown when there are no integrations. */\n  emptyLabel?: string;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function IntegrationsList({\n  integrations,\n  onToggle,\n  columns = { small: 1, medium: 2 },\n  isLoading,\n  emptyLabel = \"No integrations available\",\n  className,\n  ref,\n}: IntegrationsListProps) {\n  if (isLoading) {\n    return <SkeletonList rows={4} className={className} />;\n  }\n  if (integrations.length === 0) {\n    return (\n      <p role=\"status\" className={`sd-integrationslist__empty sd-type-caption-medium${className ? ` ${className}` : \"\"}`}>\n        {emptyLabel}\n      </p>\n    );\n  }\n  return (\n    <Grid\n      as=\"section\"\n      ref={ref}\n      aria-label=\"Integrations\"\n      columns={columns}\n      gap=\"medium\"\n      className={className ? `sd-integrationslist ${className}` : \"sd-integrationslist\"}\n    >\n      {integrations.map((integration) => (\n        <Card key={integration.id} className=\"sd-integrationslist__card\">\n          {/* On the Card's surface, so the name and description take the inset (rule 8); the Switch\n              stays on the box line at the end, so only the text is indented. */}\n          <Stack direction=\"row\" justify=\"between\" align=\"center\" gap=\"small\" className=\"sd-integrationslist__row\">\n            <Stack gap=\"2x-small\" className=\"sd-integrationslist__details\">\n              <>\n                <h3 className=\"sd-integrationslist__name sd-type-title-medium\">\n                  {integration.name}\n                </h3>\n              </>\n              {integration.description && (\n                <>\n                  <p className=\"sd-integrationslist__description sd-type-caption-medium\">\n                    {integration.description}\n                  </p>\n                </>\n              )}\n            </Stack>\n            <Switch\n              aria-label={`${integration.connected ? \"Disconnect\" : \"Connect\"} ${integration.name}`}\n              isSelected={Boolean(integration.connected)}\n              onChange={(connected) => onToggle?.(integration.id, connected)}\n            />\n          </Stack>\n        </Card>\n      ))}\n    </Grid>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/IntegrationsList.css",
+      "type": "registry:component",
+      "target": "src/blocks/IntegrationsList.css",
+      "content": "/* IntegrationsList.css — .sd-integrationslist (Block)\n   Arrangement only: the grid fills its region and card copy can shrink beside its switch. */\n.sd-integrationslist {\n  width: 100%;\n}\n\n.sd-integrationslist__card,\n.sd-integrationslist__details {\n  min-width: 0;\n}\n\n.sd-integrationslist__name,\n.sd-integrationslist__description {\n  margin: 0;\n}\n\n.sd-integrationslist__description {\n  color: var(--sd-color-text-muted);\n}\n\n/* empty state — layout only (muted color inherits default; blocks own no color) */\n.sd-integrationslist__empty {\n  padding: var(--sd-space-large);\n  text-align: center;\n}\n"
+    }
+  ]
+}

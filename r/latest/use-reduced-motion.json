@@ -1,0 +1,18 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "use-reduced-motion",
+  "type": "registry:lib",
+  "title": "useReducedMotion",
+  "description": "A hook that is true while the person asks for reduced motion (prefers-reduced-motion: reduce), and on the server. Shared by the units that animate content: Chart and Marquee.",
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/components/useReducedMotion.ts",
+      "type": "registry:lib",
+      "target": "src/components/useReducedMotion.ts",
+      "content": "// True while the person asks for reduced motion (prefers-reduced-motion: reduce), and on the server.\n// Shared by the units that animate content rather than state: Chart and Marquee.\nimport { useSyncExternalStore } from \"react\";\n\nconst QUERY = \"(prefers-reduced-motion: reduce)\";\nconst read = () => typeof matchMedia === \"function\" && matchMedia(QUERY).matches;\nconst subscribe = (on: () => void) => {\n  if (typeof matchMedia !== \"function\") return () => {};\n  const m = matchMedia(QUERY);\n  m.addEventListener(\"change\", on);\n  return () => m.removeEventListener(\"change\", on);\n};\n\nexport function useReducedMotion(): boolean {\n  return useSyncExternalStore(subscribe, read, () => true);\n}\n"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "timeline",
+  "type": "registry:ui",
+  "title": "Timeline",
+  "description": "An ordered list whose items are joined by a rail between their marks (an Avatar, an icon or a status dot). Semantic HTML with no headless primitive; look owned in Vanilla CSS.",
+  "registryDependencies": [
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/components/Timeline.tsx",
+      "type": "registry:component",
+      "target": "src/components/Timeline.tsx",
+      "content": "// Component (Category B) — an ordered list whose items are joined by a rail between their marks.\n//\n// No headless primitive: React Aria has no timeline, and the behaviour is none (a list is read,\n// not operated), so it is semantic HTML: an `<ol>` of `<li>`s. What it OWNS is the look a Block\n// cannot draw, the rail, which is why ActivityFeed asked for it (block-contract.md §5: a Block\n// owns no look). Peer systems ship the same shape (Mantine, Ant Design and Chakra each have a\n// Timeline whose item carries a mark and a tail line).\n//\n// The mark is a slot, not a variant: an Avatar for who did something, an icon or a status dot for\n// what happened. It leads a line of text, so where it starts on the page is the composing Block's\n// call (component-contract.md §6 rule 8), and the item takes the Block's `className` for that.\nimport type { HTMLAttributes, LiHTMLAttributes, ReactNode, Ref } from \"react\";\nimport \"./Timeline.css\";\n\nexport interface TimelineProps extends Omit<HTMLAttributes<HTMLOListElement>, \"className\"> {\n  /** `TimelineItem`s, in order. */\n  children: ReactNode;\n  /** Additional class. sd-timeline is always preserved. */\n  className?: string;\n  /** Forwarded to the `<ol>`. */\n  ref?: Ref<HTMLOListElement>;\n}\n\nexport function Timeline({ children, className, ref, ...props }: TimelineProps) {\n  return (\n    <ol {...props} ref={ref} className={className ? `sd-timeline ${className}` : \"sd-timeline\"}>\n      {children}\n    </ol>\n  );\n}\n\nexport interface TimelineItemProps extends Omit<LiHTMLAttributes<HTMLLIElement>, \"className\"> {\n  /** The mark the rail joins: an Avatar, an icon, a status dot. */\n  indicator: ReactNode;\n  /** What happened. */\n  children: ReactNode;\n  /** Additional class. sd-timeline__item is always preserved. */\n  className?: string;\n  /** Forwarded to the `<li>`. */\n  ref?: Ref<HTMLLIElement>;\n}\n\nexport function TimelineItem({ indicator, children, className, ref, ...props }: TimelineItemProps) {\n  return (\n    <li\n      {...props}\n      ref={ref}\n      className={className ? `sd-timeline__item ${className}` : \"sd-timeline__item\"}\n    >\n      <span className=\"sd-timeline__track\">\n        <span className=\"sd-timeline__indicator\">{indicator}</span>\n        {/* Drawn, not read: the order is the list's, and a line has nothing to announce. */}\n        <span className=\"sd-timeline__rail\" aria-hidden=\"true\" />\n      </span>\n      <div className=\"sd-timeline__content\">{children}</div>\n    </li>\n  );\n}\n"
+    },
+    {
+      "path": "src/components/Timeline.css",
+      "type": "registry:component",
+      "target": "src/components/Timeline.css",
+      "content": "/* Timeline.css — .sd-timeline (+ BEM sub-parts)\n   sd- prefix / single flat class / no descendant combinators / Cmp tokens only.\n   Each item is [track | content]; the track holds the mark and, under it, the rail that runs the\n   item's full height to the next mark. The last item has no rail and no trailing gap, carried by\n   two `-current` relays the item sets for its own descendants, because a descendant combinator\n   (`:last-child .rail`) is not allowed here. */\n.sd-timeline {\n  display: flex;\n  flex-direction: column;\n  margin: 0;\n  padding: 0;\n  list-style: none;\n}\n\n.sd-timeline__item {\n  --sd-timeline-rail-display-current: block;\n  --sd-timeline-content-padding-block-end-current: var(--sd-timeline-gap);\n  display: flex;\n  gap: var(--sd-timeline-item-gap);\n}\n.sd-timeline__item:last-child {\n  --sd-timeline-rail-display-current: none;\n  --sd-timeline-content-padding-block-end-current: 0px;\n}\n\n.sd-timeline__track {\n  display: flex;\n  flex: none;\n  flex-direction: column;\n  align-items: center;\n}\n\n.sd-timeline__indicator {\n  display: flex;\n}\n\n/* The rail grows to fill whatever height the item has left under the mark, so a long entry and a\n   short one are joined the same way. A border rather than a background, so the dashed style is the\n   token's to choose. */\n.sd-timeline__rail {\n  display: var(--sd-timeline-rail-display-current);\n  flex: 1;\n  margin-block: var(--sd-timeline-rail-gap);\n  border-inline-start: var(--sd-timeline-rail-width) var(--sd-timeline-rail-style) var(--sd-timeline-rail-color);\n}\n\n/* The gap to the next item is spent HERE, inside the item, so the rail above reaches across it. */\n.sd-timeline__content {\n  flex: 1;\n  min-width: 0;\n  padding-block-end: var(--sd-timeline-content-padding-block-end-current);\n}\n"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "social-proof",
+  "type": "registry:block",
+  "title": "Social Proof",
+  "description": "A centered trust section combining a customer quote, author, and wrapping logo row.",
+  "registryDependencies": [
+    "@sando-ui/avatar",
+    "@sando-ui/container",
+    "@sando-ui/stack",
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/SocialProof.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/SocialProof.tsx",
+      "content": "// Block (composition) — a customer-proof section combining a quote, author, and logos.\n// Container caps measure; Stack owns arrangement, Avatar owns identity look, and this Block owns content structure.\nimport type { ReactNode, Ref } from \"react\";\nimport { Avatar } from \"../components/Avatar\";\nimport { Container } from \"../layouts/Container\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./SocialProof.css\";\n\nexport interface SocialProofProps {\n  quote?: ReactNode;\n  author?: {\n    name: string;\n    role?: string;\n    avatarSrc?: string;\n  };\n  logos?: ReactNode[];\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nfunction initials(name: string) {\n  return name\n    .split(\" \")\n    .map((part) => part[0])\n    .join(\"\")\n    .slice(0, 2)\n    .toUpperCase();\n}\n\nexport function SocialProof({ quote, author, logos, className, ref }: SocialProofProps) {\n  return (\n    <Container\n      as=\"section\"\n      ref={ref}\n      span={8}\n      padding=\"none\"\n      aria-label=\"Customer proof\"\n      className={className ? `sd-socialproof ${className}` : \"sd-socialproof\"}\n    >\n      <Stack align=\"center\" gap=\"x-large\" className=\"sd-socialproof__content\">\n        {(quote || author) && (\n          <Stack align=\"center\" gap=\"medium\" className=\"sd-socialproof__testimonial\">\n            {quote && (\n              <blockquote className=\"sd-socialproof__quote sd-type-body-medium\">\n                {quote}\n              </blockquote>\n            )}\n            {author && (\n              <Stack direction=\"row\" align=\"center\" gap=\"small\" className=\"sd-socialproof__author\">\n                <Avatar src={author.avatarSrc} size=\"small\" alt={author.name}>\n                  {initials(author.name)}\n                </Avatar>\n                <Stack gap=\"2x-small\" className=\"sd-socialproof__identity\">\n                  <span className=\"sd-socialproof__name sd-type-body-medium\">{author.name}</span>\n                  {author.role && (\n                    <span className=\"sd-socialproof__role sd-type-caption-medium\">{author.role}</span>\n                  )}\n                </Stack>\n              </Stack>\n            )}\n          </Stack>\n        )}\n        {logos && logos.length > 0 && (\n          <Stack\n            direction=\"row\"\n            align=\"center\"\n            justify=\"center\"\n            gap=\"small\"\n            wrap\n            className=\"sd-socialproof__logos\"\n          >\n            {logos.map((logo, index) => (\n              <span key={index} className=\"sd-socialproof__logo\">\n                {logo}\n              </span>\n            ))}\n          </Stack>\n        )}\n      </Stack>\n    </Container>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/SocialProof.css",
+      "type": "registry:component",
+      "target": "src/blocks/SocialProof.css",
+      "content": ".sd-socialproof {\n  width: 100%;\n  text-align: center;\n}\n\n.sd-socialproof__quote,\n.sd-socialproof__name,\n.sd-socialproof__role {\n  margin: 0;\n}\n\n.sd-socialproof__role {\n  color: var(--sd-color-text-muted);\n}\n\n.sd-socialproof__logos {\n  width: 100%;\n}\n\n.sd-socialproof__logo {\n  min-width: 0;\n}\n"
+    }
+  ]
+}

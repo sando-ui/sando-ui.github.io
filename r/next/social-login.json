@@ -1,0 +1,34 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "social-login",
+  "type": "registry:block",
+  "title": "Social Login",
+  "description": "Sign-in through other services: one Button per provider in the provider's own colour and mark, supplied by the consumer, then optionally \"or\" and another way in.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/button",
+    "@sando-ui/separator",
+    "@sando-ui/stack",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/SocialLogin.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/SocialLogin.tsx",
+      "content": "// Block (composition) — sign-in through other services: one Button per provider in that provider's own colour and mark, then optionally \"or\" and another way in\n//\n// Each provider's colour, ink and mark are the caller's, passed straight to Button's `provider`\n// variant: the design system ships no third party's colour, mark or name. The caller owns each\n// pair's 4.5:1, as Button states. The other way in (an email form, a \"look around first\" link) goes\n// in `children`, under the \"or\" rule; with no children there is no rule. It arranges Buttons,\n// Separators and Stack, and paints nothing of its own.\nimport { useId } from \"react\";\nimport type { ReactNode, Ref } from \"react\";\nimport { Text } from \"react-aria-components\";\nimport { Button } from \"../components/Button\";\nimport { Separator } from \"../components/Separator\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./SocialLogin.css\";\n\nexport interface SocialLoginProvider {\n  /** Passed back to `onSelect`. */\n  id: string;\n  /** The button's label, e.g. \"Continue with Provider A\". */\n  label: string;\n  /** The provider's fill, as a CSS colour; the same in every theme. */\n  color: string;\n  /** The label and mark ink on `color`, clearing 4.5:1 against it. */\n  foreground: string;\n  /** The provider's mark, drawn before the label in `currentColor` or its own colours. Decorative. */\n  mark?: ReactNode;\n}\n\nexport interface SocialLoginProps {\n  /** A section label above the buttons. None by default: the page names itself. */\n  heading?: string;\n  /** One button per provider, in this order. */\n  providers: SocialLoginProvider[];\n  /** Called with the pressed provider's `id`. */\n  onSelect?: (id: string) => void;\n  /** The provider being signed in to: its button pends and the others stay pressable. */\n  pendingId?: string;\n  /**\n   * The word on the rule between the providers and `children`.\n   *\n   * @default \"or\"\n   */\n  dividerLabel?: string;\n  /** Another way in, under the rule: an email form, a link to browse first. */\n  children?: ReactNode;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function SocialLogin({\n  heading,\n  providers,\n  onSelect,\n  pendingId,\n  dividerLabel = \"or\",\n  children,\n  className,\n  ref,\n}: SocialLoginProps) {\n  const headingId = useId();\n  return (\n    <Stack\n      as=\"section\"\n      ref={ref}\n      gap=\"large\"\n      aria-labelledby={heading ? headingId : undefined}\n      className={className ? `sd-sociallogin ${className}` : \"sd-sociallogin\"}\n    >\n      {heading && (\n        <h2 id={headingId} className=\"sd-sociallogin__heading sd-type-title-medium\">\n          {heading}\n        </h2>\n      )}\n      <Stack gap=\"x-small\" className=\"sd-sociallogin__providers\">\n        {providers.map((provider) => (\n          <Button\n            key={provider.id}\n            variant=\"provider\"\n            providerColor={provider.color}\n            providerForeground={provider.foreground}\n            isPending={pendingId === provider.id}\n            onPress={() => onSelect?.(provider.id)}\n          >\n            {provider.mark}\n            <Text>{provider.label}</Text>\n          </Button>\n        ))}\n      </Stack>\n      {children != null && (\n        <>\n          <Stack direction=\"row\" align=\"center\" gap=\"small\" className=\"sd-sociallogin__divider\">\n            <Separator isDecorative className=\"sd-sociallogin__rule\" />\n            <span className=\"sd-sociallogin__divider-label sd-type-caption-medium\">{dividerLabel}</span>\n            <Separator isDecorative className=\"sd-sociallogin__rule\" />\n          </Stack>\n          {children}\n        </>\n      )}\n    </Stack>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/SocialLogin.css",
+      "type": "registry:component",
+      "target": "src/blocks/SocialLogin.css",
+      "content": "/* SocialLogin.css — .sd-sociallogin (Block)\n   Arrangement only: Stack places the heading, the provider Buttons and the \"or\" rule; Button and\n   Separator own every look. Fills the column it is given. No new tokens. */\n.sd-sociallogin {\n  width: 100%;\n}\n\n.sd-sociallogin__heading {\n  margin: 0;\n}\n\n/* The two rules share the row the word leaves them. */\n.sd-sociallogin__rule {\n  flex-grow: 1;\n  flex-basis: 0;\n}\n\n/* A supporting word between two ways in (naming-convention § Text colour roles, row 4). */\n.sd-sociallogin__divider-label {\n  color: var(--sd-color-text-muted);\n}\n"
+    }
+  ]
+}

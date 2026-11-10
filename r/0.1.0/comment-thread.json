@@ -1,0 +1,37 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "comment-thread",
+  "type": "registry:block",
+  "title": "Comment Thread",
+  "description": "A threaded comment list with author details and a reply composer.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/avatar",
+    "@sando-ui/button",
+    "@sando-ui/form",
+    "@sando-ui/separator",
+    "@sando-ui/stack",
+    "@sando-ui/textarea",
+    "@sando-ui/skeleton-list",
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/CommentThread.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/CommentThread.tsx",
+      "content": "// Block (composition) — a comment feed with loading, empty, and composer states.\n// Stack owns arrangement; Avatar/Form/Textarea/Button/Separator own Component concerns, and SkeletonList owns loading content.\nimport { Fragment } from \"react\";\nimport type { FormEvent, ReactNode, Ref } from \"react\";\nimport { Avatar } from \"../components/Avatar\";\nimport { Button } from \"../components/Button\";\nimport { Form } from \"../components/Form\";\nimport { Separator } from \"../components/Separator\";\nimport { Stack } from \"../layouts/Stack\";\nimport { Textarea } from \"../components/Textarea\";\nimport { SkeletonList } from \"./SkeletonList\";\nimport \"./CommentThread.css\";\n\nexport interface CommentThreadProps {\n  comments: {\n    id: string;\n    author: string;\n    avatarSrc?: string;\n    body: ReactNode;\n    timestamp?: string;\n  }[];\n  onSubmit?: (body: string) => void;\n  placeholder?: string;\n  /** Renders skeleton placeholders while comments are loading. */\n  isLoading?: boolean;\n  /** Message shown above the composer when there are no comments. */\n  emptyLabel?: string;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function CommentThread({\n  comments,\n  onSubmit,\n  placeholder = \"Add a comment…\",\n  isLoading,\n  emptyLabel = \"No comments yet — start the conversation.\",\n  className,\n  ref,\n}: CommentThreadProps) {\n  if (isLoading) {\n    return <SkeletonList rows={3} showAvatar className={className} />;\n  }\n  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {\n    event.preventDefault();\n    const body = String(new FormData(event.currentTarget).get(\"comment\") ?? \"\").trim();\n    if (body) onSubmit?.(body);\n    event.currentTarget.reset();\n  };\n\n  return (\n    <Stack\n      as=\"section\"\n      ref={ref}\n      gap=\"medium\"\n      aria-label=\"Comments\"\n      className={className ? `sd-commentthread ${className}` : \"sd-commentthread\"}\n    >\n      {comments.length === 0 && (\n        <p role=\"status\" className=\"sd-commentthread__empty sd-type-caption-medium\">\n          {emptyLabel}\n        </p>\n      )}\n      {comments.map((comment, index) => (\n        <Fragment key={comment.id}>\n          <Stack direction=\"row\" gap=\"small\" align=\"start\" className=\"sd-commentthread__comment\">\n            <Avatar src={comment.avatarSrc} size=\"small\" alt={comment.author}>\n              {comment.author.charAt(0).toUpperCase()}\n            </Avatar>\n            <Stack gap=\"x-small\" className=\"sd-commentthread__content\">\n              <Stack direction={{ small: \"column\", medium: \"row\" }} gap=\"x-small\" align={{ medium: \"center\" }} className=\"sd-commentthread__meta\">\n                <strong className=\"sd-type-body-medium-emphasized\">{comment.author}</strong>\n                {comment.timestamp && (\n                  <span className=\"sd-type-caption-medium\">{comment.timestamp}</span>\n                )}\n              </Stack>\n              {/* spacing: attachment — the byline names whose words follow */}\n              <div className=\"sd-commentthread__body sd-type-body-medium\">{comment.body}</div>\n            </Stack>\n          </Stack>\n          {index < comments.length - 1 && <Separator />}\n        </Fragment>\n      ))}\n      {comments.length > 0 && <Separator />}\n      <Form onSubmit={handleSubmit}>\n        <Stack gap=\"small\" align=\"end\" className=\"sd-commentthread__fields\">\n          <Textarea\n            aria-label=\"Comment\"\n            name=\"comment\"\n            placeholder={placeholder}\n            rows={3}\n            isRequired\n            className=\"sd-commentthread__composer\"\n          />\n          <Button type=\"submit\">Comment</Button>\n        </Stack>\n      </Form>\n    </Stack>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/CommentThread.css",
+      "type": "registry:component",
+      "target": "src/blocks/CommentThread.css",
+      "content": ".sd-commentthread {\n  width: 100%;\n}\n\n.sd-commentthread__content {\n  flex: 1;\n  min-width: 0;\n}\n\n.sd-commentthread__body {\n  overflow-wrap: anywhere;\n}\n\n.sd-commentthread__composer {\n  width: 100%;\n}\n\n/* empty state — layout only (muted color inherits default; blocks own no color) */\n.sd-commentthread__empty {\n  padding: var(--sd-space-large);\n  text-align: center;\n}\n"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "side-panel",
+  "type": "registry:block",
+  "title": "Side Panel",
+  "description": "A full-height panel for a sidebar: a title, an optional close button and description, and a body that fills the rest of the height; pass a ScrollArea to scroll it. Pair it with AppShell's rail slot, which folds the panel while the rail stays.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/button",
+    "@sando-ui/card",
+    "@sando-ui/icons",
+    "@sando-ui/stack",
+    "@sando-ui/styles",
+    "@sando-ui/tooltip"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/SidePanel.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/SidePanel.tsx",
+      "content": "// Block (Frame posture, block-contract.md §1b) — a full-height side panel: a head naming the panel,\n// with an optional close, over a body that takes the rest of the panel's height.\n//\n// It exists because the theme studio and the screen composer built it by hand five times (a Card,\n// a CardTitle beside a ghost close Button, a CardDescription, a ScrollArea), and the five copies had\n// already drifted apart on the gap under the head. The content region is an open `children` slot,\n// so this is chrome only, as the Frame posture asks.\n//\n// Named `SidePanel`, not `Panel`: \"Panel\" is block-contract.md §1b's name for a posture.\n//\n// The surface is a flat `Card` at its default tier: it sits in the shell's flow rather than floating\n// (prop-usage-contract.md § Variant, surface), and a panel that runs a sidebar's height is not the\n// compact chrome `small` is for.\n//\n// The body does not scroll by itself. A slot wrapper does not own scrolling for content it does not\n// render (component-contract.md §6, rule 4's note on scrollports): a panel that scrolls everything\n// passes one `ScrollArea`, and one that keeps a search field fixed above a list scrolls the list\n// alone. The body fills the height left under the head, so a child given `flex: 1` takes it.\nimport { useId } from \"react\";\nimport type { CSSProperties, ReactNode, Ref } from \"react\";\nimport { SidebarLeft2 } from \"../components/icons\";\nimport { Button } from \"../components/Button\";\nimport { Card, CardDescription, CardTitle } from \"../components/Card\";\nimport { Tooltip } from \"../components/Tooltip\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./SidePanel.css\";\n\nexport interface SidePanelBaseProps {\n  /** The panel's name: its heading, and the accessible name of the region. */\n  title: string;\n  /**\n   * Heading level of the title, so the panel sits at the right depth in the page outline.\n   *\n   * @default 2\n   */\n  headingLevel?: 1 | 2 | 3 | 4 | 5 | 6;\n  /** A supporting line under the title: what the panel is for. */\n  description?: ReactNode;\n}\n\nexport type SidePanelProps = SidePanelBaseProps &\n  (\n    | {\n        /** Called when the head's close Button is pressed. Omit it and the head draws no close. */\n        onClose: () => void;\n        /**\n         * The close Button's accessible name, and its Tooltip. REQUIRED with `onClose`: the Button\n         * is icon-only, so this is the only name it has (component-contract.md §2, WCAG 4.1.2).\n         */\n        closeLabel: string;\n      }\n    | { onClose?: undefined; closeLabel?: undefined }\n  ) & {\n    /**\n     * The panel's body, a column at `large` under the head. It fills the rest of the panel's height\n     * and does not scroll by itself: wrap what should scroll in a `ScrollArea` and give it `flex: 1`.\n     */\n    children: ReactNode;\n    /** Additional class (optional). sd-sidepanel is always preserved. */\n    className?: string;\n    /** Inline style passthrough, onto the Card. */\n    style?: CSSProperties;\n    /** Forwarded to the root Card. */\n    ref?: Ref<HTMLDivElement>;\n  };\n\nexport function SidePanel({\n  title,\n  headingLevel = 2,\n  description,\n  onClose,\n  closeLabel,\n  children,\n  className,\n  style,\n  ref,\n}: SidePanelProps) {\n  const titleId = useId();\n  return (\n    <Card\n      ref={ref}\n      role=\"region\"\n      aria-labelledby={titleId}\n      style={style}\n      className={className ? `sd-sidepanel ${className}` : \"sd-sidepanel\"}\n    >\n      {/* spacing: `large` under the head. heading-group (token-contract.md § By relationship): the\n          head is ATTACHED to the body it names, so its gap floors at the loosest gap inside the\n          body, which the studio's bodies keep at `large` and under (ControlGroup's controls, the\n          composer's lists); the Card's padding is an edge and seals the unit, so no gap outside it\n          bounds this one from above. Two of the five hand-built copies used `x-large`, which reads\n          the head as parted from its own body. */}\n      <Stack direction=\"column\" gap=\"large\" className=\"sd-sidepanel__layout\">\n        <Stack direction=\"column\" gap=\"2x-small\">\n          <Stack direction=\"row\" align=\"center\" justify=\"between\" gap=\"small\">\n            <CardTitle id={titleId} headingLevel={headingLevel}>\n              {title}\n            </CardTitle>\n            {onClose && (\n              <Tooltip content={closeLabel}>\n                <Button variant=\"ghost\" isIconOnly aria-label={closeLabel} onPress={onClose}>\n                  <SidebarLeft2 aria-hidden size=\"1em\" />\n                </Button>\n              </Tooltip>\n            )}\n          </Stack>\n          {description != null && <CardDescription>{description}</CardDescription>}\n        </Stack>\n        <Stack direction=\"column\" gap=\"large\" className=\"sd-sidepanel__body\">\n          {children}\n        </Stack>\n      </Stack>\n    </Card>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/SidePanel.css",
+      "type": "registry:component",
+      "target": "src/blocks/SidePanel.css",
+      "content": "/* SidePanel.css — arrangement only (Block carve-out, component-contract.md §6 carve-out 5).\n\n   The surface, padding and radius are the Card's; the gaps are the Stacks'. What is left is the\n   height chain: the panel takes its container's whole height and the body takes what the head\n   leaves, so a scroller inside it can fill and scroll. */\n\n/* The Card fills its container's block axis, and `min-block-size: 0` lets a flex parent shrink it\n   below its content, so a scroller in the body scrolls instead of the page. The body sits INSIDE\n   the Card's padding (the arrangement `Dialog.css` uses), so a child painting past its own box is\n   not cut by the Card's edge. The Card is already a flex column, so its one child fills it with\n   `flex: 1`. */\n.sd-sidepanel {\n  block-size: 100%;\n  min-block-size: 0;\n  min-inline-size: 0;\n}\n\n.sd-sidepanel__layout {\n  flex: 1;\n  min-block-size: 0;\n  min-inline-size: 0;\n}\n\n.sd-sidepanel__body {\n  flex: 1;\n  min-block-size: 0;\n  min-inline-size: 0;\n}\n"
+    }
+  ]
+}

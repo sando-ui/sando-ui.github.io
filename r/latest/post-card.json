@@ -1,0 +1,36 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "post-card",
+  "type": "registry:block",
+  "title": "Post Card",
+  "description": "A social feed post with author header, body, optional media, and like/comment/share actions. Composed from Card, Avatar, and Button.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/card",
+    "@sando-ui/avatar",
+    "@sando-ui/button",
+    "@sando-ui/media",
+    "@sando-ui/icons",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/PostCard.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/PostCard.tsx",
+      "content": "// Block (composition) — a social feed post: author header + text + optional media\n// + like/comment/share actions. Contract: docs/rules/block-contract.md. Composes\n// Card (surface), Avatar, and Button (actions); owns only layout; mints no tokens.\n// Distinct from BlogPostGrid (article cards).\nimport type { ReactNode, Ref } from \"react\";\nimport { Text } from \"react-aria-components\";\nimport { Comment, Heart, Share } from \"../components/icons\";\nimport { Avatar } from \"../components/Avatar\";\nimport { Media } from \"../components/Media\";\nimport { Button } from \"../components/Button\";\nimport { Card } from \"../components/Card\";\nimport \"./PostCard.css\";\n\nexport interface PostCardAuthor {\n  /** Display name. */\n  name: string;\n  /** Optional @handle shown under the name. */\n  handle?: string;\n  /** Optional avatar image URL. */\n  avatarSrc?: string;\n}\n\nexport interface PostCardProps {\n  /** Post author. */\n  author: PostCardAuthor;\n  /** Relative or absolute time label. */\n  timestamp?: string;\n  /** Post body content. */\n  content?: ReactNode;\n  /** Optional attached image. */\n  image?: { src: string; alt: string };\n  /** Like count shown next to the like action. */\n  likeCount?: number;\n  /** Comment count shown next to the comment action. */\n  commentCount?: number;\n  onLike?: () => void;\n  onComment?: () => void;\n  onShare?: () => void;\n  className?: string;\n  ref?: Ref<HTMLDivElement>;\n}\n\n// The Avatar's fallback: `Avatar` derives nothing from `alt`, so an avatar with no `src` and no\n// children renders an empty circle. Same helper as its peers (`ProfileCard`, `ReviewList`,\n// `TeamGrid`), duplicated per Block on purpose — §7 copy-friendly.\nfunction initials(name: string) {\n  return name\n    .split(\" \")\n    .map((part) => part[0])\n    .join(\"\")\n    .slice(0, 2)\n    .toUpperCase();\n}\n\nexport function PostCard({\n  author,\n  timestamp,\n  content,\n  image,\n  likeCount,\n  commentCount,\n  onLike,\n  onComment,\n  onShare,\n  className,\n  ref,\n}: PostCardProps) {\n  return (\n    <Card ref={ref} className={className ? `sd-postcard ${className}` : \"sd-postcard\"}>\n      <div className=\"sd-postcard__header\">\n        <Avatar src={author.avatarSrc} alt={author.name} size=\"small\">\n          {initials(author.name)}\n        </Avatar>\n        <div className=\"sd-postcard__author\">\n          <span className=\"sd-postcard__name sd-type-body-medium\">{author.name}</span>\n          {author.handle && (\n            <span className=\"sd-postcard__handle sd-type-caption-medium\">{author.handle}</span>\n          )}\n        </div>\n        {timestamp && (\n          <div className=\"sd-postcard__meta\">\n            <time className=\"sd-postcard__timestamp sd-type-caption-medium\">{timestamp}</time>\n          </div>\n        )}\n      </div>\n\n      {content && (\n        <>\n          <div className=\"sd-postcard__content sd-type-body-medium\">{content}</div>\n        </>\n      )}\n\n      {image && (\n        <Media className=\"sd-postcard__media\">\n          <img className=\"sd-postcard__media-image\" src={image.src} alt={image.alt} />\n        </Media>\n      )}\n\n      {/* usage: chrome — the post's reaction bar */}\n      <div className=\"sd-postcard__actions\">\n        <Button variant=\"ghost\" size=\"small\" onPress={onLike} aria-label=\"Like\">\n          <Heart aria-hidden size=\"1em\" />\n          <Text className=\"sd-postcard__count\">{likeCount ?? 0}</Text>\n        </Button>\n        <Button variant=\"ghost\" size=\"small\" onPress={onComment} aria-label=\"Comment\">\n          <Comment aria-hidden size=\"1em\" />\n          <Text className=\"sd-postcard__count\">{commentCount ?? 0}</Text>\n        </Button>\n        <Button variant=\"ghost\" size=\"small\" isIconOnly onPress={onShare} aria-label=\"Share\">\n          <Share aria-hidden size=\"1em\" />\n        </Button>\n      </div>\n    </Card>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/PostCard.css",
+      "type": "registry:component",
+      "target": "src/blocks/PostCard.css",
+      "content": "/* PostCard.css — .sd-postcard (Block)\n   Arrangement only: Card owns the surface; this Block places the author header,\n   body, media, and action row. The media image fills the card width; actions sit\n   in a row. No look (color/border/radius), no tokens. */\n.sd-postcard__header {\n  display: flex;\n  align-items: center;\n  gap: var(--sd-space-small);\n}\n\n.sd-postcard__author {\n  display: flex;\n  flex-direction: column;\n  /* The name↔handle pair IS this container's whole content, which `token-contract.md`\n     § Choosing a Sys rung answers with `2x-small` — `grid-list.item.content.gap` is the reference\n     for the same pair inside a rich row. Without it the pair runs on the two line-heights alone, 0 as\n     a box and 3.5px as ink, which `heading-pair:check` cannot see because it judges structure. */\n  gap: var(--sd-space-2x-small);\n  min-width: 0;\n}\n\n/* The Indent around the timestamp is the row's last flex item, so it carries the push to the end. */\n.sd-postcard__meta {\n  margin-inline-start: auto;\n  flex: 0 0 auto;\n  color: var(--sd-color-text-muted);\n}\n\n.sd-postcard__media-image {\n  display: block;\n  width: 100%;\n  height: auto;\n}\n\n.sd-postcard__actions {\n  display: flex;\n  align-items: center;\n  gap: var(--sd-space-x-small);\n}\n\n.sd-postcard__handle {\n  color: var(--sd-color-text-muted);\n}\n"
+    }
+  ]
+}

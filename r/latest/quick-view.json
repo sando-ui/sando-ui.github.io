@@ -1,0 +1,35 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "quick-view",
+  "type": "registry:block",
+  "title": "Quick View",
+  "description": "A responsive product preview modal with a gallery, product details, and an add-to-cart action.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/dialog",
+    "@sando-ui/button",
+    "@sando-ui/stack",
+    "@sando-ui/gallery",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/QuickView.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/QuickView.tsx",
+      "content": "// Block (composition) — a responsive product preview inside the Dialog Component.\n// Dialog owns modal behavior and chrome; Gallery owns image selection.\nimport type { ReactNode } from \"react\";\nimport { Button } from \"../components/Button\";\nimport { DialogContent, DialogHeader, DialogTitle, DialogTrigger } from \"../components/Dialog\";\nimport { Stack } from \"../layouts/Stack\";\nimport { Gallery, type GalleryProps } from \"./Gallery\";\nimport \"./QuickView.css\";\n\nexport interface QuickViewProps {\n  trigger: ReactNode;\n  title: string;\n  price: string;\n  description?: ReactNode;\n  images: GalleryProps[\"images\"];\n  onAddToCart?: () => void;\n  addLabel?: string;\n}\n\nexport function QuickView({\n  trigger,\n  title,\n  price,\n  description,\n  images,\n  onAddToCart,\n  addLabel = \"Add to cart\",\n}: QuickViewProps) {\n  return (\n    <DialogTrigger>\n      {trigger}\n      <DialogContent width=\"large\" className=\"sd-quickview\"\n        header={\n          <DialogHeader>\n            <DialogTitle>{title}</DialogTitle>\n          </DialogHeader>\n        }\n      >\n        <Stack direction={{ small: \"column\", medium: \"row\" }} gap=\"large\" className=\"sd-quickview__layout\">\n          <div className=\"sd-quickview__gallery\">\n            <Gallery images={images} layout=\"showcase\" />\n          </div>\n          <Stack gap=\"small\" className=\"sd-quickview__details\">\n            {/* Name and price are ONE unit, at a tighter rung than the panel's own — the pair\n                `ProductCard` already groups. Flat, the same 12px separated the name from its\n                price as separated the price from the description below it. */}\n            <>\n              <Stack gap=\"2x-small\" className=\"sd-quickview__header\">\n                <p className=\"sd-quickview__title sd-type-title-medium\">{title}</p>\n                <p className=\"sd-quickview__price sd-type-body-medium-emphasized\">{price}</p>\n              </Stack>\n            </>\n            {description && (\n              <>\n                <div className=\"sd-quickview__description sd-type-body-medium\">{description}</div>\n              </>\n            )}\n            {/* usage: completing-action — adding to the cart is the task the quick view exists for, not a submit */}\n            <Button variant=\"primary\" size=\"large\" onPress={onAddToCart}>\n              {addLabel}\n            </Button>\n          </Stack>\n        </Stack>\n      </DialogContent>\n    </DialogTrigger>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/QuickView.css",
+      "type": "registry:component",
+      "target": "src/blocks/QuickView.css",
+      "content": "/* QuickView.css — .sd-quickview (Block)\n   Arrangement only: splits gallery and product details at the shared responsive breakpoint. */\n.sd-quickview__gallery,\n.sd-quickview__details {\n  min-width: 0;\n  flex: 1 1 0;\n}\n\n.sd-quickview__title,\n.sd-quickview__price {\n  margin: 0;\n}\n\n.sd-quickview__description {\n  color: var(--sd-color-text-muted);\n  width: 100%;\n}\n"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "contact-form",
+  "type": "registry:block",
+  "title": "Contact Form",
+  "description": "A contact form for name, email, and message with submit and form-level error states.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/form",
+    "@sando-ui/text-field",
+    "@sando-ui/textarea",
+    "@sando-ui/button",
+    "@sando-ui/stack",
+    "@sando-ui/alert",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/ContactForm.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/ContactForm.tsx",
+      "content": "// Block (composition) — a ready-to-use contact form.\n// Arranges only; composes Form/TextField/Textarea/Button/Alert/Stack.\nimport type { FormEvent, Ref } from \"react\";\nimport { Form } from \"../components/Form\";\nimport { TextField } from \"../components/TextField\";\nimport { Textarea } from \"../components/Textarea\";\nimport { Button } from \"../components/Button\";\nimport { Alert } from \"../components/Alert\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./ContactForm.css\";\n\nexport interface ContactFormProps {\n  /** Heading shown above the contact fields. */\n  heading?: string;\n  /** Called with the submitted message. */\n  onSubmit?: (data: Record<string, string>) => void;\n  /** Form-level error, shown above the fields. */\n  errorMessage?: string;\n  /** Puts the submit button in a pending state and blocks re-submit. */\n  isPending?: boolean;\n  className?: string;\n  ref?: Ref<HTMLFormElement>;\n}\n\nexport function ContactForm({\n  heading = \"Contact us\",\n  onSubmit,\n  errorMessage,\n  isPending,\n  className,\n  ref,\n}: ContactFormProps) {\n  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {\n    event.preventDefault();\n    const data = new FormData(event.currentTarget);\n    onSubmit?.({\n      name: String(data.get(\"name\") ?? \"\"),\n      email: String(data.get(\"email\") ?? \"\"),\n      message: String(data.get(\"message\") ?? \"\"),\n    });\n  };\n\n  return (\n    <Form isPending={isPending}\n      ref={ref}\n      onSubmit={handleSubmit}\n      className={className ? `sd-contactform ${className}` : \"sd-contactform\"}\n    >\n      <Stack gap=\"large\" className=\"sd-contactform__content\">\n        {heading && (\n          <>\n            <h1 className=\"sd-contactform__heading sd-type-headline-medium\">{heading}</h1>\n          </>\n        )}\n        {/* live=\"assertive\": see `AlertProps.live` — submit failure is the case that earns it. */}\n        {errorMessage && (\n          <Alert variant=\"error\" live=\"assertive\">\n            {errorMessage}\n          </Alert>\n        )}\n        <Stack gap=\"medium\" className=\"sd-contactform__fields\">\n          <TextField label=\"Name\" name=\"name\" autoComplete=\"name\" isRequired />\n          <TextField label=\"Email\" name=\"email\" type=\"email\" autoComplete=\"email\" isRequired />\n          <Textarea label=\"Message\" name=\"message\" rows={6} isRequired />\n        </Stack>\n        <Button size=\"large\" type=\"submit\" variant=\"primary\" isPending={isPending}>\n          Send\n        </Button>\n      </Stack>\n    </Form>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/ContactForm.css",
+      "type": "registry:component",
+      "target": "src/blocks/ContactForm.css",
+      "content": "/* ContactForm.css — arrangement only; Component look stays with its owners. */\n/* Fills the column it is given. The page narrows that column on the grid (a Container span), so the\n   form's edges land on column lines; a px measure here would leave them off the grid. */\n.sd-contactform {\n  width: 100%;\n}\n\n.sd-contactform__heading {\n  margin: 0;\n}\n"
+    }
+  ]
+}

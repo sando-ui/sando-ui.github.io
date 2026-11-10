@@ -1,0 +1,33 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "testimonial-grid",
+  "type": "registry:block",
+  "title": "Testimonial Grid",
+  "description": "A responsive full-width grid of customer quotes and attribution cards.",
+  "registryDependencies": [
+    "@sando-ui/card",
+    "@sando-ui/avatar",
+    "@sando-ui/grid",
+    "@sando-ui/responsive",
+    "@sando-ui/stack",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/TestimonialGrid.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/TestimonialGrid.tsx",
+      "content": "// Block (composition) — a responsive grid of customer testimonial cards.\n// Grid/Stack own arrangement; Card owns surfaces, Avatar owns identity look, and this Block owns quote content.\nimport type { Ref } from \"react\";\nimport { Avatar } from \"../components/Avatar\";\nimport { Card } from \"../components/Card\";\nimport { Grid } from \"../layouts/Grid\";\nimport type { Responsive } from \"../layouts/responsive\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./TestimonialGrid.css\";\n\nexport interface TestimonialGridProps {\n  testimonials: {\n    quote: string;\n    name: string;\n    role?: string;\n    avatarSrc?: string;\n  }[];\n  columns?: Responsive<number>;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\n// The Avatar's fallback: `Avatar` derives nothing from `alt`, so an avatar with no `src` and no\n// children renders an empty circle. Same helper as its peers (`ProfileCard`, `ReviewList`,\n// `TeamGrid`), duplicated per Block on purpose — §7 copy-friendly.\nfunction initials(name: string) {\n  return name\n    .split(\" \")\n    .map((part) => part[0])\n    .join(\"\")\n    .slice(0, 2)\n    .toUpperCase();\n}\n\nexport function TestimonialGrid({\n  testimonials,\n  columns = { small: 1, medium: 3 },\n  className,\n  ref,\n}: TestimonialGridProps) {\n  return (\n    <Grid\n      as=\"section\"\n      ref={ref}\n      aria-label=\"Customer testimonials\"\n      columns={columns}\n      gap=\"medium\"\n      className={className ? `sd-testimonialgrid ${className}` : \"sd-testimonialgrid\"}\n    >\n      {testimonials.map((testimonial, index) => (\n        <Card key={`${testimonial.name}-${index}`}>\n          <Stack gap=\"small\" className=\"sd-testimonialgrid__content\">\n            <>\n              <blockquote className=\"sd-testimonialgrid__quote sd-type-body-medium\">\n                {testimonial.quote}\n              </blockquote>\n            </>\n            <Stack direction=\"row\" align=\"center\" gap=\"small\" className=\"sd-testimonialgrid__author\">\n              <Avatar src={testimonial.avatarSrc} size=\"small\" alt={testimonial.name}>\n                {initials(testimonial.name)}\n              </Avatar>\n              <Stack gap=\"2x-small\" className=\"sd-testimonialgrid__identity\">\n                <div className=\"sd-testimonialgrid__name sd-type-body-medium\">\n                  {testimonial.name}\n                </div>\n                {testimonial.role && (\n                  <div className=\"sd-testimonialgrid__role sd-type-caption-medium\">\n                    {testimonial.role}\n                  </div>\n                )}\n              </Stack>\n            </Stack>\n          </Stack>\n        </Card>\n      ))}\n    </Grid>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/TestimonialGrid.css",
+      "type": "registry:component",
+      "target": "src/blocks/TestimonialGrid.css",
+      "content": ".sd-testimonialgrid {\n  width: 100%;\n}\n\n.sd-testimonialgrid__quote,\n.sd-testimonialgrid__name,\n.sd-testimonialgrid__role {\n  margin: 0;\n}\n\n.sd-testimonialgrid__role {\n  color: var(--sd-color-text-muted);\n}\n"
+    }
+  ]
+}

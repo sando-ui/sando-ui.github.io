@@ -1,0 +1,37 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "otp-verify-form",
+  "type": "registry:block",
+  "title": "OTP Verify Form",
+  "description": "A ready-to-use email verification form: one-time code field, verify and resend actions, and an inline form-level error. Composed from Form, TextField, Button, Alert, and Stack.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/alert",
+    "@sando-ui/button",
+    "@sando-ui/button-group",
+    "@sando-ui/form",
+    "@sando-ui/stack",
+    "@sando-ui/styles",
+    "@sando-ui/pin-field",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/OtpVerifyForm.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/OtpVerifyForm.tsx",
+      "content": "// Block (composition) — a ready-to-use one-time-code form assembled from Components.\n// Contract: docs/rules/block-contract.md. Arranges only (Stack for layout);\n// composes Form/PinField/Button/Alert. Owns no Component look; mints no tokens.\nimport type { FormEvent, Ref } from \"react\";\nimport { Form } from \"../components/Form\";\nimport { PinField } from \"../components/PinField\";\nimport { Button } from \"../components/Button\";\nimport { ButtonGroup } from \"../components/ButtonGroup\";\nimport { Alert } from \"../components/Alert\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./OtpVerifyForm.css\";\n\nexport interface OtpVerifyFormProps {\n  /** Heading shown above the fields. */\n  heading?: string;\n  /** Called with the entered verification code on submit. */\n  onSubmit?: (values: { code: string }) => void;\n  /** Called when the user requests another verification code. */\n  onResend?: () => void;\n  /** Form-level error, shown above the fields. */\n  errorMessage?: string;\n  /** Puts the submit button in a pending state and blocks re-submit. */\n  isPending?: boolean;\n  className?: string;\n  ref?: Ref<HTMLFormElement>;\n}\n\nexport function OtpVerifyForm({\n  heading = \"Verify your email\",\n  onSubmit,\n  onResend,\n  errorMessage,\n  isPending,\n  className,\n  ref,\n}: OtpVerifyFormProps) {\n  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {\n    event.preventDefault();\n    const data = new FormData(event.currentTarget);\n    onSubmit?.({\n      code: String(data.get(\"code\") ?? \"\"),\n    });\n  };\n\n  return (\n    <Form isPending={isPending}\n      ref={ref}\n      onSubmit={handleSubmit}\n      className={className ? `sd-otpverifyform ${className}` : \"sd-otpverifyform\"}\n    >\n      <Stack gap=\"large\" className=\"sd-otpverifyform__content\">\n        {heading && (\n          <>\n            <h1 className=\"sd-otpverifyform__heading sd-type-headline-medium\">{heading}</h1>\n          </>\n        )}\n        {/* live=\"assertive\": see `AlertProps.live` — submit failure is the case that earns it. */}\n        {errorMessage && (\n          <Alert variant=\"error\" live=\"assertive\">\n            {errorMessage}\n          </Alert>\n        )}\n        <Stack gap=\"medium\" className=\"sd-otpverifyform__fields\">\n          {/* One cell per digit, one real input under them, so a pasted or autofilled code lands whole. */}\n          <PinField label=\"Verification code\" name=\"code\" length={6} isRequired />\n        </Stack>\n        {/* ButtonGroup, not two siblings 20px apart: these are one action group, and its contract\n            is that the LAST child is the primary — which is what six of the eight adjacent Button\n            pairs in this tier already do. */}\n        <ButtonGroup layout=\"stack\">\n          <Button size=\"large\" type=\"button\" variant=\"secondary\" onPress={onResend}>\n            Resend code\n          </Button>\n          <Button size=\"large\" type=\"submit\" variant=\"primary\" isPending={isPending}>\n            Verify\n          </Button>\n        </ButtonGroup>\n      </Stack>\n    </Form>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/OtpVerifyForm.css",
+      "type": "registry:component",
+      "target": "src/blocks/OtpVerifyForm.css",
+      "content": "/* OtpVerifyForm.css — .sd-otpverifyform (Block)\n   Arrangement only: fills the column it is given; the page sets that column on the grid\n   (a Container span or a LayoutGrid item), never this Block.\n   Component look is owned by Form/TextField/Button/Alert; grouping is via Stack.\n   No new tokens. */\n.sd-otpverifyform {\n  width: 100%;\n}\n\n.sd-otpverifyform__heading {\n  margin: 0;\n}\n"
+    }
+  ]
+}

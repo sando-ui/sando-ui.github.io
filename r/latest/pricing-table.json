@@ -1,0 +1,36 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "pricing-table",
+  "type": "registry:block",
+  "title": "Pricing Table",
+  "description": "A responsive full-width plan comparison with feature lists, an optional popular badge, and plan selection actions.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/card",
+    "@sando-ui/button",
+    "@sando-ui/badge",
+    "@sando-ui/grid",
+    "@sando-ui/stack",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/PricingTable.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/PricingTable.tsx",
+      "content": "// Block (composition) — a responsive comparison of product plans.\n// Existing Badge and Button variants communicate the featured plan without new look.\nimport type { Ref } from \"react\";\nimport { Badge } from \"../components/Badge\";\nimport { Button } from \"../components/Button\";\nimport { Card } from \"../components/Card\";\nimport { Grid } from \"../layouts/Grid\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./PricingTable.css\";\n\nexport interface PricingTableProps {\n  /** Plans to compare. */\n  plans: {\n    name: string;\n    price: string;\n    period?: string;\n    features: string[];\n    ctaLabel?: string;\n    featured?: boolean;\n  }[];\n  /** Called with the selected plan name. */\n  onSelect?: (name: string) => void;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function PricingTable({ plans, onSelect, className, ref }: PricingTableProps) {\n  const desktopColumns = Math.min(Math.max(plans.length, 1), 4);\n\n  return (\n    <Grid\n      as=\"section\"\n      ref={ref}\n      columns={{ small: 1, medium: desktopColumns }}\n      gap=\"medium\"\n      aria-label=\"Pricing plans\"\n      className={className ? `sd-pricingtable ${className}` : \"sd-pricingtable\"}\n    >\n      {plans.map((plan) => (\n        <Card key={plan.name}>\n          <Stack gap=\"small\" className=\"sd-pricingtable__content\">\n            {/* The plan name and its price are ONE unit, at a tighter rung than the card's\n                own, the pair `ProductCard` already groups. Flat, the same 8px separated the\n                name from its price as separated that price from the feature list below it. */}\n            <Stack gap=\"2x-small\" className=\"sd-pricingtable__header\">\n              <Stack direction=\"row\" align=\"center\" gap=\"x-small\" className=\"sd-pricingtable__heading\">\n                <>\n                  <h3 className=\"sd-pricingtable__name sd-type-title-medium\">{plan.name}</h3>\n                </>\n                {plan.featured && <Badge variant=\"tonal\">Popular</Badge>}\n              </Stack>\n              <>\n                <p className=\"sd-pricingtable__price sd-type-headline-medium\">\n                  {plan.price}\n                  {plan.period && (\n                    <small className=\"sd-pricingtable__period sd-type-caption-medium\">\n                      {plan.period}\n                    </small>\n                  )}\n                </p>\n              </>\n            </Stack>\n            <ul className=\"sd-pricingtable__features sd-type-body-medium\">\n              {plan.features.map((feature) => (\n                <li key={feature}>{feature}</li>\n              ))}\n            </ul>\n            <Button\n              variant={plan.featured ? \"primary\" : \"secondary\"}\n              onPress={() => onSelect?.(plan.name)}\n            >\n              {plan.ctaLabel ?? `Choose ${plan.name}`}\n            </Button>\n          </Stack>\n        </Card>\n      ))}\n    </Grid>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/PricingTable.css",
+      "type": "registry:component",
+      "target": "src/blocks/PricingTable.css",
+      "content": "/* PricingTable.css — .sd-pricingtable (Block)\n   Arrangement only: full-width grid and native text/list spacing normalization. */\n.sd-pricingtable {\n  width: 100%;\n}\n\n.sd-pricingtable__name,\n.sd-pricingtable__price,\n.sd-pricingtable__features {\n  margin: 0;\n}\n\n.sd-pricingtable__period {\n  margin-inline-start: var(--sd-space-2x-small);\n}\n\n.sd-pricingtable__features {\n  padding-inline-start: var(--sd-space-large);\n}\n"
+    }
+  ]
+}

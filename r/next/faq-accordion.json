@@ -1,0 +1,31 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "faq-accordion",
+  "type": "registry:block",
+  "title": "FAQ Accordion",
+  "description": "A readable, centered list of frequently asked questions composed from the Accordion element.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/accordion",
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/FaqAccordion.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/FaqAccordion.tsx",
+      "content": "// Block (composition) — a section of expandable frequently asked questions.\n// Accordion/AccordionItem own disclosure behavior and look; this Block supplies the question structure.\nimport type { ReactNode, Ref } from \"react\";\nimport { Accordion, AccordionItem } from \"../components/Accordion\";\nimport \"./FaqAccordion.css\";\n\nexport interface FaqAccordionProps {\n  items: {\n    id: string;\n    question: string;\n    answer: ReactNode;\n  }[];\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function FaqAccordion({ items, className, ref }: FaqAccordionProps) {\n  return (\n    <section\n      ref={ref}\n      aria-label=\"Frequently asked questions\"\n      className={className ? `sd-faqaccordion ${className}` : \"sd-faqaccordion\"}\n    >\n      <Accordion>\n        {items.map((item) => (\n          <AccordionItem key={item.id} id={item.id} title={item.question} headingLevel={2}>\n            {item.answer}\n          </AccordionItem>\n        ))}\n      </Accordion>\n    </section>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/FaqAccordion.css",
+      "type": "registry:component",
+      "target": "src/blocks/FaqAccordion.css",
+      "content": "/* A Panel: its width is the page's (block-contract.md §1b), so its left edge stays on the page grid\n   with every section around it. */\n.sd-faqaccordion {\n  width: 100%;\n}\n"
+    }
+  ]
+}

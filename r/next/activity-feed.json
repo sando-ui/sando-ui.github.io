@@ -1,0 +1,35 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "activity-feed",
+  "type": "registry:block",
+  "title": "Activity Feed",
+  "description": "A chronological feed of actor activity with avatars and timestamps. Composed from Avatar and Stack.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/avatar",
+    "@sando-ui/stack",
+    "@sando-ui/timeline",
+    "@sando-ui/skeleton-list",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/ActivityFeed.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/ActivityFeed.tsx",
+      "content": "// Block (composition) — a chronological feed of actor activity.\n// Avatar owns identity styling and Timeline the rail joining the entries; Stack arranges the groups.\nimport type { ReactNode, Ref } from \"react\";\nimport { Avatar } from \"../components/Avatar\";\nimport { Timeline, TimelineItem } from \"../components/Timeline\";\nimport { Stack } from \"../layouts/Stack\";\nimport { SkeletonList } from \"./SkeletonList\";\nimport \"./ActivityFeed.css\";\n\nexport interface ActivityFeedProps {\n  /** Events to display in chronological order. */\n  items: {\n    id: string;\n    actor?: string;\n    avatarSrc?: string;\n    action: ReactNode;\n    timestamp?: string;\n    /** A date group the event belongs to (\"Today\", \"Yesterday\"). Consecutive events that share one\n     *  are listed under a single heading; with no group anywhere the feed is one list. */\n    group?: string;\n  }[];\n  /** Renders skeleton placeholders while the feed is loading. */\n  isLoading?: boolean;\n  /** Message shown when there are no events. */\n  emptyLabel?: string;\n  className?: string;\n  /** The feed's root: the list, or the section holding the groups when items carry `group`. */\n  ref?: Ref<HTMLElement>;\n}\n\nexport function ActivityFeed({\n  items,\n  isLoading,\n  emptyLabel = \"No activity yet\",\n  className,\n  ref,\n}: ActivityFeedProps) {\n  if (isLoading) {\n    return <SkeletonList rows={4} showAvatar className={className} />;\n  }\n  if (items.length === 0) {\n    return (\n      <p role=\"status\" className={`sd-activityfeed__empty sd-type-caption-medium${className ? ` ${className}` : \"\"}`}>\n        {emptyLabel}\n      </p>\n    );\n  }\n  const cls = className ? `sd-activityfeed ${className}` : \"sd-activityfeed\";\n  // Content-presence fact the Figma master projects as its isGrouped axis.\n  const isGrouped = items.some((item) => item.group);\n  if (isGrouped) {\n    // Consecutive events sharing a group form one run, in the order given.\n    const groups: { label: string; items: ActivityFeedProps[\"items\"] }[] = [];\n    for (const item of items) {\n      const label = item.group ?? \"\";\n      const last = groups[groups.length - 1];\n      if (last && last.label === label) last.items.push(item);\n      else groups.push({ label, items: [item] });\n    }\n    // Two rungs over the list's own gap between groups, the list's gap under each heading\n    // (token-contract.md § By relationship: stacked-units and heading-group).\n    return (\n      <Stack as=\"section\" ref={ref} gap=\"x-large\" aria-label=\"Activity\" className={cls}>\n        {groups.map((group, index) => (\n          <Stack key={`${group.label}-${index}`} gap=\"medium\" className=\"sd-activityfeed__group\">\n            {/* CONTRASTIVE: one rung below the entries it heads, as a collection's section-header. */}\n            {group.label && (\n              <>\n                <h2 className=\"sd-activityfeed__group-label sd-type-label-small\">{group.label}</h2>\n              </>\n            )}\n            <Timeline className=\"sd-activityfeed__list\">{group.items.map(renderItem)}</Timeline>\n          </Stack>\n        ))}\n      </Stack>\n    );\n  }\n  return (\n    <Timeline ref={ref as Ref<HTMLOListElement>} aria-label=\"Activity\" className={cls}>\n      {items.map(renderItem)}\n    </Timeline>\n  );\n}\n\nfunction renderItem(item: ActivityFeedProps[\"items\"][number]) {\n  return (\n    <TimelineItem\n      key={item.id}\n      className=\"sd-activityfeed__item\"\n      indicator={\n        <Avatar src={item.avatarSrc} size=\"small\" alt={item.actor ?? \"\"}>\n          {item.actor?.charAt(0).toUpperCase()}\n        </Avatar>\n      }\n    >\n      <Stack gap=\"2x-small\" className=\"sd-activityfeed__content\">\n        <span className=\"sd-activityfeed__event sd-type-body-medium\">\n          {/* The actor is emphasis INSIDE a sentence, so it takes the role's emphasized\n              class rather than the UA's `bolder`: the UA resolves that\n              to 700 everywhere while this scale's emphasis is 500 here (ADR-0027). */}\n          {item.actor && <strong className=\"sd-type-body-medium-emphasized\">{item.actor}</strong>}{\" \"}\n          {item.action}\n        </span>\n        {item.timestamp && (\n          <span className=\"sd-activityfeed__timestamp sd-type-caption-medium\">\n            {item.timestamp}\n          </span>\n        )}\n      </Stack>\n    </TimelineItem>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/ActivityFeed.css",
+      "type": "registry:component",
+      "target": "src/blocks/ActivityFeed.css",
+      "content": "/* ActivityFeed.css — .sd-activityfeed (Block)\n   Arrangement only: Timeline owns the list, its spacing and the rail; Avatar owns identity styling. */\n.sd-activityfeed {\n  width: 100%;\n  margin: 0;\n  padding: 0;\n  list-style: none;\n}\n\n.sd-activityfeed__group-label {\n  margin: 0;\n}\n\n.sd-activityfeed__content {\n  flex: 1;\n  min-width: 0;\n}\n\n/* empty state — layout only (muted color inherits default; blocks own no color) */\n.sd-activityfeed__empty {\n  padding: var(--sd-space-large);\n  text-align: center;\n}\n"
+    }
+  ]
+}

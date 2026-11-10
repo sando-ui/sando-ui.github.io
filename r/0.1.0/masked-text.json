@@ -1,0 +1,35 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "masked-text",
+  "type": "registry:ui",
+  "title": "MaskedText",
+  "description": "A personal value shown masked, with an eye Button that asks the consumer to reveal it and one that masks it again. The full value reaches the DOM only once revealed; the masked form is read by a label instead of its asterisks. maskPhone masks a Korean mobile number. Look owned in Vanilla CSS.",
+  "registryDependencies": [
+    "@sando-ui/icons",
+    "@sando-ui/styles",
+    "@sando-ui/button"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/components/MaskedText.tsx",
+      "type": "registry:component",
+      "target": "src/components/MaskedText.tsx",
+      "content": "// Category B — a personal value shown masked, with a way to reveal it: 「010-****-1234」 and an eye\n// Button. A POS shows customer phone numbers this way in its CRM and booking screens, as a dashboard\n// does: the reveal asks for the staff PIN and then shows the number for a while.\n//\n// Masking here is a privacy rule, not a format, so the full value never reaches the DOM while masked:\n// the component receives `masked` (made with `maskPhone` or the product's own pattern) and, only once\n// the person may see it, `revealed`. The reveal itself (a PIN, a permission check, a timer) is the\n// consumer's: `onReveal` asks for it, and `onHide` puts the mask back.\n//\n// The masked form is read with `maskedLabel` in place of its asterisks, which a screen reader would\n// otherwise read one by one (\"star star star star\").\n//\n// Reveal and hide are one mounted Button whose label and glyph swap, so a PIN dialog opened from it\n// returns focus to a control that still exists. Each action comes with its name, enforced by the types.\nimport { Eye, EyeOff } from \"./icons\";\nimport type { Ref } from \"react\";\nimport { Button } from \"./Button\";\nimport \"./MaskedText.css\";\n\nexport { maskPhone } from \"./maskPhone\";\n\nexport interface MaskedTextBaseProps {\n  /**\n   * Size axis: the type rung and the reveal Button.\n   *\n   * @default \"medium\"\n   */\n  size?: \"small\" | \"medium\" | \"large\";\n  /** The value as shown while masked, e.g. \"010-****-5678\". */\n  masked: string;\n  /** Read in place of the masked form, e.g. \"010 가운데 4자리 가림 5678\". */\n  maskedLabel: string;\n  /** The full value, passed only once it may be shown. While set, it shows instead of `masked`. */\n  revealed?: string;\n}\n\nexport type MaskedTextProps = MaskedTextBaseProps &\n  (\n    | {\n        /** Asks to reveal the value, e.g. by opening a PIN dialog. Without it there is no reveal. */\n        onReveal: () => void;\n        /** Accessible name of the reveal action, e.g. \"전화번호 보기\". */\n        revealLabel: string;\n      }\n    | { onReveal?: undefined; revealLabel?: undefined }\n  ) &\n  (\n    | {\n        /** Masks the value again. */\n        onHide: () => void;\n        /** Accessible name of the hide action, e.g. \"전화번호 가리기\". */\n        hideLabel: string;\n      }\n    | { onHide?: undefined; hideLabel?: undefined }\n  ) & {\n    /** Additional class (optional). sd-masked-text is always preserved. */\n    className?: string;\n    /** Forwarded to the root element. */\n    ref?: Ref<HTMLSpanElement>;\n  };\n\nexport function MaskedText({\n  size = \"medium\",\n  masked,\n  maskedLabel,\n  revealed,\n  onReveal,\n  revealLabel,\n  onHide,\n  hideLabel,\n  className,\n  ref,\n}: MaskedTextProps) {\n  const shown = revealed !== undefined;\n  // The pairs are enforced by the types, so a handler always comes with its label.\n  // With reveal only, the Button stays mounted and focusable once shown, marked aria-disabled with no\n  // press handler, so focus stays put and a PIN dialog can return focus to it.\n  const action = shown\n    ? onHide\n      ? { label: hideLabel as string, onPress: onHide }\n      : onReveal && { label: revealLabel as string, onPress: undefined }\n    : onReveal && { label: revealLabel as string, onPress: onReveal };\n  return (\n    <span ref={ref} className={className ? `sd-masked-text ${className}` : \"sd-masked-text\"}>\n      {shown ? (\n        <span className={`sd-masked-text__value sd-type-body-${size}`}>{revealed}</span>\n      ) : (\n        <span className={`sd-masked-text__value sd-type-body-${size}`}>\n          <span aria-hidden=\"true\">{masked}</span>\n          <span className=\"sd-visually-hidden\">{maskedLabel}</span>\n        </span>\n      )}\n      {action && (\n        <Button isIconOnly variant=\"ghost\" size={size} aria-label={action.label} aria-disabled={action.onPress ? undefined : true} onPress={action.onPress}>\n          {shown ? <EyeOff aria-hidden size=\"1em\" /> : <Eye aria-hidden size=\"1em\" />}\n        </Button>\n      )}\n    </span>\n  );\n}\n"
+    },
+    {
+      "path": "src/components/MaskedText.css",
+      "type": "registry:component",
+      "target": "src/components/MaskedText.css",
+      "content": "/* The value and its eye Button on one line. The value keeps its digits aligned while it switches\n   between the masked and the full form. */\n.sd-masked-text {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--sd-masked-text-gap);\n}\n\n.sd-masked-text__value {\n  color: var(--sd-masked-text-foreground);\n  font-variant-numeric: tabular-nums;\n  white-space: nowrap;\n}\n"
+    },
+    {
+      "path": "src/components/maskPhone.ts",
+      "type": "registry:lib",
+      "target": "src/components/maskPhone.ts",
+      "content": "/**\n * Masks a Korean mobile number (01X, 10 or 11 digits) to its first three and last four digits:\n * \"01012345678\" → \"010-****-5678\". Any other number (a landline groups differently) keeps only its\n * last four digits: \"0212345678\" → \"******5678\".\n */\nexport function maskPhone(digits: string): string {\n  const d = digits.replace(/\\D/g, \"\");\n  if (/^01\\d{8,9}$/.test(d)) return `${d.slice(0, 3)}-${\"*\".repeat(d.length - 7)}-${d.slice(-4)}`;\n  return d.length > 4 ? \"*\".repeat(d.length - 4) + d.slice(-4) : \"*\".repeat(d.length);\n}\n"
+    }
+  ]
+}

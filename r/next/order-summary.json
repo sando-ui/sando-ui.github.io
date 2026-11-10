@@ -1,0 +1,34 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "order-summary",
+  "type": "registry:block",
+  "title": "Order Summary",
+  "description": "A compact read-only order breakdown with identifier, status, line values, and total.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/badge",
+    "@sando-ui/separator",
+    "@sando-ui/stack",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/OrderSummary.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/OrderSummary.tsx",
+      "content": "// Block (composition) — a read-only order identifier, status, and value breakdown.\nimport type { ReactNode, Ref } from \"react\";\nimport { Badge } from \"../components/Badge\";\nimport { Separator } from \"../components/Separator\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./OrderSummary.css\";\n\nexport interface OrderSummaryProps {\n  orderId?: string;\n  status?: string;\n  lines: { label: string; value: string }[];\n  total: string;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function OrderSummary({\n  orderId,\n  status,\n  lines,\n  total,\n  className,\n  ref,\n}: OrderSummaryProps) {\n  // The values end their rows under the status Badge's end edge, so with a status they take the end\n  // inset (component-contract.md §6 rule 8). Without one no box shares that edge and they stay at 0.\n  const valueText = (value: ReactNode) => (status ? <>{value}</> : value);\n\n  return (\n    <Stack\n      as=\"section\"\n      ref={ref}\n      gap=\"small\"\n      aria-label=\"Order summary\"\n      className={className ? `sd-ordersummary ${className}` : \"sd-ordersummary\"}\n    >\n      {(orderId || status) && (\n        <>\n          <Stack direction=\"row\" align=\"center\" justify=\"between\" gap=\"small\" className=\"sd-ordersummary__header\">\n            {orderId && (\n              <h3 className=\"sd-ordersummary__order sd-type-title-medium\">Order {orderId}</h3>\n            )}\n            {status && <Badge>{status}</Badge>}\n          </Stack>\n          <Separator />\n        </>\n      )}\n      {lines.map((line) => (\n        <Stack key={line.label} direction=\"row\" justify=\"between\" align=\"baseline\" gap=\"small\" className=\"sd-ordersummary__line\">\n          <span className=\"sd-ordersummary__label sd-type-label-medium\">{line.label}</span>\n          {valueText(<span className=\"sd-ordersummary__value sd-type-body-medium\">{line.value}</span>)}\n        </Stack>\n      ))}\n      <Separator />\n      <Stack direction=\"row\" justify=\"between\" align=\"baseline\" gap=\"small\" className=\"sd-ordersummary__line\">\n        <span className=\"sd-ordersummary__total-label sd-type-label-medium\">Total</span>\n        {valueText(<span className=\"sd-ordersummary__total-value sd-type-headline-medium\">{total}</span>)}\n      </Stack>\n    </Stack>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/OrderSummary.css",
+      "type": "registry:component",
+      "target": "src/blocks/OrderSummary.css",
+      "content": "/* OrderSummary.css — .sd-ordersummary (Block)\n   Arrangement only: a compact read-only section that fills the column it is given. */\n.sd-ordersummary {\n  width: 100%;\n}\n\n.sd-ordersummary__order {\n  margin: 0;\n}\n\n.sd-ordersummary__label {\n  min-width: 0;\n}\n\n.sd-ordersummary__value {\n  flex: none;\n}\n"
+    }
+  ]
+}

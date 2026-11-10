@@ -1,0 +1,30 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "drop-zone",
+  "type": "registry:ui",
+  "title": "Drop Zone",
+  "description": "A droppable area that highlights while a drag is over it. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/components/DropZone.tsx",
+      "type": "registry:component",
+      "target": "src/components/DropZone.tsx",
+      "content": "import { DropZone as AriaDropZone } from \"react-aria-components\";\nimport type { DropZoneProps as AriaDropZoneProps } from \"react-aria-components\";\nimport type { ReactNode, Ref } from \"react\";\nimport \"./DropZone.css\";\n\nexport interface DropZoneProps\n  extends Omit<AriaDropZoneProps, \"className\" | \"children\"> {\n  /** Drop zone content. */\n  children?: ReactNode;\n  /** Additional class. sd-drop-zone is always retained. */\n  className?: string;\n  /** Passed to the root drop zone DOM element. */\n  ref?: Ref<HTMLDivElement>;\n}\n\nexport function DropZone({ children, className, ref, ...props }: DropZoneProps) {\n  return (\n    <AriaDropZone\n      {...props}\n      ref={ref}\n      className={className ? `sd-drop-zone ${className}` : \"sd-drop-zone\"}\n    >\n      {children}\n    </AriaDropZone>\n  );\n}\n"
+    },
+    {
+      "path": "src/components/DropZone.css",
+      "type": "registry:component",
+      "target": "src/components/DropZone.css",
+      "content": ".sd-drop-zone {\n  display: flex;\n  /* A zone stacks its parts: `text-align: center` and `min-height` beside it assume a column, and\n     without the direction several children fall into a `row` (`DropZone/MultiPart` renders it). */\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--sd-drop-zone-gap);\n  min-height: var(--sd-drop-zone-min-height);\n  padding: var(--sd-drop-zone-padding);\n  color: var(--sd-drop-zone-foreground);\n  background: var(--sd-drop-zone-background);\n  border: var(--sd-drop-zone-border-width) var(--sd-drop-zone-border-style) var(--sd-drop-zone-border);\n  border-radius: var(--sd-drop-zone-radius);\n  corner-shape: superellipse(var(--sd-radius-curve));\n  text-align: center;\n  transition:\n    background-color var(--sd-duration-moderate) var(--sd-easing-standard),\n    color var(--sd-duration-moderate) var(--sd-easing-standard),\n    border-color var(--sd-duration-moderate) var(--sd-easing-standard);\n  outline: none;\n}\n\n.sd-drop-zone[data-drop-target] {\n  background: var(--sd-drop-zone-background-drop-target);\n  color: var(--sd-drop-zone-foreground-drop-target);\n  border-color: var(--sd-drop-zone-border-drop-target);\n  border-style: var(--sd-drop-zone-border-style-drop-target);\n}\n\n.sd-drop-zone[data-focus-visible] {\n  box-shadow: 0 0 0 var(--sd-state-focus-ring-width) color-mix(in srgb, var(--sd-state-focus-ring) calc(var(--sd-state-focus-ring-opacity) * 100%), transparent);\n  outline: var(--sd-state-focus-ring-width) solid transparent;\n}\n\n.sd-drop-zone[data-disabled] {\n  opacity: var(--sd-state-disabled);\n}\n"
+    }
+  ]
+}

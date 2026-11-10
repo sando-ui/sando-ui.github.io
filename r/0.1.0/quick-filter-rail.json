@@ -1,0 +1,33 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "quick-filter-rail",
+  "type": "registry:block",
+  "title": "Quick Filter Rail",
+  "description": "A row of round quick-filter shortcuts, each an icon plate over a caption, that scrolls sideways when it outgrows its column. Composed from Button, ScrollArea, and Stack.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/button",
+    "@sando-ui/scroll-area",
+    "@sando-ui/stack",
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/QuickFilterRail.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/QuickFilterRail.tsx",
+      "content": "// Block (composition) — a row of round quick-filter shortcuts, each an icon plate over a caption.\n// Button's vertical orientation owns the plate, the caption and the press target; this Block only\n// lines them up and lets the row scroll sideways when it outgrows its column.\nimport type { ReactNode, Ref } from \"react\";\nimport { Text } from \"react-aria-components\";\nimport { Button } from \"../components/Button\";\nimport { ScrollArea } from \"../components/ScrollArea\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./QuickFilterRail.css\";\n\ninterface QuickFilterBase {\n  /** Stable key for the filter. */\n  id: string;\n  /** Caption under the plate; also the button's accessible name. */\n  label: string;\n}\n\n/** An icon on the neutral plate, or an illustration that IS the plate: never both. */\nexport type QuickFilter = QuickFilterBase &\n  (\n    | {\n        /** One decorative icon. Pass it with `aria-hidden`. */\n        icon: ReactNode;\n        image?: never;\n      }\n    | {\n        icon?: never;\n        /** An illustration filling the plate (its own background included), as a decorative image URL. */\n        image: string;\n      }\n  );\n\nexport interface QuickFilterRailProps {\n  /** The shortcuts, in reading order. */\n  filters: QuickFilter[];\n  /** Called with the chosen filter's `id`. */\n  onSelect?: (id: string) => void;\n  /** Accessible name of the row, since a row of shortcuts is a group. */\n  \"aria-label\": string;\n  className?: string;\n  ref?: Ref<HTMLDivElement>;\n}\n\nexport function QuickFilterRail({ filters, onSelect, \"aria-label\": ariaLabel, className, ref }: QuickFilterRailProps) {\n  return (\n    <ScrollArea\n      ref={ref}\n      orientation=\"horizontal\"\n      className={className ? `sd-quickfilterrail ${className}` : \"sd-quickfilterrail\"}\n    >\n      <Stack as=\"ul\" direction=\"row\" gap=\"medium\" align=\"start\" aria-label={ariaLabel} className=\"sd-quickfilterrail__list\">\n        {filters.map((filter) => (\n          <li key={filter.id} className=\"sd-quickfilterrail__item\">\n            <Button orientation=\"vertical\" variant=\"secondary\" onPress={() => onSelect?.(filter.id)}>\n              {filter.image ? <img src={filter.image} alt=\"\" /> : filter.icon}\n              <Text>{filter.label}</Text>\n            </Button>\n          </li>\n        ))}\n      </Stack>\n    </ScrollArea>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/QuickFilterRail.css",
+      "type": "registry:component",
+      "target": "src/blocks/QuickFilterRail.css",
+      "content": "/* QuickFilterRail.css — .sd-quickfilterrail (Block)\n   Arrangement only. Button owns the plate, caption and colours; ScrollArea owns the overflow. */\n.sd-quickfilterrail__list {\n  margin: 0;\n  padding: 0;\n  list-style: none;\n}\n\n/* A shortcut never shrinks to fit the row: the row scrolls instead, so a caption is never cut. */\n.sd-quickfilterrail__item {\n  flex: none;\n}\n"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "agenda-list",
+  "type": "registry:block",
+  "title": "Agenda List",
+  "description": "A full-width agenda of time-ordered events grouped by day or period.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/badge",
+    "@sando-ui/separator",
+    "@sando-ui/stack",
+    "@sando-ui/skeleton-list",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/AgendaList.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/AgendaList.tsx",
+      "content": "// Block (composition) — a grouped agenda with loading and empty states.\n// Stack owns arrangement; Badge/Separator own Component look, and SkeletonList owns loading content.\nimport type { Ref } from \"react\";\nimport { Badge } from \"../components/Badge\";\nimport { Separator } from \"../components/Separator\";\nimport { Stack } from \"../layouts/Stack\";\nimport { SkeletonList } from \"./SkeletonList\";\nimport \"./AgendaList.css\";\n\nexport interface AgendaListProps {\n  groups: {\n    label: string;\n    items: { time: string; title: string; description?: string }[];\n  }[];\n  /** Renders skeleton placeholders while the agenda is loading. */\n  isLoading?: boolean;\n  /** Message shown when there is nothing scheduled. */\n  emptyLabel?: string;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function AgendaList({\n  groups,\n  isLoading,\n  emptyLabel = \"Nothing scheduled\",\n  className,\n  ref,\n}: AgendaListProps) {\n  if (isLoading) {\n    return <SkeletonList rows={4} className={className} />;\n  }\n  if (groups.length === 0) {\n    return (\n      <p role=\"status\" className={`sd-agendalist__empty sd-type-caption-medium${className ? ` ${className}` : \"\"}`}>\n        {emptyLabel}\n      </p>\n    );\n  }\n  return (\n    <Stack\n      as=\"section\"\n      ref={ref}\n      gap=\"large\"\n      aria-label=\"Agenda\"\n      className={className ? `sd-agendalist ${className}` : \"sd-agendalist\"}\n    >\n      {groups.map((group) => (\n        <Stack key={group.label} gap=\"small\" className=\"sd-agendalist__group\">\n          {/* CONTRASTIVE: one rung below the agenda rows it heads, as a collection's section-header. */}\n          <>\n            <h2 className=\"sd-agendalist__label sd-type-label-small\">{group.label}</h2>\n          </>\n          <Separator />\n          <Stack as=\"ol\" gap=\"small\" className=\"sd-agendalist__items\">\n            {group.items.map((item, index) => (\n              <Stack\n                as=\"li\"\n                key={`${item.time}-${item.title}-${index}`}\n                direction={{ small: \"column\", medium: \"row\" }}\n                gap={{ small: \"2x-small\", medium: \"small\" }}\n                align={{ medium: \"start\" }}\n                className=\"sd-agendalist__item\"\n              >\n                <Badge className=\"sd-agendalist__time\">{item.time}</Badge>\n                <div className=\"sd-agendalist__content-inset\">\n                  <Stack gap=\"2x-small\" className=\"sd-agendalist__content\">\n                    <span className=\"sd-type-body-medium-emphasized\">{item.title}</span>\n                    {item.description && (\n                      <span className=\"sd-type-caption-medium\">{item.description}</span>\n                    )}\n                  </Stack>\n                </div>\n              </Stack>\n            ))}\n          </Stack>\n        </Stack>\n      ))}\n    </Stack>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/AgendaList.css",
+      "type": "registry:component",
+      "target": "src/blocks/AgendaList.css",
+      "content": ".sd-agendalist {\n  width: 100%;\n}\n\n.sd-agendalist__label {\n  margin: 0;\n}\n\n.sd-agendalist__items {\n  margin: 0;\n  padding: 0;\n  list-style: none;\n}\n\n/* A Badge is a chip: content-sized on both axes. `flex: none` holds the MAIN axis, and at the\n   small rung this row is a COLUMN, where a Stack's default `stretch` pulled the chip to the full\n   358px. `align-self` is the cross-axis half of the same statement. */\n.sd-agendalist__time {\n  flex: none;\n  align-self: start;\n}\n\n/* The content's Indent is the row's flex item now, so it carries the grow and the shrink. At the\n   small rung the content stacks under the chip and takes the text line (component-contract.md §6\n   rule 8); from `medium` up it starts after the chip and keeps the same inset. */\n.sd-agendalist__content-inset {\n  flex: 1;\n  min-width: 0;\n}\n\n/* empty state — layout only (muted color inherits default; blocks own no color) */\n.sd-agendalist__empty {\n  padding: var(--sd-space-large);\n  text-align: center;\n}\n"
+    }
+  ]
+}

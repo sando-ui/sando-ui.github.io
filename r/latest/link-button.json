@@ -1,0 +1,26 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "link-button",
+  "type": "registry:ui",
+  "title": "Link Button",
+  "description": "A link drawn as a Button: it navigates (role link, a real anchor) and reuses Button's classes, variants and sizes.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/button",
+    "@sando-ui/control-size",
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/components/LinkButton.tsx",
+      "type": "registry:component",
+      "target": "src/components/LinkButton.tsx",
+      "content": "// Category A — a navigation drawn as a Button. Behaviour is React Aria's `Link` (a real <a>: role link,\n// Enter follows it, the browser can open it in a new tab); the look is Button's own `.sd-button`, read\n// from `Button.css`, so there is one Button look and no second copy of it. RAC's Link emits the same\n// state attributes Button.css keys on (`data-hovered`, `data-pressed`, `data-focus-visible`,\n// `data-disabled`), so every state rule applies unchanged. A separate component rather than\n// `Link variant=\"button\"`: Link's `variant` already names how its underline draws, so Button's\n// variant and size would arrive as a second vocabulary on the same prop, and the root class would\n// swap by prop value, which component-contract.md §6 rule 3 forbids.\nimport { Link as AriaLink, Provider, Text, TextContext } from \"react-aria-components\";\nimport type { LinkProps as AriaLinkProps } from \"react-aria-components\";\nimport { Children } from \"react\";\nimport type { ReactNode, Ref } from \"react\";\nimport type { ButtonBaseProps } from \"./Button\";\nimport { roleSize } from \"./controlSize\";\nimport \"./Button.css\";\n\nexport interface LinkButtonProps extends Omit<AriaLinkProps, \"className\" | \"href\" | \"children\"> {\n  /**\n   * Visual variant, Button's ladder (`prop-usage-contract.md` § Variant): the page's forward\n   * destination is `primary`, every other worded one `secondary`.\n   *\n   * @default \"primary\"\n   */\n  variant?: Exclude<ButtonBaseProps[\"variant\"], \"provider\">;\n  /**\n   * Size axis, Button's control-height ladder.\n   *\n   * @default \"medium\"\n   */\n  size?: ButtonBaseProps[\"size\"];\n  /** Where it goes. Required: without it React Aria renders a `<span role=\"link\">`, not an anchor. */\n  href: string;\n  /** The visible label. Text is wrapped for Button's text inset; with an icon, wrap the words in `<Text>`. */\n  children: ReactNode;\n  /** Additional class (optional). sd-button is always preserved. */\n  className?: string;\n  /** Forwarded to the underlying <a> DOM node. */\n  ref?: Ref<HTMLAnchorElement>;\n}\n\n/** Button's own test (Button.tsx): only a run of strings and numbers is auto-wrapped in one `<Text>`. */\nfunction isTextOnly(content: ReactNode): boolean {\n  const parts = Children.toArray(content);\n  return parts.length > 0 && parts.every((p) => typeof p === \"string\" || typeof p === \"number\");\n}\n\nexport function LinkButton({\n  variant = \"primary\",\n  size = \"medium\",\n  children,\n  className,\n  ...props\n}: LinkButtonProps) {\n  return (\n    <AriaLink\n      {...props}\n      data-variant={variant}\n      data-size={size}\n      className={\n        className\n          ? `sd-button sd-type-label-${roleSize(size)} ${className}`\n          : `sd-button sd-type-label-${roleSize(size)}`\n      }\n    >\n      {/* Button's label box: above the ::after state layer, and the text inset on the words only. */}\n      <span className=\"sd-button__label\">\n        <Provider values={[[TextContext, { className: \"sd-button__text\" }]]}>\n          {isTextOnly(children) ? <Text>{children}</Text> : children}\n        </Provider>\n      </span>\n    </AriaLink>\n  );\n}\n"
+    }
+  ]
+}

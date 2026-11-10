@@ -1,0 +1,34 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "bottom-nav",
+  "type": "registry:block",
+  "title": "Bottom Nav",
+  "description": "A floating iOS-style bottom navigation bar with 3–5 icon+label items and a current-page highlight. Composed from Card, NavItem, and Grid.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/card",
+    "@sando-ui/grid",
+    "@sando-ui/nav-item",
+    "@sando-ui/styles",
+    "@sando-ui/use-scroll-clearance"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/BottomNav.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/BottomNav.tsx",
+      "content": "// Block (composition) — a floating, iOS-style bottom navigation bar.\n// Contract: docs/rules/block-contract.md. Arranges only: Card supplies the\n// themed surface — `size=\"small\" variant=\"raised\"` gives the compact inset plus the elevation that\n// makes the bar read as floating. NavItem (orientation=\"vertical\")\n// supplies each icon+label item and its look, Grid lays them out in equal columns. The\n// Block owns no look and mints no tokens — its own CSS only fixes the bar to the\n// bottom-center of the viewport. Posture: self-contained floating chrome.\nimport type { ReactNode, Ref } from \"react\";\nimport { Card } from \"../components/Card\";\nimport { useScrollClearance } from \"../components/useScrollClearance\";\nimport { NavItem } from \"../components/NavItem\";\nimport { Grid } from \"../layouts/Grid\";\nimport \"./BottomNav.css\";\n\nexport interface BottomNavItemBase {\n  /** Visible label under the icon. */\n  label: string;\n  /** Item icon (sized to the icon slot; inherits the item's text color). */\n  icon: ReactNode;\n  /** Marks the active tab — applies aria-current + the selected highlight. */\n  isCurrent?: boolean;\n}\n\n/** Link or button, never both — mirrors NavItem's own mode union so the either/or the JSDoc\n    always claimed is enforced at the data layer, not silently resolved in favour of `href`. */\nexport type BottomNavItem = BottomNavItemBase &\n  (\n    | {\n        /** Destination. Present → renders a link. */\n        href: string;\n        onPress?: never;\n      }\n    | {\n        href?: never;\n        /** Press handler — button mode (no `href`). */\n        onPress?: () => void;\n      }\n  );\n\nexport interface BottomNavProps {\n  /** Navigation destinations — intended for 3–5 top-level sections. */\n  items: BottomNavItem[];\n  /** Accessible name for the navigation landmark. */\n  \"aria-label\"?: string;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function BottomNav({\n  items,\n  \"aria-label\": ariaLabel = \"Primary\",\n  className,\n  ref,\n}: BottomNavProps) {\n  // The bar covers the bottom of the page, so the document keeps focus clear of it (WCAG 2.4.11).\n  // Room after the page's last row is the page's own: AppShell keeps it for its `bottomNav` slot.\n  const clearRef = useScrollClearance(\"end\", ref);\n  return (\n    <nav\n      ref={clearRef}\n      aria-label={ariaLabel}\n      className={className ? `sd-bottomnav ${className}` : \"sd-bottomnav\"}\n    >\n      {/* `raised` because this bar genuinely floats — it is `position: fixed` on the sticky layer,\n          over page content. The elevation belongs to the surface that wraps the items (§6: the\n          floating surface belongs to whatever WRAPS it), not to this Block, which owns no look.\n          `small` keeps a compact bar rather than using the roomier card tier. */}\n      <Card size=\"small\" variant=\"raised\" className=\"sd-bottomnav__bar\">\n        {/* One equal column per tab, so every item is as wide as the widest label and the bar reads\n            as a row of peers rather than a run of words. The items overlap by a -4 gap, so\n            their hit areas meet and the bar reads as one strip. */}\n        <Grid columns={items.length} gap=\"none\" className=\"sd-bottomnav__items\">\n          {items.map((item, index) =>\n            item.href != null ? (\n              <NavItem\n                key={`${item.label}-${index}`}\n                orientation=\"vertical\"\n                icon={item.icon}\n                isCurrent={item.isCurrent}\n                href={item.href}\n                className=\"sd-bottomnav__item\"\n              >\n                {item.label}\n              </NavItem>\n            ) : (\n              <NavItem\n                key={item.label}\n                orientation=\"vertical\"\n                icon={item.icon}\n                isCurrent={item.isCurrent}\n                onPress={item.onPress}\n                className=\"sd-bottomnav__item\"\n              >\n                {item.label}\n              </NavItem>\n            ),\n          )}\n        </Grid>\n      </Card>\n    </nav>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/BottomNav.css",
+      "type": "registry:component",
+      "target": "src/blocks/BottomNav.css",
+      "content": "/* BottomNav.css — .sd-bottomnav (Block)\n   Arrangement only: pin the bar to the bottom-center of the viewport. All look\n   (surface, radius, shadow) is owned by the composed Card (size=small variant=raised); each item's look by\n   NavItem. References Sys layout scales only; defines no tokens. */\n.sd-bottomnav {\n  position: fixed;\n  inset-inline: 0;\n  inset-block-end: var(--sd-overlay-margin-medium);\n  display: flex;\n  justify-content: center;\n  z-index: var(--sd-layer-sticky);\n  /* Let clicks fall through the transparent gutter beside the bar; the bar itself\n     re-enables hit-testing below. */\n  pointer-events: none;\n}\n\n.sd-bottomnav__bar {\n  pointer-events: auto;\n}\n\n/* A -4 gap between items: a grid gap cannot be negative, so each item gives\n   back half of `space.2x-small` on both inline sides. */\n.sd-bottomnav__item {\n  margin-inline: calc(var(--sd-space-2x-small) / -2);\n}\n"
+    }
+  ]
+}

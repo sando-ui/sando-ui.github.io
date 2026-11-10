@@ -1,0 +1,30 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "stats-band",
+  "type": "registry:block",
+  "title": "Stats Band",
+  "description": "A full-width responsive band of headline marketing metrics.",
+  "registryDependencies": [
+    "@sando-ui/grid",
+    "@sando-ui/responsive",
+    "@sando-ui/stack",
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/StatsBand.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/StatsBand.tsx",
+      "content": "// Block (composition) — a responsive band of labeled key statistics.\n// Grid owns responsive columns; Stack owns each statistic's arrangement and this Block owns its content structure.\nimport type { Ref } from \"react\";\nimport { Grid } from \"../layouts/Grid\";\nimport type { Responsive } from \"../layouts/responsive\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./StatsBand.css\";\n\nexport interface StatsBandProps {\n  stats: {\n    label: string;\n    value: string;\n    description?: string;\n  }[];\n  columns?: Responsive<number>;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function StatsBand({\n  stats,\n  columns = { small: 2, medium: 4 },\n  className,\n  ref,\n}: StatsBandProps) {\n  return (\n    <Grid\n      as=\"section\"\n      ref={ref}\n      aria-label=\"Key statistics\"\n      columns={columns}\n      gap=\"large\"\n      className={className ? `sd-statsband ${className}` : \"sd-statsband\"}\n    >\n      {stats.map((stat, index) => (\n        <Stack key={`${stat.label}-${index}`} align=\"center\" gap=\"2x-small\" className=\"sd-statsband__stat\">\n          <strong className=\"sd-statsband__value sd-type-display-medium\">{stat.value}</strong>\n          <span className=\"sd-statsband__label sd-type-label-medium\">{stat.label}</span>\n          {stat.description && (\n            <span className=\"sd-statsband__description sd-type-caption-medium\">\n              {stat.description}\n            </span>\n          )}\n        </Stack>\n      ))}\n    </Grid>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/StatsBand.css",
+      "type": "registry:component",
+      "target": "src/blocks/StatsBand.css",
+      "content": ".sd-statsband {\n  width: 100%;\n  text-align: center;\n}\n\n.sd-statsband__value,\n.sd-statsband__label,\n.sd-statsband__description {\n  margin: 0;\n}\n\n.sd-statsband__description {\n  color: var(--sd-color-text-muted);\n}\n\n.sd-statsband__value {\n  /* A value that changes in place (a count, a percentage) keeps its width, so it does not jitter as\n     its digits change. */\n  font-variant-numeric: tabular-nums;\n}\n"
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "app-bar",
+  "type": "registry:block",
+  "title": "App Bar",
+  "description": "A mobile/app top navigation bar with a leading back button, centered title, and trailing actions. Composed from Button and Stack.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/button",
+    "@sando-ui/stack",
+    "@sando-ui/icons",
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/AppBar.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/AppBar.tsx",
+      "content": "// Block (composition) — a mobile/app top navigation bar: leading back button +\n// centered title + trailing actions. Contract: docs/rules/block-contract.md.\n// Panel posture (full-width; the parent/AppShell owns positioning — no fixed, no\n// max-width). Arranges Button + Stack; owns only layout; mints no tokens.\nimport type { ReactNode, Ref } from \"react\";\nimport { ChevronLeft } from \"../components/icons\";\nimport { Button } from \"../components/Button\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./AppBar.css\";\n\nexport interface AppBarProps {\n  /** Centered screen title. */\n  title: ReactNode;\n  /** When provided, a leading icon-only back button is shown. */\n  onBack?: () => void;\n  /** Accessible name of the back button, for a screen that is not in English. @default \"Back\" */\n  backLabel?: string;\n  /** Trailing actions (buttons / menus) shown at the end. */\n  actions?: ReactNode;\n  /** Accessible name for the bar landmark. */\n  \"aria-label\"?: string;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function AppBar({\n  title,\n  onBack,\n  backLabel = \"Back\",\n  actions,\n  \"aria-label\": ariaLabel = \"Top bar\",\n  className,\n  ref,\n}: AppBarProps) {\n  return (\n    <Stack\n      as=\"header\"\n      ref={ref}\n      direction=\"row\"\n      align=\"center\"\n      justify=\"between\"\n      gap=\"small\"\n      aria-label={ariaLabel}\n      className={className ? `sd-appbar ${className}` : \"sd-appbar\"}\n    >\n      <div className=\"sd-appbar__leading\">\n        {onBack ? (\n          <Button variant=\"ghost\" isIconOnly size=\"small\" aria-label={backLabel} onPress={onBack}>\n            <ChevronLeft aria-hidden size=\"1em\" />\n          </Button>\n        ) : null}\n      </div>\n      <div className=\"sd-appbar__title sd-type-title-medium\">{title}</div>\n      <div className=\"sd-appbar__trailing\">{actions}</div>\n    </Stack>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/AppBar.css",
+      "type": "registry:component",
+      "target": "src/blocks/AppBar.css",
+      "content": "/* AppBar.css — .sd-appbar (Block)\n   Arrangement only: a full-width top bar with three regions (leading · centered\n   title · trailing). Leading and trailing share a min-width so the title stays\n   optically centered. No look (color/border/surface) — that is a Sys/Component\n   concern; this Block owns layout and mints no tokens. */\n.sd-appbar {\n  width: 100%;\n  min-height: var(--sd-control-height-large);\n  padding-inline: var(--sd-space-small);\n}\n\n.sd-appbar__leading,\n.sd-appbar__trailing {\n  display: flex;\n  align-items: center;\n  flex: 0 0 auto;\n  min-width: var(--sd-control-height-large);\n}\n\n.sd-appbar__trailing {\n  justify-content: flex-end;\n}\n\n.sd-appbar__title {\n  flex: 1 1 auto;\n  min-width: 0;\n  margin: 0;\n  text-align: center;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n"
+    }
+  ]
+}

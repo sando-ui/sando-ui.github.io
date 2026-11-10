@@ -1,0 +1,33 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "user-menu",
+  "type": "registry:block",
+  "title": "User Menu",
+  "description": "A self-contained account menu opened by an avatar trigger with an optional user name. Composed from Avatar, Button, Menu, and Stack.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/avatar",
+    "@sando-ui/button",
+    "@sando-ui/menu",
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/UserMenu.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/UserMenu.tsx",
+      "content": "// Block (composition) — a self-contained account menu opened from an avatar trigger.\n// Contract: docs/rules/block-contract.md. Arranges only (Stack for trigger layout);\n// composes Avatar/Button/Menu and delegates item actions to the consumer. Mints no tokens.\nimport { Avatar } from \"../components/Avatar\";\nimport { Text } from \"react-aria-components\";\nimport { Button } from \"../components/Button\";\nimport { Menu, MenuItem } from \"../components/Menu\";\nimport \"./UserMenu.css\";\n\nexport interface UserMenuProps {\n  /** User name shown beside the avatar and used for accessible image text. */\n  name?: string;\n  /** Avatar image source. */\n  avatarSrc?: string;\n  /** Account menu choices. */\n  items: { id: string; label: string }[];\n  /** Called with the selected item id. */\n  onAction?: (id: string) => void;\n  className?: string;\n}\n\nconst initials = (name?: string) =>\n  name\n    ?.split(/\\s+/)\n    .filter(Boolean)\n    .slice(0, 2)\n    .map((part) => part[0]?.toUpperCase())\n    .join(\"\") || \"U\";\n\nexport function UserMenu({ name, avatarSrc, items, onAction, className }: UserMenuProps) {\n  const label = name ? `Open account menu for ${name}` : \"Open account menu\";\n\n  return (\n    <Menu\n      aria-label=\"Account menu\"\n      onAction={(key) => onAction?.(String(key))}\n      trigger={\n        /* usage: chrome — a trigger meant for a bar or rail footer slot */\n        <Button\n          variant=\"secondary\"\n          size=\"small\"\n          aria-label={label}\n          className={className ? `sd-usermenu ${className}` : \"sd-usermenu\"}\n        >\n          {/* The Avatar and the name are Button's own content row: the Avatar sits where a\n              glyph does and <Text> takes Button's text padding, so the Block adds no gap. */}\n          <Avatar src={avatarSrc} alt={name || \"User\"} size=\"small\">\n            {initials(name)}\n          </Avatar>\n          {name && <Text className=\"sd-usermenu__name\">{name}</Text>}\n        </Button>\n      }\n    >\n      {items.map((item) => (\n        <MenuItem key={item.id} id={item.id}>\n          {item.label}\n        </MenuItem>\n      ))}\n    </Menu>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/UserMenu.css",
+      "type": "registry:component",
+      "target": "src/blocks/UserMenu.css",
+      "content": "/* UserMenu.css — .sd-usermenu (Block)\n   Arrangement only: keeps the account trigger from shrinking in shell layouts.\n   Avatar, Button, and Menu own their look; trigger grouping is owned by Stack. */\n.sd-usermenu {\n  flex-shrink: 0;\n}\n"
+    }
+  ]
+}

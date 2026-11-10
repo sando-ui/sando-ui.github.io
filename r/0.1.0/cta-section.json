@@ -1,0 +1,29 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "cta-section",
+  "type": "registry:block",
+  "title": "CTA Section",
+  "description": "A centered full-width closing call-to-action section with optional supporting copy and consumer-supplied actions.",
+  "registryDependencies": [
+    "@sando-ui/container",
+    "@sando-ui/stack",
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/CtaSection.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/CtaSection.tsx",
+      "content": "// Block (composition) — a centered, full-width closing call to action.\n// Container caps the inner measure; consumer-supplied actions retain Component look.\nimport { useId, type ReactNode, type Ref } from \"react\";\nimport { Container } from \"../layouts/Container\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./CtaSection.css\";\n\nexport interface CtaSectionProps {\n  /** Closing call-to-action heading. */\n  title: string;\n  /** Supporting context shown below the heading. */\n  description?: string;\n  /** Consumer-supplied calls to action. */\n  actions?: ReactNode;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function CtaSection({\n  title,\n  description,\n  actions,\n  className,\n  ref,\n}: CtaSectionProps) {\n  const titleId = useId();\n\n  return (\n    <section\n      ref={ref}\n      aria-labelledby={titleId}\n      className={className ? `sd-ctasection ${className}` : \"sd-ctasection\"}\n    >\n      <Container span={8} padding=\"none\">\n        <Stack align=\"center\" gap=\"small\" className=\"sd-ctasection__content\">\n          {/* The name and its supporting line are ONE unit, so they group at a tighter rung than the\n          section's own — otherwise the same gap separates the pair as separates it from everything\n          else, and two things read as three (`PageHeader` is the reference). */}\n          <Stack align=\"center\" gap=\"x-small\" className=\"sd-ctasection__heading\">\n            <h2 id={titleId} className=\"sd-ctasection__title sd-type-title-medium\">{title}</h2>\n            {description && (\n              <p className=\"sd-ctasection__description sd-type-body-medium\">{description}</p>\n            )}\n          </Stack>\n          {actions}\n        </Stack>\n      </Container>\n    </section>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/CtaSection.css",
+      "type": "registry:component",
+      "target": "src/blocks/CtaSection.css",
+      "content": "/* CtaSection.css — .sd-ctasection (Block)\n   Arrangement only: full-width section rhythm and centered text. */\n.sd-ctasection {\n  width: 100%;\n  padding-block: var(--sd-space-2x-large);\n  text-align: center;\n}\n\n.sd-ctasection__title,\n.sd-ctasection__description {\n  margin: 0;\n}\n\n.sd-ctasection__description {\n  color: var(--sd-color-text-muted);\n}\n"
+    }
+  ]
+}

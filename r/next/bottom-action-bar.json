@@ -1,0 +1,29 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "bottom-action-bar",
+  "type": "registry:block",
+  "title": "BottomActionBar",
+  "description": "The action row that closes a customer screen: one full-width forward Button, or an outline secondary and the primary in halves, laid out by ButtonGroup. The last row of a screen column, never floating over content; it keeps the safe area below.",
+  "registryDependencies": [
+    "@sando-ui/styles",
+    "@sando-ui/button",
+    "@sando-ui/button-group"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/BottomActionBar.tsx",
+      "type": "registry:block",
+      "target": "src/blocks/BottomActionBar.tsx",
+      "content": "// Block (composition) — the action row that closes a customer screen: one full-width forward Button,\n// or a pair (an outline secondary and the primary). A counter, a kiosk, a table order or a mobile POS\n// ends its steps with it: 「바로 결제 | 메뉴 추가」, 「분할 | 결제하기」, 「주문하기」.\n//\n// Not FloatingBar: that floats inset over the page and reserves no space. This is the last row of a\n// screen column whose middle scrolls, so it never covers content and needs no surface of its own. The\n// consumer places it last in a full-height column, which supplies the page margin at the sides.\n//\n// The row is a ButtonGroup (component-usage.md § Two buttons side by side): `center` splits the width\n// evenly between a pair, `stack` gives a single action the full width. This Block owns only the space\n// below: at least `space.medium`, or the device's bottom safe area where that is larger. The safe area\n// is reported only when the page's viewport meta sets `viewport-fit=cover`; without it, it reads 0.\n//\n// ponytail: a pair where the secondary hugs its label and the primary takes the rest (「분할 | 결제하기」)\n// waits on a ButtonGroup layout for it (queued on the Sando side); until then a pair is halves.\nimport type { HTMLAttributes, ReactNode, Ref } from \"react\";\nimport { Button } from \"../components/Button\";\nimport { ButtonGroup } from \"../components/ButtonGroup\";\nimport \"./BottomActionBar.css\";\n\nexport interface BottomAction {\n  /** The visible label, e.g. \"14,500원 결제하기\". */\n  label: ReactNode;\n  /** Called when pressed. */\n  onPress: () => void;\n  /** When true the action shows but cannot be pressed, e.g. before a required option is chosen. */\n  isDisabled?: boolean;\n}\n\nexport interface BottomActionBarProps extends Omit<HTMLAttributes<HTMLDivElement>, \"className\" | \"role\" | \"aria-label\"> {\n  /**\n   * Size of the Buttons. `large` on a customer screen read at arm's length.\n   *\n   * @default \"large\"\n   */\n  size?: \"small\" | \"medium\" | \"large\";\n  /**\n   * Wordless actions before the row, on the item the screen is about: a save heart, a share. Icon-only\n   * Buttons, `ghost` (prop-usage-contract.md, the wordless law). The forward action then takes the\n   * rest of the width.\n   */\n  leading?: ReactNode;\n  /** The forward action: completes or advances the step. */\n  primary: BottomAction;\n  /** A second action beside it, drawn `outline`. */\n  secondary?: BottomAction;\n  /**\n   * Accessible name of the row, e.g. \"주문\". It names the region landmark the row renders as, so a\n   * screen reader can jump to the screen's closing actions, and a docked row outside `main` stays in a\n   * landmark (axe `region`).\n   */\n  \"aria-label\": string;\n  /** Additional class (optional). sd-bottom-action-bar is always preserved. */\n  className?: string;\n  /** Forwarded to the root element. */\n  ref?: Ref<HTMLDivElement>;\n}\n\nexport function BottomActionBar({\n  size = \"large\",\n  leading,\n  primary,\n  secondary,\n  \"aria-label\": ariaLabel,\n  className,\n  ref,\n  ...props\n}: BottomActionBarProps) {\n  return (\n    <div\n      {...props}\n      ref={ref}\n      role=\"region\"\n      aria-label={ariaLabel}\n      className={className ? `sd-bottom-action-bar ${className}` : \"sd-bottom-action-bar\"}\n      data-has-leading={leading ? \"\" : undefined}\n    >\n      {leading && <div className=\"sd-bottom-action-bar__leading\">{leading}</div>}\n      <ButtonGroup layout={secondary ? \"center\" : \"stack\"} className=\"sd-bottom-action-bar__actions\">\n        {secondary && (\n          <Button variant=\"secondary\" size={size} isDisabled={secondary.isDisabled} onPress={secondary.onPress}>\n            {secondary.label}\n          </Button>\n        )}\n        {/* usage: completing-action — the forward action of the step, the only primary in the row */}\n        <Button variant=\"primary\" size={size} isDisabled={primary.isDisabled} onPress={primary.onPress}>\n          {primary.label}\n        </Button>\n      </ButtonGroup>\n    </div>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/BottomActionBar.css",
+      "type": "registry:block",
+      "target": "src/blocks/BottomActionBar.css",
+      "content": "/* Layout only (block-contract.md §3, §5): the ButtonGroup lays out the row; this owns the space above\n   and the device's safe area below. */\n.sd-bottom-action-bar {\n  padding-block: var(--sd-space-small) max(var(--sd-space-medium), env(safe-area-inset-bottom));\n}\n\n/* With wordless actions before it, the row runs inline: the icons hug their glyphs and the forward\n   action takes the rest. The icons are transparent toggles of one cluster, so they sit flush\n   (token-contract.md, action-row), and the cluster parts from the filled Button by `x-small`. */\n.sd-bottom-action-bar[data-has-leading] {\n  display: flex;\n  align-items: center;\n  gap: var(--sd-space-x-small);\n}\n\n.sd-bottom-action-bar__leading {\n  display: flex;\n  flex: none;\n}\n\n.sd-bottom-action-bar__actions {\n  flex: 1 1 auto;\n  min-width: 0;\n}\n"
+    }
+  ]
+}

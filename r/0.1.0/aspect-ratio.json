@@ -1,0 +1,27 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "aspect-ratio",
+  "type": "registry:ui",
+  "title": "Aspect Ratio",
+  "description": "A layout primitive that constrains arbitrary content to a width/height ratio. Arrangement only, owns no look.",
+  "registryDependencies": [
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/layouts/AspectRatio.tsx",
+      "type": "registry:component",
+      "target": "src/layouts/AspectRatio.tsx",
+      "content": "// Layout primitive (Category B) — arrangement only, owns no look.\n// Carve-out 5 (component-contract.md §6): no Cmp token layer; it reads only its own\n// `--sd-layout-*` inline intermediate.\n//\n// Constrains arbitrary content to a width/height ratio. This is the Layout tier by the\n// AGENTS.md ladder (#1): it positions content it does not render, and owns no look.\n// `ratio` is a plain number rather than a token scale because that is what every peer with\n// this primitive does — shadcn (`ratio={16 / 9}`), Radix, and Carbon all take the division,\n// and none of them tokenize it. A ratio is a per-usage composition choice, not a shared\n// scale the way space or radius are.\nimport type { CSSProperties, HTMLAttributes, Ref } from \"react\";\nimport \"./AspectRatio.css\";\n\nexport interface AspectRatioProps extends Omit<HTMLAttributes<HTMLDivElement>, \"className\"> {\n  /** Width divided by height — pass the division itself, e.g. `16 / 9`. Defaults to 1 (square). */\n  ratio?: number;\n  className?: string;\n  style?: CSSProperties;\n  ref?: Ref<HTMLDivElement>;\n}\n\nexport function AspectRatio({ ratio = 1, className, style, ...props }: AspectRatioProps) {\n  return (\n    <div\n      {...props}\n      className={className ? `sd-aspect-ratio ${className}` : \"sd-aspect-ratio\"}\n      style={{ \"--sd-layout-aspect-ratio\": String(ratio), ...style } as CSSProperties}\n    />\n  );\n}\n"
+    },
+    {
+      "path": "src/layouts/AspectRatio.css",
+      "type": "registry:component",
+      "target": "src/layouts/AspectRatio.css",
+      "content": "/* AspectRatio.css — .sd-aspect-ratio\n   Layout primitive: arrangement only, no look (no color/border/radius). Carve-out 5. */\n.sd-aspect-ratio {\n  /* Block inheritance of the inline per-instance --sd-layout-* var (see Container.css): custom\n     properties inherit, so a nested AspectRatio with no `ratio` would otherwise pick up its\n     ancestor's ratio instead of falling back to square. */\n  --sd-layout-aspect-ratio: initial;\n  /* grid, so a single child fills the box on both axes without this rule having to reach the\n     child — descendant combinators are forbidden (§6 rule 2), so the box can only govern\n     itself. The consumer sets `object-fit` on its own image, exactly as shadcn's example does.\n     The `minmax(0, …)` on the single cell is load-bearing, not decoration. A bare `1fr` is\n     shorthand for `minmax(auto, 1fr)`, and that `auto` minimum makes the track grow to its\n     content — so a 1:1 image in a 16/9 box kept its natural height, overflowed, and got\n     top-cropped by the clip below instead of being covered (measured 360×360 inside a 360×203\n     box; `minmax(0, 1fr)` gives 360×203). Pinning the minimum to 0 lets the track take its size\n     from the container, whose height `aspect-ratio` makes definite, so a child's percentage\n     height resolves and `object-fit` finally has the box it expects. */\n  display: grid;\n  grid-template: minmax(0, 1fr) / minmax(0, 1fr);\n  aspect-ratio: var(--sd-layout-aspect-ratio, 1);\n  /* Clipping IS the ratio contract — without it, content larger than the box escapes and the\n     ratio stops meaning anything. Not \"look\": the forbidden properties for a Layout primitive\n     are color/border/radius, and both media boxes this replaces already clipped. */\n  overflow: hidden;\n}\n"
+    }
+  ]
+}

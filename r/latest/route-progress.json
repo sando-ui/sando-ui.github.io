@@ -1,0 +1,33 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "route-progress",
+  "type": "registry:block",
+  "title": "Route Progress",
+  "description": "A trip from an origin to a destination, partway done: both endpoints, a progress bar, time remaining and a status. Composed from Card, ProgressBar, Badge, and Stack.",
+  "registryDependencies": [
+    "@sando-ui/card",
+    "@sando-ui/progress-bar",
+    "@sando-ui/badge",
+    "@sando-ui/responsive",
+    "@sando-ui/stack",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/RouteProgress.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/RouteProgress.tsx",
+      "content": "// Block (composition) — a trip from one place to another, partway done: a flight, a delivery.\n// Card owns the surface, ProgressBar the bar, Badge the status; Stack arranges.\nimport { useId } from \"react\";\nimport type { Ref } from \"react\";\nimport type { BadgeProps } from \"../components/Badge\";\nimport { Badge } from \"../components/Badge\";\nimport { Card } from \"../components/Card\";\nimport { ProgressBar } from \"../components/ProgressBar\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./RouteProgress.css\";\n\nexport interface RouteProgressEndpoint {\n  /** The short code that names the place (\"SMX\"). */\n  code: string;\n  /** The place written out (\"Santa Maria\"). */\n  label?: string;\n  /** When the trip leaves or reaches it (\"9:40 AM\"). */\n  time?: string;\n}\n\nexport interface RouteProgressProps {\n  /** Where the trip started. */\n  origin: RouteProgressEndpoint;\n  /** Where it is going. */\n  destination: RouteProgressEndpoint;\n  /** How far along it is, 0 to 100. */\n  value: number;\n  /** Names the progress bar for assistive tech (\"Flight progress\"). */\n  progressLabel: string;\n  /** What is left, as it should read (\"1 h 12 min left\"). */\n  remaining?: string;\n  /** The trip's status. Its variant follows the Badge law: `error` for a delay, `live` while\n   *  it is moving, `neutral` otherwise. A trip status is never `strong`, so the type leaves it out. */\n  status?: { label: string; variant?: Extract<BadgeProps[\"variant\"], \"neutral\" | \"live\" | \"error\"> };\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nfunction Endpoint({ endpoint, align }: { endpoint: RouteProgressEndpoint; align: \"start\" | \"end\" }) {\n  return (\n    <Stack gap=\"2x-small\" align={align} className=\"sd-routeprogress__endpoint\">\n      <span className=\"sd-routeprogress__code sd-type-headline-medium\">{endpoint.code}</span>\n      {endpoint.label && (\n        <span className=\"sd-routeprogress__place sd-type-body-medium\">{endpoint.label}</span>\n      )}\n      {endpoint.time && (\n        <span className=\"sd-routeprogress__time sd-type-caption-medium\">{endpoint.time}</span>\n      )}\n    </Stack>\n  );\n}\n\nexport function RouteProgress({\n  origin,\n  destination,\n  value,\n  progressLabel,\n  remaining,\n  status,\n  className,\n  ref,\n}: RouteProgressProps) {\n  const routeId = useId();\n  return (\n    <Card className={className ? `sd-routeprogress ${className}` : \"sd-routeprogress\"}>\n      <Stack as=\"section\" ref={ref} aria-labelledby={routeId} gap=\"medium\" className=\"sd-routeprogress__content\">\n        {/* The route names the section: \"SMX to LAX\", read from the two codes. */}\n        <span id={routeId} className=\"sd-visually-hidden\">\n          {`${origin.code} to ${destination.code}`}\n        </span>\n        {/* The row spans the Card: the origin reads from the start edge, the destination from the end. */}\n        <>\n          <Stack direction=\"row\" justify=\"between\" align=\"start\" gap=\"medium\" className=\"sd-routeprogress__endpoints\">\n            <Endpoint endpoint={origin} align=\"start\" />\n            <Endpoint endpoint={destination} align=\"end\" />\n          </Stack>\n        </>\n        <ProgressBar aria-label={progressLabel} value={value} />\n        {(remaining || status) && (\n          <Stack direction=\"row\" justify=\"between\" align=\"center\" gap=\"small\" className=\"sd-routeprogress__footer\">\n            {remaining && (\n              <>\n                <span className=\"sd-routeprogress__remaining sd-type-body-medium\">{remaining}</span>\n              </>\n            )}\n            {status && (\n              <Badge variant={status.variant ?? \"neutral\"} className=\"sd-routeprogress__status\">\n                {status.label}\n              </Badge>\n            )}\n          </Stack>\n        )}\n      </Stack>\n    </Card>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/RouteProgress.css",
+      "type": "registry:component",
+      "target": "src/blocks/RouteProgress.css",
+      "content": "/* RouteProgress.css — .sd-routeprogress (Block)\n   Arrangement only: Card owns the surface, ProgressBar and Badge their look. */\n.sd-routeprogress__endpoint {\n  min-width: 0;\n}\n\n/* The destination reads from the far edge, so its lines align to the end. */\n.sd-routeprogress__endpoint:last-child {\n  text-align: end;\n}\n\n.sd-routeprogress__code,\n.sd-routeprogress__time,\n.sd-routeprogress__remaining {\n  font-variant-numeric: tabular-nums;\n}\n\n.sd-routeprogress__status {\n  flex: none;\n}\n"
+    }
+  ]
+}

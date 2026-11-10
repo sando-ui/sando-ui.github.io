@@ -1,0 +1,30 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "form",
+  "type": "registry:ui",
+  "title": "Form",
+  "description": "A form wrapper that propagates shared and server-side validation errors to its fields. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/components/Form.tsx",
+      "type": "registry:component",
+      "target": "src/components/Form.tsx",
+      "content": "// Category A — a <form> that wraps multiple fields. Propagates RAC's validation context\n// (validationErrors, etc.) to child fields. Owns only a minimal look (vertical layout gap).\nimport { Form as AriaForm } from \"react-aria-components\";\nimport type { FormProps as AriaFormProps } from \"react-aria-components\";\nimport type { Ref } from \"react\";\nimport \"./Form.css\";\n\nexport interface FormProps extends Omit<AriaFormProps, \"className\"> {\n  /**\n   * The form's submission is in flight: a submit while pending is ignored, and the form is marked\n   * busy. Pass the same flag the submit Button takes. A pending Button stops being a submit button\n   * (React Aria), so it cannot block a second submit by itself: a form with one text field still\n   * submits on Enter (HTML implicit submission).\n   */\n  isPending?: boolean;\n  /** Additional class (optional). sd-form is always preserved. */\n  className?: string;\n  /** Forwarded to the underlying <form> DOM node. */\n  ref?: Ref<HTMLFormElement>;\n}\n\nexport function Form({ isPending, onSubmit, className, ref, ...props }: FormProps) {\n  return (\n    <AriaForm\n      {...props}\n      ref={ref}\n      // Set only while pending, after the spread, so an `aria-busy` a consumer passes otherwise stays.\n      {...(isPending ? { \"aria-busy\": true } : {})}\n      onSubmit={(event) => {\n        if (isPending) {\n          event.preventDefault();\n          return;\n        }\n        onSubmit?.(event);\n      }}\n      className={className ? `sd-form ${className}` : \"sd-form\"}\n    />\n  );\n}\n"
+    },
+    {
+      "path": "src/components/Form.css",
+      "type": "registry:component",
+      "target": "src/components/Form.css",
+      "content": ".sd-form {\n  display: flex;\n  flex-direction: column;\n  gap: var(--sd-form-gap);\n}\n"
+    }
+  ]
+}

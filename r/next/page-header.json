@@ -1,0 +1,33 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "page-header",
+  "type": "registry:block",
+  "title": "Page Header",
+  "description": "A full-width page heading with optional description, breadcrumbs, and page-level actions. Composed from Breadcrumbs and Stack.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/breadcrumb",
+    "@sando-ui/stack",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/PageHeader.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/PageHeader.tsx",
+      "content": "// Block (composition) — a full-width page heading with optional context and actions.\n// Contract: docs/rules/block-contract.md. Arranges only (Stack for layout);\n// breadcrumb content is supplied by the consumer. Owns no Component look; mints no tokens.\nimport type { ReactNode, Ref } from \"react\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./PageHeader.css\";\n\nexport interface PageHeaderProps {\n  /** Page title. */\n  title: string;\n  /** Supporting context shown below the title. */\n  description?: string;\n  /** Breadcrumbs row supplied by the consumer. */\n  breadcrumbs?: ReactNode;\n  /** Page-level actions aligned opposite the title on desktop. */\n  actions?: ReactNode;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function PageHeader({\n  title,\n  description,\n  breadcrumbs,\n  actions,\n  className,\n  ref,\n}: PageHeaderProps) {\n  return (\n    // A div, not a <header>: placed at page level a <header> is an implicit `banner` landmark, and\n    // the page's banner belongs to the shell whose header slot this sits in (AppShell renders one).\n    // A second banner inside it is an axe violation on every Screen; Calendar made the same call.\n    <Stack\n      ref={ref}\n      gap=\"small\"\n      className={className ? `sd-pageheader ${className}` : \"sd-pageheader\"}\n    >\n      {/* Below medium the actions stack under the title, so the title and the breadcrumbs above it\n          take the inset (rule 8). */}\n      {breadcrumbs && (\n        <>\n          <div className=\"sd-pageheader__breadcrumbs\">{breadcrumbs}</div>\n        </>\n      )}\n      {/* spacing: attachment — the breadcrumbs name where the title sits */}\n      <Stack\n        direction={{ small: \"column\", medium: \"row\" }}\n        justify=\"between\"\n        align={{ small: \"stretch\", medium: \"center\" }}\n        gap=\"small\"\n        className=\"sd-pageheader__content\"\n      >\n        <>\n          <Stack gap=\"x-small\" className=\"sd-pageheader__heading\">\n            <h1 className=\"sd-pageheader__title sd-type-headline-medium\">{title}</h1>\n            {description && (\n              <p className=\"sd-pageheader__description sd-type-body-medium\">{description}</p>\n            )}\n          </Stack>\n        </>\n        {actions}\n      </Stack>\n    </Stack>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/PageHeader.css",
+      "type": "registry:component",
+      "target": "src/blocks/PageHeader.css",
+      "content": "/* PageHeader.css — .sd-pageheader (Block)\n   Arrangement only: fills its available width and removes native text margins.\n   Grouping and responsive alignment are owned by Stack. No width cap or new tokens. */\n.sd-pageheader {\n  width: 100%;\n}\n\n.sd-pageheader__title,\n.sd-pageheader__description {\n  margin: 0;\n}\n\n.sd-pageheader__description {\n  color: var(--sd-color-text-muted);\n}\n"
+    }
+  ]
+}

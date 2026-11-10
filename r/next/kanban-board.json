@@ -1,0 +1,36 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "kanban-board",
+  "type": "registry:block",
+  "title": "Kanban Board",
+  "description": "A horizontally scrolling board of status columns and actionable task cards.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/badge",
+    "@sando-ui/button",
+    "@sando-ui/card",
+    "@sando-ui/scroll-area",
+    "@sando-ui/stack",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/KanbanBoard.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/KanbanBoard.tsx",
+      "content": "// Block (composition) — a horizontally scrollable board of columns and task cards.\n// ScrollArea/Stack own arrangement; Card/Badge/Button own Component surfaces, labels, and actions.\nimport type { Ref } from \"react\";\nimport { Badge } from \"../components/Badge\";\nimport { Button } from \"../components/Button\";\nimport {\n  Card,\n  CardContent,\n  CardDescription,\n  CardFooter,\n  CardHeader,\n  CardTitle,\n} from \"../components/Card\";\nimport { ScrollArea } from \"../components/ScrollArea\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./KanbanBoard.css\";\n\nexport interface KanbanBoardProps {\n  columns: {\n    id: string;\n    title: string;\n    cards: { id: string; title: string; description?: string; badge?: string }[];\n  }[];\n  onCardAction?: (cardId: string) => void;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function KanbanBoard({ columns, onCardAction, className, ref }: KanbanBoardProps) {\n  return (\n    <Stack\n      as=\"section\"\n      ref={ref}\n      aria-label=\"Kanban board\"\n      className={className ? `sd-kanbanboard ${className}` : \"sd-kanbanboard\"}\n    >\n      {/* The row of columns used to BE the root, with `overflow-x: auto` on it — a scroll region\n          with no way to reach it from a keyboard, and one that holds nothing tabbable at all unless\n          the consumer passes `onCardAction` (axe scrollable-region-focusable / WCAG 2.1.1). The\n          landmark and its label stay on the root; only the scrolling moves. */}\n      <ScrollArea orientation=\"horizontal\" className=\"sd-kanbanboard__scroll\">\n        <Stack direction=\"row\" gap=\"medium\" align=\"start\" className=\"sd-kanbanboard__columns\">\n          {columns.map((column) => (\n            <Stack key={column.id} gap=\"small\" className=\"sd-kanbanboard__column\">\n              <Stack direction=\"row\" gap=\"small\" align=\"center\" justify=\"between\" className=\"sd-kanbanboard__column-header\">\n                <>\n                  <h2 className=\"sd-kanbanboard__title sd-type-title-medium\">{column.title}</h2>\n                </>\n                <Badge aria-label={`${column.cards.length} cards`}>{column.cards.length}</Badge>\n              </Stack>\n              <Stack gap=\"small\" className=\"sd-kanbanboard__cards\">\n                {column.cards.map((card) => (\n                  <Card key={card.id}>\n                    <CardHeader>\n                      <CardTitle>{card.title}</CardTitle>\n                      {card.description && <CardDescription>{card.description}</CardDescription>}\n                    </CardHeader>\n                    {card.badge && (\n                      <CardContent>\n                        <Badge>{card.badge}</Badge>\n                      </CardContent>\n                    )}\n                    {onCardAction && (\n                      <CardFooter>\n                        <Button\n                          type=\"button\"\n                          variant=\"secondary\"\n                          size=\"small\"\n                          onPress={() => onCardAction(card.id)}\n                        >\n                          Open\n                        </Button>\n                      </CardFooter>\n                    )}\n                  </Card>\n            ))}\n          </Stack>\n        </Stack>\n          ))}\n        </Stack>\n      </ScrollArea>\n    </Stack>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/KanbanBoard.css",
+      "type": "registry:component",
+      "target": "src/blocks/KanbanBoard.css",
+      "content": "/* KanbanBoard.css — .sd-kanbanboard (Block)\n   Arrangement only. The root is the landmark; the SCROLLPORT is a child (see the tsx). */\n.sd-kanbanboard {\n  width: 100%;\n}\n\n/* The scrollport. `padding-block-end` lives here, not on the root: it reserves the strip the\n   horizontal scrollbar occupies, which is only meaningful inside the box that scrolls. ScrollArea\n   compensates its gutter padding with an equal negative margin; overriding the padding on this side\n   takes the margin with it, so the strip adds below the columns as it always did and the other three\n   sides keep the compensated gutter, leaving the columns where they were. */\n.sd-kanbanboard__scroll {\n  min-width: 0;\n  width: 100%;\n  padding-block-end: var(--sd-space-small);\n  margin-block-end: 0;\n}\n\n.sd-kanbanboard__column {\n  flex: 0 0 18rem;\n}\n\n.sd-kanbanboard__title {\n  margin: 0;\n}\n"
+    }
+  ]
+}

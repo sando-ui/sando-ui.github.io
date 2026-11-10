@@ -1,0 +1,33 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "contextual-help",
+  "type": "registry:ui",
+  "title": "ContextualHelp",
+  "description": "A small icon button that opens a popover holding a note about the field beside it. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/button",
+    "@sando-ui/popover",
+    "@sando-ui/icons",
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/components/ContextualHelp.tsx",
+      "type": "registry:component",
+      "target": "src/components/ContextualHelp.tsx",
+      "content": "// Category A (overlay) — behavior borrowed from react-aria-components, look owned in src.\n// A small icon Button that opens a Popover holding a note about the field beside it: the shape\n// React Spectrum ships as `ContextualHelp`. It composes this library's own Button and\n// PopoverContent, so the trigger and the panel look and behave like every other one here.\nimport { ButtonContext, Heading } from \"react-aria-components\";\nimport { HelpCircle, InfoCircle } from \"./icons\";\nimport type { CSSProperties, ReactNode, Ref } from \"react\";\nimport { Button } from \"./Button\";\nimport { PopoverContent, PopoverTrigger } from \"./Popover\";\nimport type { PopoverContentProps, PopoverTriggerProps } from \"./Popover\";\nimport \"./ContextualHelp.css\";\n\nexport type ContextualHelpVariant = \"help\" | \"info\";\n\nexport interface ContextualHelpProps\n  extends Pick<PopoverTriggerProps, \"isOpen\" | \"defaultOpen\" | \"onOpenChange\"> {\n  /**\n   * `help` explains how to use the field (a question mark); `info` adds context about what it\n   * does (an i). The two differ in icon and default accessible name only.\n   *\n   * @default \"help\"\n   */\n  variant?: ContextualHelpVariant;\n  /**\n   * The trigger's size, one of Button's: `small` beside a field label, `medium` among medium\n   * controls (a toolbar of medium icon buttons). The panel is the same at both.\n   *\n   * @default \"small\"\n   */\n  size?: \"small\" | \"medium\";\n  /**\n   * The note's heading. Required because it names the dialog the panel is: React Aria labels a\n   * Dialog from its `Heading slot=\"title\"`, and a dialog with no name announces as nothing.\n   */\n  title: string;\n  /** The note itself. */\n  children: ReactNode;\n  /** Where the panel opens relative to the trigger. @default \"bottom start\" */\n  placement?: PopoverContentProps[\"placement\"];\n  /**\n   * The trigger's accessible name. Defaults to the variant's word, which is right when the field\n   * label beside it already says what the help is about.\n   */\n  \"aria-label\"?: string;\n  /** Extra class on the panel (optional). `sd-contextual-help` is always kept. */\n  className?: string;\n  /** Inline style on the panel. */\n  style?: CSSProperties;\n  /** Forwarded to the panel's DOM node. */\n  ref?: Ref<HTMLElement>;\n}\n\nexport function ContextualHelp({\n  variant = \"help\",\n  size = \"small\",\n  title,\n  children,\n  \"aria-label\": ariaLabel,\n  placement = \"bottom start\",\n  className,\n  style,\n  ref,\n  ...trigger\n}: ContextualHelpProps) {\n  const Icon = variant === \"info\" ? InfoCircle : HelpCircle;\n  return (\n    <PopoverTrigger {...trigger}>\n      {/* The trigger CLEARS the button context it sits in. A field that slots its own buttons\n          (Select's trigger, ComboBox's toggle, NumberField's steppers, SearchField's clear, a date\n          picker's calendar button) provides `ButtonContext`, and React Aria's Button reads it, so a\n          help trigger placed beside that field's label would become the field's button: it would\n          open the listbox or calendar, clear the search, leave the tab order, and throw in\n          NumberField (\"A slot prop is required\"). The press still reaches `PopoverTrigger`, whose\n          responder is a different context. */}\n      <ButtonContext.Provider value={null}>\n        {/* usage: wordless — a glyph with no word, so `ghost` */}\n        <Button\n          variant=\"ghost\"\n          size={size}\n          isIconOnly\n          className=\"sd-contextual-help__trigger\"\n          aria-label={ariaLabel ?? (variant === \"info\" ? \"Information\" : \"Help\")}\n        >\n          <Icon aria-hidden size=\"1em\" />\n        </Button>\n      </ButtonContext.Provider>\n      <PopoverContent\n        ref={ref}\n        style={style}\n        placement={placement}\n        className={className ? `sd-contextual-help ${className}` : \"sd-contextual-help\"}\n      >\n        <div className=\"sd-contextual-help__text\">\n          <Heading slot=\"title\" className=\"sd-contextual-help__title sd-type-subtitle-medium\">\n            {title}\n          </Heading>\n          <div className=\"sd-contextual-help__body sd-type-body-medium\">{children}</div>\n        </div>\n      </PopoverContent>\n    </PopoverTrigger>\n  );\n}\n"
+    },
+    {
+      "path": "src/components/ContextualHelp.css",
+      "type": "registry:component",
+      "target": "src/components/ContextualHelp.css",
+      "content": "/* ContextualHelp.css — .sd-contextual-help__* (the note panel; the trigger is a Button)\n   The panel's surface, padding and radius are PopoverContent's; this file owns only the note's\n   measure and the text inside it. */\n/* The trigger is a glyph in a square bigger than it, and a neighbour is spaced from what it SEES.\n   An optical bleed: the box gives back its own air on both inline sides, so the row's gap lands\n   between the neighbour and the glyph, while the box keeps its whole press target (WCAG 2.5.8) and\n   its ring, drawn over the gap's air. */\n.sd-contextual-help__trigger {\n  margin-inline: calc(-1 * var(--sd-contextual-help-trigger-bleed-small));\n}\n.sd-contextual-help__trigger[data-size=\"medium\"] {\n  margin-inline: calc(-1 * var(--sd-contextual-help-trigger-bleed-medium));\n}\n\n.sd-contextual-help {\n  max-inline-size: var(--sd-contextual-help-max-width);\n}\n\n/* The note is text the component draws on the panel's painted surface, so it takes the text inset\n   on both inline sides (component-contract.md §6 rule 8, component-owned text); its title and body\n   part at the note's own gap. */\n.sd-contextual-help__text {\n  display: flex;\n  flex-direction: column;\n  gap: var(--sd-contextual-help-gap);\n}\n"
+    }
+  ]
+}

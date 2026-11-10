@@ -1,0 +1,31 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "bento-grid",
+  "type": "registry:block",
+  "title": "Bento Grid",
+  "description": "A responsive asymmetric marketing feature grid with variable card spans.",
+  "registryDependencies": [
+    "@sando-ui/card",
+    "@sando-ui/stack",
+    "@sando-ui/media",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/BentoGrid.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/BentoGrid.tsx",
+      "content": "// Block (composition) — a spanning grid of titled feature cards.\n// Card owns each surface; Stack arranges card content, while this Block maps item spans to the grid.\nimport type { CSSProperties, ReactNode, Ref } from \"react\";\nimport { Card } from \"../components/Card\";\nimport { Media } from \"../components/Media\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./BentoGrid.css\";\n\nexport interface BentoGridProps {\n  items: {\n    id: string;\n    title: string;\n    description?: string;\n    media?: ReactNode;\n    colSpan?: number;\n    rowSpan?: number;\n  }[];\n  columns?: number;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\ntype BentoGridStyle = CSSProperties & {\n  \"--sd-layout-bentogrid-columns\": number;\n};\n\ntype BentoGridItemStyle = CSSProperties & {\n  \"--sd-layout-bentogrid-column-span\": number;\n  \"--sd-layout-bentogrid-row-span\": number;\n};\n\nexport function BentoGrid({\n  items,\n  columns = 3,\n  className,\n  ref,\n}: BentoGridProps) {\n  return (\n    <section\n      ref={ref}\n      aria-label=\"Featured capabilities\"\n      className={className ? `sd-bentogrid ${className}` : \"sd-bentogrid\"}\n      style={{ \"--sd-layout-bentogrid-columns\": columns } as BentoGridStyle}\n    >\n      {items.map((item) => (\n        <Card\n          key={item.id}\n          className=\"sd-bentogrid__item\"\n          style={\n            {\n              \"--sd-layout-bentogrid-column-span\": item.colSpan ?? 1,\n              \"--sd-layout-bentogrid-row-span\": item.rowSpan ?? 1,\n            } as BentoGridItemStyle\n          }\n        >\n          <Stack gap=\"small\" className=\"sd-bentogrid__content\">\n            {/* The name and its supporting line are ONE unit, so they group at a tighter rung than the\n              section's own — otherwise the same gap separates the pair as separates it from\n              everything else, and two things read as three (`PageHeader` is the reference). */}\n            <>\n              <Stack gap=\"x-small\" className=\"sd-bentogrid__heading\">\n                <h3 className=\"sd-bentogrid__title sd-type-title-medium\">{item.title}</h3>\n                {item.description && (\n                  <p className=\"sd-bentogrid__description sd-type-body-medium\">\n                    {item.description}\n                  </p>\n                )}\n              </Stack>\n            </>\n            {item.media && <Media className=\"sd-bentogrid__media\">{item.media}</Media>}\n          </Stack>\n        </Card>\n      ))}\n    </section>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/BentoGrid.css",
+      "type": "registry:component",
+      "target": "src/blocks/BentoGrid.css",
+      "content": ".sd-bentogrid {\n  display: grid;\n  grid-template-columns: minmax(0, 1fr);\n  gap: var(--sd-space-large);\n  width: 100%;\n}\n\n.sd-bentogrid__item {\n  grid-column: span 1;\n  grid-row: span 1;\n}\n\n.sd-bentogrid__title,\n.sd-bentogrid__description {\n  margin: 0;\n}\n\n.sd-bentogrid__description {\n  color: var(--sd-color-text-muted);\n}\n\n.sd-bentogrid__media {\n  min-width: 0;\n}\n\n@media (min-width: 768px) {\n  .sd-bentogrid {\n    grid-template-columns: repeat(var(--sd-layout-bentogrid-columns), minmax(0, 1fr));\n  }\n\n  .sd-bentogrid__item {\n    grid-column: span var(--sd-layout-bentogrid-column-span);\n    grid-row: span var(--sd-layout-bentogrid-row-span);\n  }\n}\n"
+    }
+  ]
+}

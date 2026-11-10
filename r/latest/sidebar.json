@@ -1,0 +1,33 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "sidebar",
+  "type": "registry:block",
+  "title": "Sidebar",
+  "description": "A full-height vertical section navigation with labelled groups, icons, a current-page highlight, and collapsible nested nav. Composed from NavItem, Stack, and React Aria Disclosure.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/nav-item",
+    "@sando-ui/stack",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/Sidebar.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/Sidebar.tsx",
+      "content": "// Block (composition) — a full-height vertical section navigation.\n// Contract: docs/rules/block-contract.md. Arranges only (Stack for layout);\n// composes NavItem (row look) + React Aria Disclosure (collapsible groups). Owns no\n// Component look; mints no tokens. Header/footer are open slots (e.g. a workspace\n// switcher Menu goes in `header`).\nimport { Fragment, type ReactNode, type Ref } from \"react\";\nimport { Disclosure, DisclosurePanel } from \"react-aria-components\";\nimport { NavItem } from \"../components/NavItem\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./Sidebar.css\";\n\nexport interface SidebarNavLink {\n  /** Visible row label. */\n  label: string;\n  /** Destination. Omit on a group whose `items` are the destinations. */\n  href?: string;\n  /** Leading icon. */\n  icon?: ReactNode;\n  /** Marks this row as the current page. */\n  isCurrent?: boolean;\n  /** Nested links — when present, the row becomes a collapsible group trigger. */\n  items?: SidebarNavLink[];\n  /** A collapsible group starts open (only meaningful with `items`). */\n  defaultExpanded?: boolean;\n}\n\nexport interface SidebarSection {\n  /** Optional group label shown above the rows. */\n  heading?: string;\n  items: SidebarNavLink[];\n}\n\nexport interface SidebarProps {\n  /** Navigation grouped into labelled sections. */\n  sections: SidebarSection[];\n  /** Content shown before the navigation (e.g. a workspace switcher). */\n  header?: ReactNode;\n  /** Content pinned to the bottom of the sidebar. */\n  footer?: ReactNode;\n  /** Accessible name for the navigation landmark. */\n  \"aria-label\"?: string;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nfunction SidebarLink({ link }: { link: SidebarNavLink }) {\n  if (link.items?.length) {\n    return (\n      <li className=\"sd-sidebar__item\">\n        <Disclosure defaultExpanded={link.defaultExpanded} className=\"sd-sidebar__disclosure\">\n          {({ isExpanded }) => (\n            <>\n              <NavItem slot=\"trigger\" icon={link.icon} hasChevron isExpanded={isExpanded}>\n                {link.label}\n              </NavItem>\n              <DisclosurePanel>\n                <Stack as=\"ul\" gap=\"2x-small\" className=\"sd-sidebar__items\">\n                  {link.items!.map((child) => (\n                    <li key={child.label} className=\"sd-sidebar__item\">\n                      <NavItem href={child.href} level={1} isCurrent={child.isCurrent}>\n                        {child.label}\n                      </NavItem>\n                    </li>\n                  ))}\n                </Stack>\n              </DisclosurePanel>\n            </>\n          )}\n        </Disclosure>\n      </li>\n    );\n  }\n  return (\n    <li className=\"sd-sidebar__item\">\n      <NavItem href={link.href} icon={link.icon} isCurrent={link.isCurrent}>\n        {link.label}\n      </NavItem>\n    </li>\n  );\n}\n\nexport function Sidebar({\n  sections,\n  header,\n  footer,\n  \"aria-label\": ariaLabel = \"Section navigation\",\n  className,\n  ref,\n}: SidebarProps) {\n  return (\n    <Stack\n      as=\"nav\"\n      ref={ref}\n      direction=\"column\"\n      gap=\"medium\"\n      aria-label={ariaLabel}\n      className={className ? `sd-sidebar ${className}` : \"sd-sidebar\"}\n    >\n      {/* The header text, the section labels and the rows' text take the inset together, so a row's\n          bled fill lands on the line of a box in the footer slot (component-contract.md §6 rule 8). */}\n      {header && <div className=\"sd-sidebar__header\">{header}</div>}\n      {sections.map((section, index) => (\n        <Fragment key={`${section.heading ?? \"section\"}-${index}`}>\n          <Stack gap=\"2x-small\" className=\"sd-sidebar__group\">\n            {/* CONTRASTIVE: one rung below the nav items it heads, as a collection's section-header. */}\n            {section.heading && (\n              <h2 className=\"sd-sidebar__heading sd-type-label-small\">{section.heading}</h2>\n            )}\n            <Stack as=\"ul\" gap=\"2x-small\" className=\"sd-sidebar__items\">\n              {section.items.map((link) => (\n                <SidebarLink key={link.label} link={link} />\n              ))}\n            </Stack>\n          </Stack>\n        </Fragment>\n      ))}\n      {footer && <div className=\"sd-sidebar__footer\">{footer}</div>}\n    </Stack>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/Sidebar.css",
+      "type": "registry:component",
+      "target": "src/blocks/Sidebar.css",
+      "content": "/* Sidebar.css — .sd-sidebar (Block)\n   Arrangement only: a standalone navigation column that pins its optional footer.\n   Rows own their own look (NavItem); this file adds no color/border. The width is a\n   Block-unique shell dimension, not a reusable token. */\n.sd-sidebar {\n  width: 100%;\n  max-width: 16rem;\n  min-height: 100%;\n}\n\n.sd-sidebar__heading {\n  margin: 0;\n}\n\n.sd-sidebar__items {\n  margin: 0;\n  padding: 0;\n  list-style: none;\n}\n\n.sd-sidebar__footer {\n  margin-top: auto;\n}\n"
+    }
+  ]
+}

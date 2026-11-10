@@ -1,0 +1,37 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "profile-form",
+  "type": "registry:block",
+  "title": "Profile Form",
+  "description": "A profile form with an avatar preview, identity fields, submit, and form-level error states.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/form",
+    "@sando-ui/avatar",
+    "@sando-ui/text-field",
+    "@sando-ui/button",
+    "@sando-ui/stack",
+    "@sando-ui/alert",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/ProfileForm.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/ProfileForm.tsx",
+      "content": "// Block (composition) — profile identity fields with an avatar preview.\n// Arranges only; composes Form/Avatar/TextField/Button/Alert/Stack.\nimport type { FormEvent, Ref } from \"react\";\nimport { Form } from \"../components/Form\";\nimport { Avatar } from \"../components/Avatar\";\nimport { TextField } from \"../components/TextField\";\nimport { Button } from \"../components/Button\";\nimport { Alert } from \"../components/Alert\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./ProfileForm.css\";\n\nexport interface ProfileFormProps {\n  /** Heading shown above the profile fields. */\n  heading?: string;\n  /** Initial full name. */\n  name?: string;\n  /** Initial email address. */\n  email?: string;\n  /** Image used by the avatar preview. */\n  avatarSrc?: string;\n  /** Called with the submitted identity fields. */\n  onSubmit?: (data: Record<string, string>) => void;\n  /** Form-level error, shown above the fields. */\n  errorMessage?: string;\n  /** Puts the submit button in a pending state and blocks re-submit. */\n  isPending?: boolean;\n  className?: string;\n  ref?: Ref<HTMLFormElement>;\n}\n\nexport function ProfileForm({\n  heading,\n  name,\n  email,\n  avatarSrc,\n  onSubmit,\n  errorMessage,\n  isPending,\n  className,\n  ref,\n}: ProfileFormProps) {\n  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {\n    event.preventDefault();\n    const data = new FormData(event.currentTarget);\n    onSubmit?.({\n      name: String(data.get(\"name\") ?? \"\"),\n      email: String(data.get(\"email\") ?? \"\"),\n    });\n  };\n  const avatarFallback =\n    name\n      ?.trim()\n      .split(/\\s+/)\n      .map((part) => part[0])\n      .slice(0, 2)\n      .join(\"\")\n      .toUpperCase() || \"P\";\n\n  return (\n    <Form isPending={isPending}\n      ref={ref}\n      onSubmit={handleSubmit}\n      className={className ? `sd-profileform ${className}` : \"sd-profileform\"}\n    >\n      <Stack gap=\"large\" className=\"sd-profileform__content\">\n        {heading && (\n          <>\n            <h1 className=\"sd-profileform__heading sd-type-headline-medium\">{heading}</h1>\n          </>\n        )}\n        {/* live=\"assertive\": see `AlertProps.live` — submit failure is the case that earns it. */}\n        {errorMessage && (\n          <Alert variant=\"error\" live=\"assertive\">\n            {errorMessage}\n          </Alert>\n        )}\n        <Avatar\n          src={avatarSrc}\n          alt={name ? `${name} profile photo` : \"Profile photo\"}\n          size=\"large\"\n          className=\"sd-profileform__avatar\"\n        >\n          {avatarFallback}\n        </Avatar>\n        <Stack gap=\"medium\" className=\"sd-profileform__fields\">\n          <TextField\n            label=\"Full name\"\n            name=\"name\"\n            defaultValue={name}\n            autoComplete=\"name\"\n            isRequired\n          />\n          <TextField\n            label=\"Email\"\n            name=\"email\"\n            type=\"email\"\n            defaultValue={email}\n            autoComplete=\"email\"\n            isRequired\n          />\n        </Stack>\n        <Button size=\"large\" type=\"submit\" variant=\"primary\" isPending={isPending}>\n          Save\n        </Button>\n      </Stack>\n    </Form>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/ProfileForm.css",
+      "type": "registry:component",
+      "target": "src/blocks/ProfileForm.css",
+      "content": "/* ProfileForm.css — arrangement only; Component look stays with its owners. */\n/* Fills the column it is given. The page narrows that column on the grid (a Container span), so the\n   form's edges land on column lines; a px measure here would leave them off the grid. */\n.sd-profileform {\n  width: 100%;\n}\n\n.sd-profileform__heading {\n  margin: 0;\n}\n\n.sd-profileform__avatar {\n  margin-inline: auto;\n}\n"
+    }
+  ]
+}

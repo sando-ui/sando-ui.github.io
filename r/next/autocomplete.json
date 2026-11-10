@@ -1,0 +1,30 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "autocomplete",
+  "type": "registry:ui",
+  "title": "Autocomplete",
+  "description": "A behavior-only context wrapper that adds live filtering to a paired search field and collection (e.g. a command menu). Behavior borrowed from react-aria-components; no owned CSS (no wrapper DOM to style).",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/components/Autocomplete.tsx",
+      "type": "registry:component",
+      "target": "src/components/Autocomplete.tsx",
+      "content": "// Category A — behavior-only context wrapper. No DOM/look of its own (the same kind as FileTrigger).\n// Wraps SearchField (or TextField) + Menu/ListBox/GridList to provide live filtering\n// — command-palette-style patterns (\"⌘K\" search + execute). Because children connect automatically\n// through context, this component itself has nothing to render.\nimport { Autocomplete as AriaAutocomplete } from \"react-aria-components\";\nimport type { AutocompleteProps as AriaAutocompleteProps } from \"react-aria-components\";\nimport \"./Autocomplete.css\";\n\nexport interface AutocompleteProps extends AriaAutocompleteProps {}\n\nexport function Autocomplete(props: AutocompleteProps) {\n  return <AriaAutocomplete {...props} />;\n}\n"
+    },
+    {
+      "path": "src/components/Autocomplete.css",
+      "type": "registry:component",
+      "target": "src/components/Autocomplete.css",
+      "content": "/* RAC's Autocomplete renders no wrapper DOM — it's a pure context provider around\n   its children (a SearchField/Input paired with a Menu/ListBox/GridList). Nothing\n   to style here; the look lives entirely in the child components. */\n"
+    }
+  ]
+}

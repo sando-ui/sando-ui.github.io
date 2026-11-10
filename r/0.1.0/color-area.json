@@ -1,0 +1,30 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "color-area",
+  "type": "registry:ui",
+  "title": "Color Area",
+  "description": "A two-axis color area for adjusting color channels. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/components/ColorArea.tsx",
+      "type": "registry:component",
+      "target": "src/components/ColorArea.tsx",
+      "content": "// Category A — React Aria owns the color area behavior and inline gradient/position.\nimport {\n  ColorArea as AriaColorArea,\n  ColorThumb,\n} from \"react-aria-components\";\nimport type { ColorAreaProps as AriaColorAreaProps } from \"react-aria-components\";\nimport type { Ref } from \"react\";\nimport \"./ColorArea.css\";\n\n// NO `description`: React Aria's ColorArea root IS the painted gradient (the wrapper sets its\n// width/height), so helper text rendered inside draws ON the colour (white text over red). Giving it somewhere to go means adding a wrapper element around a Category-A\n// component for a prop nothing has asked for. `ColorWheel` keeps one because its root is not the\n// painted box; `ColorSlider` keeps one and gained the visible label that makes it describable.\nexport interface ColorAreaProps extends Omit<AriaColorAreaProps, \"className\" | \"children\"> {\n  /** Additional class. sd-color-area is always preserved. */\n  className?: string;\n  /** Passed to the underlying area DOM node. */\n  ref?: Ref<HTMLDivElement>;\n}\n\nexport function ColorArea({ className, ref, ...props }: ColorAreaProps) {\n  return (\n    <AriaColorArea\n      {...props}\n      ref={ref}\n      className={className ? `sd-color-area ${className}` : \"sd-color-area\"}\n    >\n      <ColorThumb className=\"sd-color-area__thumb\" />\n    </AriaColorArea>\n  );\n}\n"
+    },
+    {
+      "path": "src/components/ColorArea.css",
+      "type": "registry:component",
+      "target": "src/components/ColorArea.css",
+      "content": ".sd-color-area {\n  width: var(--sd-color-area-size);\n  height: var(--sd-color-area-size);\n  border-radius: var(--sd-color-area-radius);\n  corner-shape: superellipse(var(--sd-radius-curve));\n  flex-shrink: 0;\n  forced-color-adjust: none;\n}\n.sd-color-area[data-disabled] {\n  opacity: var(--sd-state-disabled);\n}\n\n.sd-color-area__thumb {\n  width: var(--sd-color-area-thumb-size);\n  height: var(--sd-color-area-thumb-size);\n  border: var(--sd-color-area-thumb-border-width) solid var(--sd-color-area-thumb-border);\n  border-radius: var(--sd-color-area-thumb-radius);\n  corner-shape: round;\n  box-shadow: var(--sd-color-area-thumb-shadow);\n  box-sizing: border-box;\n}\n/* Hover/drag feedback halo (RAC's ColorThumb emits data-hovered/data-dragging), composed\n   over the base contrast ring — mirrors Slider's thumb affordance. */\n.sd-color-area__thumb[data-hovered] {\n  box-shadow: var(--sd-color-area-thumb-shadow-hover);\n}\n.sd-color-area__thumb[data-dragging] {\n  box-shadow: var(--sd-color-area-thumb-shadow-dragging);\n}\n.sd-color-area__thumb[data-focus-visible] {\n  width: var(--sd-color-area-thumb-size-focused);\n  height: var(--sd-color-area-thumb-size-focused);\n}\n"
+    }
+  ]
+}

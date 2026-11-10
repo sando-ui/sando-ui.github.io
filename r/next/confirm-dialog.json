@@ -1,0 +1,33 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "confirm-dialog",
+  "type": "registry:block",
+  "title": "Confirm Dialog",
+  "description": "A reusable confirmation modal with cancel and confirm actions. Composed from Dialog, Button, and Stack.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/dialog",
+    "@sando-ui/button",
+    "@sando-ui/stack",
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/ConfirmDialog.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/ConfirmDialog.tsx",
+      "content": "// Block (composition) — confirmation content arranged inside the Dialog Component.\n// Dialog owns open/close/focus behavior and chrome; this Block owns no overlay behavior or look.\nimport type { ReactNode } from \"react\";\nimport {\n  DialogContent,\n  DialogDescription,\n  DialogFooter,\n  DialogHeader,\n  DialogTitle,\n  DialogTrigger,\n} from \"../components/Dialog\";\nimport { Button } from \"../components/Button\";\nimport \"./ConfirmDialog.css\";\n\nexport interface ConfirmDialogProps {\n  /** Control that opens the dialog. */\n  trigger: ReactNode;\n  /** Dialog heading. */\n  title: string;\n  /** Supporting confirmation message. */\n  message?: ReactNode;\n  /** Confirm action label. */\n  confirmLabel?: string;\n  /** Cancel action label. */\n  cancelLabel?: string;\n  /** Called when the confirm action is pressed. */\n  onConfirm?: () => void;\n  /** Existing Button intent used for the confirm action. */\n  confirmVariant?: \"primary\" | \"secondary\" | \"destructive\";\n  /** Leading status icon (optional) — shown in the dialog header. Pass at `size=\"1em\"`. */\n  icon?: ReactNode;\n  /** Layout alignment — `center` for an alert-style centered dialog. Default `start`. */\n  align?: \"start\" | \"center\";\n}\n\nexport function ConfirmDialog({\n  trigger,\n  title,\n  message,\n  confirmLabel = \"Confirm\",\n  cancelLabel = \"Cancel\",\n  onConfirm,\n  confirmVariant = \"primary\",\n  icon,\n  align,\n}: ConfirmDialogProps) {\n  return (\n    <DialogTrigger>\n      {trigger}\n      <DialogContent className=\"sd-confirmdialog\" width=\"small\"\n        header={\n          <DialogHeader icon={icon} align={align}>\n            <DialogTitle>{title}</DialogTitle>\n            {message && <DialogDescription>{message}</DialogDescription>}\n          </DialogHeader>\n        }\n        footer={\n          <DialogFooter layout={align === \"center\" ? \"center\" : \"end\"}>\n            <Button size=\"large\" type=\"button\" variant=\"secondary\" slot=\"close\">\n              {cancelLabel}\n            </Button>\n            <Button size=\"large\" type=\"button\" variant={confirmVariant} slot=\"close\" onPress={onConfirm}>\n              {confirmLabel}\n            </Button>\n          </DialogFooter>\n        }\n      />\n    </DialogTrigger>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/ConfirmDialog.css",
+      "type": "registry:component",
+      "target": "src/blocks/ConfirmDialog.css",
+      "content": "/* ConfirmDialog.css — .sd-confirmdialog (Block)\n   Arrangement is handled by Stack; Dialog and Button own all chrome and look.\n   This Block defines no tokens and does not reach into Component internals. */\n"
+    }
+  ]
+}

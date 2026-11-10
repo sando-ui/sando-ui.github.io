@@ -1,0 +1,27 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "progress-connector",
+  "type": "registry:ui",
+  "title": "Progress Connector",
+  "description": "A decorative completion line between discrete progress markers. No headless primitive; built and owned entirely in Vanilla CSS.",
+  "registryDependencies": [
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/components/ProgressConnector.tsx",
+      "type": "registry:component",
+      "target": "src/components/ProgressConnector.tsx",
+      "content": "// Category B — no headless component and no behavior; this is a decorative progress line.\nimport type { CSSProperties, Ref } from \"react\";\nimport \"./ProgressConnector.css\";\n\nexport interface ProgressConnectorProps {\n  /** Whether the preceding segment is complete. */\n  isComplete?: boolean;\n  className?: string;\n  style?: CSSProperties;\n  /** Forwarded to the underlying <span> DOM node. */\n  ref?: Ref<HTMLSpanElement>;\n}\n\n/**\n * A decorative connector between two nodes in a discrete sequence.\n *\n * The connector is always hidden from assistive technology. Consumers that need completion\n * announced must provide that information themselves in adjacent text.\n */\nexport function ProgressConnector({\n  isComplete,\n  className,\n  style,\n  ref,\n}: ProgressConnectorProps) {\n  return (\n    <span\n      ref={ref}\n      aria-hidden=\"true\"\n      data-complete={isComplete || undefined}\n      className={className ? `sd-progress-connector ${className}` : \"sd-progress-connector\"}\n      style={style}\n    />\n  );\n}\n"
+    },
+    {
+      "path": "src/components/ProgressConnector.css",
+      "type": "registry:component",
+      "target": "src/components/ProgressConnector.css",
+      "content": ".sd-progress-connector {\n  /* `display` is load-bearing: a bare <span> is inline, and an inline non-replaced box ignores\n     `height`, so the connector rendered as NOTHING on its own — caught by a coverage gap, confirmed\n     by a blank screenshot. Inside a flex container a flex item is blockified anyway, so this is a\n     no-op where the Blocks use it and the fix where anyone else does. */\n  display: block;\n  align-self: center;\n  height: var(--sd-progress-connector-thickness);\n  /* The same thickness on the other axis, for a consumer that runs its markers in a COLUMN: there\n     the consumer's `flex-basis` sets the length and overrides `height`, and a centred item with no\n     content would otherwise be zero wide. In a row it binds only when a track leaves less than one thickness for the rule. */\n  min-width: var(--sd-progress-connector-thickness);\n  background: var(--sd-progress-connector-background);\n}\n\n.sd-progress-connector[data-complete] {\n  background: var(--sd-progress-connector-background-complete);\n}\n"
+    }
+  ]
+}

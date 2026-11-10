@@ -1,0 +1,35 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "file-list",
+  "type": "registry:block",
+  "title": "File List",
+  "description": "An uploaded-file list with an optional drop zone, upload progress, and remove actions.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/drop-zone",
+    "@sando-ui/progress-bar",
+    "@sando-ui/button",
+    "@sando-ui/stack",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/FileList.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/FileList.tsx",
+      "content": "// Block (composition) — dropped and uploaded files with progress and removal actions.\n// DropZone, ProgressBar, and Button own their look; Stack owns arrangement.\nimport type { ReactNode, Ref } from \"react\";\nimport { Button } from \"../components/Button\";\nimport { DropZone } from \"../components/DropZone\";\nimport { ProgressBar } from \"../components/ProgressBar\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./FileList.css\";\n\nexport interface FileListProps {\n  /** Files to display. */\n  files: {\n    id: string;\n    name: string;\n    size?: string;\n    progress?: number;\n  }[];\n  onRemove?: (id: string) => void;\n  onDrop?: (files: File[]) => void;\n  showDropZone?: boolean;\n  /** Message shown when there are no files. */\n  emptyLabel?: string;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function FileList({\n  files,\n  onRemove,\n  onDrop,\n  showDropZone,\n  emptyLabel = \"No files yet\",\n  className,\n  ref,\n}: FileListProps) {\n  const handleDrop = onDrop\n    ? (event: Parameters<NonNullable<React.ComponentProps<typeof DropZone>[\"onDrop\"]>>[0]) => {\n        const droppedFiles = event.items\n          .filter((item) => item.kind === \"file\")\n          .map((item) => item.getFile());\n        void Promise.all(droppedFiles).then(onDrop);\n      }\n    : undefined;\n\n  // Under the DropZone the file names share its start edge, so the name and size take the inset\n  // (component-contract.md §6 rule 8); the row's progress bar and Button stay on the box line. Without\n  // the DropZone no box stands in that column and the names stay at 0.\n  const hasDropZone = Boolean(showDropZone || onDrop);\n  const text = (className: string, children: ReactNode) =>\n    hasDropZone ? (\n      <>\n        <span className={className}>{children}</span>\n      </>\n    ) : (\n      <span className={className}>{children}</span>\n    );\n\n  return (\n    <Stack\n      as=\"section\"\n      ref={ref}\n      gap=\"large\"\n      aria-label=\"Files\"\n      className={className ? `sd-filelist ${className}` : \"sd-filelist\"}\n    >\n      {hasDropZone && (\n        <DropZone aria-label=\"Upload files\" onDrop={handleDrop}>\n          <span className=\"sd-filelist__drop-label sd-type-label-medium\">\n            Drop files here to upload\n          </span>\n        </DropZone>\n      )}\n      {files.length === 0 ? (\n        <p role=\"status\" className=\"sd-filelist__empty sd-type-caption-medium\">\n          {emptyLabel}\n        </p>\n      ) : (\n        <Stack as=\"ul\" gap=\"small\" className=\"sd-filelist__items\">\n          {files.map((file) => (\n            <Stack\n              as=\"li\"\n              key={file.id}\n              direction=\"row\"\n              align=\"center\"\n              justify=\"between\"\n              gap=\"large\"\n              className=\"sd-filelist__item\"\n            >\n              <Stack gap=\"2x-small\" className=\"sd-filelist__details\">\n                {text(\"sd-filelist__name sd-type-body-medium\", file.name)}\n                {file.size && text(\"sd-filelist__size sd-type-caption-medium\", file.size)}\n              </Stack>\n              {(file.progress != null || onRemove) && (\n                <Stack direction=\"row\" align=\"center\" gap=\"small\" className=\"sd-filelist__actions\">\n                  {file.progress != null && (\n                    <ProgressBar\n                      value={file.progress}\n                      aria-label={`Upload progress for ${file.name}`}\n                      className=\"sd-filelist__progress\"\n                    />\n                  )}\n                  {onRemove && (\n                    <Button\n                      type=\"button\"\n                      variant=\"secondary\"\n                      size=\"small\"\n                      aria-label={`Remove ${file.name}`}\n                      onPress={() => onRemove(file.id)}\n                    >\n                      Remove\n                    </Button>\n                  )}\n                </Stack>\n              )}\n            </Stack>\n          ))}\n        </Stack>\n      )}\n    </Stack>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/FileList.css",
+      "type": "registry:component",
+      "target": "src/blocks/FileList.css",
+      "content": "/* FileList.css — .sd-filelist (Block)\n   Arrangement only: composed Components retain complete ownership of their look. */\n.sd-filelist {\n  width: 100%;\n}\n\n.sd-filelist__items {\n  margin: 0;\n  padding: 0;\n  list-style: none;\n}\n\n/* The name keeps a readable column and the progress bar gives way first: at 360 a fixed-width\n   bar would leave the name ~49px and break a file name letter by letter. */\n.sd-filelist__details {\n  flex: 1 0 7rem;\n  min-width: 0;\n}\n\n.sd-filelist__name {\n  overflow-wrap: anywhere;\n}\n\n.sd-filelist__actions {\n  flex: 0 1 auto;\n  min-width: 0;\n}\n\n.sd-filelist__progress {\n  flex: 0 1 8rem;\n  min-width: 3rem;\n}\n\n/* empty state — layout only (muted color inherits default; blocks own no color) */\n.sd-filelist__empty {\n  padding: var(--sd-space-large);\n  text-align: center;\n}\n"
+    }
+  ]
+}

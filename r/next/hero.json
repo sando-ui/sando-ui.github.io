@@ -1,0 +1,30 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "hero",
+  "type": "registry:block",
+  "title": "Hero",
+  "description": "A centered full-width marketing introduction with a headline, supporting copy, responsive actions, and optional media.",
+  "registryDependencies": [
+    "@sando-ui/container",
+    "@sando-ui/stack",
+    "@sando-ui/media",
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/Hero.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/Hero.tsx",
+      "content": "// Block (composition) — a centered, full-width marketing introduction.\n// Container caps the inner measure; Stack owns responsive action arrangement.\nimport { useId, type ReactNode, type Ref } from \"react\";\nimport { Media } from \"../components/Media\";\nimport { Container } from \"../layouts/Container\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./Hero.css\";\n\nexport interface HeroProps {\n  /** Primary marketing headline. */\n  title: string;\n  /** Supporting copy shown below the headline. */\n  subtitle?: string;\n  /** Consumer-supplied calls to action, typically Buttons. */\n  actions?: ReactNode;\n  /** Optional product visual, illustration, or other supporting media. */\n  media?: ReactNode;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function Hero({ title, subtitle, actions, media, className, ref }: HeroProps) {\n  const titleId = useId();\n\n  return (\n    <section\n      ref={ref}\n      aria-labelledby={titleId}\n      className={className ? `sd-hero ${className}` : \"sd-hero\"}\n    >\n      <Container span={8} padding=\"none\">\n        <Stack align=\"center\" gap=\"medium\" className=\"sd-hero__content\">\n          {/* The headline and its supporting line are ONE unit, so they group at a tighter rung\n              than the section's own (`PageHeader` is the reference). */}\n          <Stack align=\"center\" gap=\"x-small\" className=\"sd-hero__heading\">\n            <h1 id={titleId} className=\"sd-hero__title sd-type-display-medium\">{title}</h1>\n            {subtitle && (\n              <p className=\"sd-hero__subtitle sd-type-body-medium\">{subtitle}</p>\n            )}\n          </Stack>\n          {actions && (\n            <Stack\n              direction={{ small: \"column\", medium: \"row\" }}\n              align=\"center\"\n              justify=\"center\"\n              gap=\"x-small\"\n              className=\"sd-hero__actions\"\n            >\n              {actions}\n            </Stack>\n          )}\n          {media && <Media className=\"sd-hero__media\">{media}</Media>}\n        </Stack>\n      </Container>\n    </section>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/Hero.css",
+      "type": "registry:component",
+      "target": "src/blocks/Hero.css",
+      "content": "/* Hero.css — .sd-hero (Block)\n   Arrangement only: full-width section rhythm and centered text. */\n.sd-hero {\n  width: 100%;\n  padding-block: var(--sd-space-2x-large);\n  text-align: center;\n}\n\n.sd-hero__title,\n.sd-hero__subtitle {\n  margin: 0;\n}\n\n.sd-hero__subtitle {\n  color: var(--sd-color-text-muted);\n}\n\n.sd-hero__actions,\n.sd-hero__media {\n  width: 100%;\n}\n"
+    }
+  ]
+}

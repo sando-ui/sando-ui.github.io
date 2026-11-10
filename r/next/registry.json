@@ -1,0 +1,3409 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "sando-ui",
+  "homepage": "https://github.com/caffebara/sando-ui",
+  "items": [
+    {
+      "name": "styles",
+      "type": "registry:file",
+      "title": "Tokens & reset",
+      "description": "Shared design tokens (Ref → Sys → Cmp) and CSS reset, with the default brand theme. Install once before any component — every component references only the Cmp tier defined here. tokens.css holds Cmp + the type-role classes; the Ref + Sys values come from the brand file beside it (mango), which applies with no attribute set. Add `brand-<name>` for an alternate theme.",
+      "registryDependencies": [
+        "@sando-ui/guide"
+      ]
+    },
+    {
+      "name": "guide",
+      "type": "registry:file",
+      "title": "Sando guide",
+      "description": "The consumer guide: installing and upgrading Sando, the theme attributes, the rules your own CSS and compositions follow, and which unit to use. Installed with `styles` into `docs/sando/`, so the agent working in your repo can be pointed at it."
+    },
+    {
+      "name": "icons",
+      "type": "registry:lib",
+      "title": "Icons",
+      "description": "The design system's icons: one module that every component imports its glyphs from, drawn by the icon library themes/icons.json names (Lucide by default), plus the stylesheet that sets each icon's stroke to the stem of the text beside it. Changing library is that config and a rebuild; no component changes.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "brand-mango",
+      "type": "registry:file",
+      "title": "Mango brand theme",
+      "description": "The mango theme (망고) — a complete alternate look: yellow brand, lime accent, one Outfit face in both text slots, 1px hairlines, a 2px focus ring. It is the default brand, so this item carries the same file `styles` does and applies with no attribute set; it exists so a product whose theme is mango can name it (ADR-0049).",
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "brand-avocado",
+      "type": "registry:file",
+      "title": "Avocado brand theme",
+      "description": "The avocado theme (아보카도) — a complete alternate look: a green brand (hue 130) with an amber accent held at an absolute angle, a warm tinted neutral, Archivo for text with Figtree for the display roles, and 2px and 4px border chrome. Select it with `data-brand=\"avocado\"` on <html>; with no such attribute the default brand from `styles` renders. Install both — import order does not matter, the cascade is decided by selector specificity.",
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "brand-lychee",
+      "type": "registry:file",
+      "title": "Lychee brand theme",
+      "description": "The lychee theme (리치), a neutral alternate look: an achromatic charcoal brand over a true-grey paper (neutral chroma 0), with a calm blue accent split off for links, the focus ring and selection (ADR-0023). Type, spacing, radius, motion and the translucent overlay are mango's. Select it with `data-brand=\"lychee\"` on <html>; with no such attribute the default brand from `styles` renders. Install both: import order does not matter, the cascade is decided by selector specificity.",
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "brand-blueberry",
+      "type": "registry:file",
+      "title": "Blueberry brand theme",
+      "description": "The blueberry theme (블루베리) — a complete alternate look: an indigo brand (hue 291) with a split-complementary amber accent, a true-grey paper (neutral chroma 0), a crisp 4px radius ladder on a 2px grid, 12px spacing base, Inter for text with Inter Tight for the display roles, and a 2px focus ring. Its decorative and functional borders share one value by decision, so cards read at the same weight as inputs. Select it with `data-brand=\"blueberry\"` on <html>; with no such attribute the default brand from `styles` renders. Install both — import order does not matter, the cascade is decided by selector specificity.",
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "brand-aronia",
+      "type": "registry:file",
+      "title": "Aronia brand theme",
+      "description": "The aronia theme (아로니아): a blue action fill dark enough that white labels clear 5:1, a cool grey paper, 1px hairlines, a radius ladder anchored at 8 with each control's corner following its size, Pretendard for display and body text on a type ladder anchored at 16, and a high-contrast variant. Select it with `data-brand=\"aronia\"` on <html>; with no such attribute the default brand from `styles` renders. Install both — import order does not matter, the cascade is decided by selector specificity.",
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "link-button",
+      "type": "registry:ui",
+      "title": "Link Button",
+      "description": "A link drawn as a Button: it navigates (role link, a real anchor) and reuses Button's classes, variants and sizes.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/button",
+        "@sando-ui/control-size",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "countdown",
+      "type": "registry:ui",
+      "title": "Countdown",
+      "description": "A live time-left chip: an urgency Badge whose caller-worded text ticks each second, exposed as a timer that is not announced per tick.",
+      "registryDependencies": [
+        "@sando-ui/badge",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "button",
+      "type": "registry:ui",
+      "title": "Button",
+      "description": "A press-driven action trigger. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/styles",
+        "@sando-ui/spinner",
+        "@sando-ui/control-size"
+      ]
+    },
+    {
+      "name": "button-group",
+      "type": "registry:ui",
+      "title": "ButtonGroup",
+      "description": "A row of related actions. Owns the placement Stack cannot express: a reverse column on a narrow screen so the primary action rises to the top while staying last in the DOM, and an even grid split for centered layouts."
+    },
+    {
+      "name": "calendar",
+      "type": "registry:ui",
+      "title": "Calendar",
+      "description": "A month grid for selecting a date. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components",
+        "@internationalized/date"
+      ],
+      "registryDependencies": [
+        "@sando-ui/button",
+        "@sando-ui/select",
+        "@sando-ui/icons",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "date-picker",
+      "type": "registry:ui",
+      "title": "Date Picker",
+      "description": "A labeled field for picking a date, combining a segmented date input with a Calendar popover. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components",
+        "@internationalized/date"
+      ],
+      "registryDependencies": [
+        "@sando-ui/calendar",
+        "@sando-ui/popover",
+        "@sando-ui/icons",
+        "@sando-ui/styles",
+        "@sando-ui/control-size"
+      ]
+    },
+    {
+      "name": "accordion",
+      "type": "registry:ui",
+      "title": "Accordion",
+      "description": "A disclosure group for expanding titled content panels. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/icons",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "collapsible",
+      "type": "registry:ui",
+      "title": "Collapsible",
+      "description": "A single disclosure section for expanding titled content. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/button",
+        "@sando-ui/icons",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "alert",
+      "type": "registry:ui",
+      "title": "Alert",
+      "description": "A status message with optional title and icon. No headless primitive; built and owned entirely in Vanilla CSS.",
+      "registryDependencies": [
+        "@sando-ui/featured-icon",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "avatar",
+      "type": "registry:ui",
+      "title": "Avatar",
+      "description": "A user image with accessible fallback content. No headless primitive; built and owned entirely in Vanilla CSS.",
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "media",
+      "type": "registry:ui",
+      "title": "Media",
+      "description": "A rounded frame that clips one picture, video or artwork to the system's corner. Compose AspectRatio inside it for a ratio.",
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "site-header",
+      "type": "registry:ui",
+      "title": "Site Header",
+      "description": "A full-width top bar on the page's fill with an edge below, sticky by default, whose content follows the page grid's frame. Holds a Navbar.",
+      "registryDependencies": [
+        "@sando-ui/styles",
+        "@sando-ui/use-scroll-clearance"
+      ]
+    },
+    {
+      "name": "docked-bar",
+      "type": "registry:ui",
+      "title": "Docked Bar",
+      "description": "A full-width bar fixed to the bottom of the viewport, on the page's fill with an edge above, whose content follows the page grid's frame and clears the device's bottom safe area. Holds a BottomNavDocked.",
+      "registryDependencies": [
+        "@sando-ui/styles",
+        "@sando-ui/use-scroll-clearance"
+      ]
+    },
+    {
+      "name": "badge",
+      "type": "registry:ui",
+      "title": "Badge",
+      "description": "A compact inline label for status or metadata. No headless primitive; built and owned entirely in Vanilla CSS.",
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "responsive",
+      "type": "registry:lib",
+      "title": "Responsive helper",
+      "description": "Type + helper that expands responsive layout props into breakpoint custom properties. Shared by the layout primitives."
+    },
+    {
+      "name": "stack",
+      "type": "registry:ui",
+      "title": "Stack",
+      "description": "A layout primitive for 1D flow (row or column) with token-scale gap. Responsive props; arrangement only, owns no look.",
+      "registryDependencies": [
+        "@sando-ui/styles",
+        "@sando-ui/responsive"
+      ]
+    },
+    {
+      "name": "layer",
+      "type": "registry:ui",
+      "title": "Layer",
+      "description": "A layout primitive that overlaps its items in one grid cell, each pinned to a side, a corner or the middle, so a badge sits over an image or copy over a banner. Source order is stacking order. Responsive props; arrangement only, owns no look.",
+      "registryDependencies": [
+        "@sando-ui/styles",
+        "@sando-ui/responsive"
+      ]
+    },
+    {
+      "name": "grid",
+      "type": "registry:ui",
+      "title": "Grid",
+      "description": "A layout primitive for 2D grids — fixed columns or auto-fit — with token-scale gap. Responsive props; arrangement only, owns no look.",
+      "registryDependencies": [
+        "@sando-ui/styles",
+        "@sando-ui/responsive"
+      ]
+    },
+    {
+      "name": "aspect-ratio",
+      "type": "registry:ui",
+      "title": "Aspect Ratio",
+      "description": "A layout primitive that constrains arbitrary content to a width/height ratio. Arrangement only, owns no look.",
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "sticky-bar",
+      "type": "registry:ui",
+      "title": "Sticky Bar",
+      "description": "A toolbar region pinned to the top of the scrolling page on the page's own fill, edge to edge of its frame, with a hairline under it; its content stays on the page column.",
+      "registryDependencies": [
+        "@sando-ui/styles",
+        "@sando-ui/use-scroll-clearance"
+      ]
+    },
+    {
+      "name": "show",
+      "type": "registry:ui",
+      "title": "Show",
+      "description": "A layout primitive that shows its children only from, or only below, a breakpoint step, so one control can sit in two places by width. Arrangement only, owns no look.",
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "indent",
+      "type": "registry:ui",
+      "title": "Indent",
+      "description": "A layout primitive that applies the text inset to the text a Block or consumer places beside a rounded box or on a painted surface: start (default), end or both. Arrangement only, owns no look.",
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "container",
+      "type": "registry:ui",
+      "title": "Container",
+      "description": "A layout primitive that caps content width and centers it, with inline gutters. Responsive props; arrangement only, owns no look.",
+      "registryDependencies": [
+        "@sando-ui/styles",
+        "@sando-ui/responsive"
+      ]
+    },
+    {
+      "name": "login-form",
+      "type": "registry:block",
+      "title": "Login Form",
+      "description": "A ready-to-use sign-in form: email + password fields, submit, and an inline form-level error. Composed from Form, TextField, Button, Alert, and Stack.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/form",
+        "@sando-ui/text-field",
+        "@sando-ui/button",
+        "@sando-ui/link",
+        "@sando-ui/alert",
+        "@sando-ui/stack",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "settings-form",
+      "type": "registry:block",
+      "title": "Settings Form",
+      "description": "A sectioned account settings form for profile details and preferences, with submit and form-level error states.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/form",
+        "@sando-ui/text-field",
+        "@sando-ui/switch",
+        "@sando-ui/select",
+        "@sando-ui/button",
+        "@sando-ui/stack",
+        "@sando-ui/alert",
+        "@sando-ui/separator",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "control-group",
+      "type": "registry:block",
+      "title": "Control Group",
+      "description": "A titled group of controls, spaced so each control reads as its own and the group as one. Composed from Stack.",
+      "registryDependencies": [
+        "@sando-ui/stack",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "profile-form",
+      "type": "registry:block",
+      "title": "Profile Form",
+      "description": "A profile form with an avatar preview, identity fields, submit, and form-level error states.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/form",
+        "@sando-ui/avatar",
+        "@sando-ui/text-field",
+        "@sando-ui/button",
+        "@sando-ui/stack",
+        "@sando-ui/alert",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "address-form",
+      "type": "registry:block",
+      "title": "Address Form",
+      "description": "A structured shipping address form with a responsive city, state, and ZIP row plus country selection.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/form",
+        "@sando-ui/text-field",
+        "@sando-ui/select",
+        "@sando-ui/grid",
+        "@sando-ui/button",
+        "@sando-ui/stack",
+        "@sando-ui/alert",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "contact-form",
+      "type": "registry:block",
+      "title": "Contact Form",
+      "description": "A contact form for name, email, and message with submit and form-level error states.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/form",
+        "@sando-ui/text-field",
+        "@sando-ui/textarea",
+        "@sando-ui/button",
+        "@sando-ui/stack",
+        "@sando-ui/alert",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "signup-form",
+      "type": "registry:block",
+      "title": "Signup Form",
+      "description": "A ready-to-use account creation form: name, email, password, terms acceptance, submit, and an inline form-level error. Composed from Form, TextField, Checkbox, Button, Alert, and Stack.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/form",
+        "@sando-ui/text-field",
+        "@sando-ui/checkbox",
+        "@sando-ui/button",
+        "@sando-ui/alert",
+        "@sando-ui/stack",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "forgot-password-form",
+      "type": "registry:block",
+      "title": "Forgot Password Form",
+      "description": "A ready-to-use password-reset request form: email field, submit, and an inline form-level error. Composed from Form, TextField, Button, Alert, and Stack.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/form",
+        "@sando-ui/text-field",
+        "@sando-ui/button",
+        "@sando-ui/alert",
+        "@sando-ui/stack",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "reset-password-form",
+      "type": "registry:block",
+      "title": "Reset Password Form",
+      "description": "A ready-to-use new-password form: password confirmation, submit, and an inline form-level error. Composed from Form, TextField, Button, Alert, and Stack.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/form",
+        "@sando-ui/text-field",
+        "@sando-ui/button",
+        "@sando-ui/alert",
+        "@sando-ui/stack",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "otp-verify-form",
+      "type": "registry:block",
+      "title": "OTP Verify Form",
+      "description": "A ready-to-use email verification form: one-time code field, verify and resend actions, and an inline form-level error. Composed from Form, TextField, Button, Alert, and Stack.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/alert",
+        "@sando-ui/button",
+        "@sando-ui/button-group",
+        "@sando-ui/form",
+        "@sando-ui/stack",
+        "@sando-ui/styles",
+        "@sando-ui/pin-field",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "side-panel",
+      "type": "registry:block",
+      "title": "Side Panel",
+      "description": "A full-height panel for a sidebar: a title, an optional close button and description, and a body that fills the rest of the height; pass a ScrollArea to scroll it. Pair it with AppShell's rail slot, which folds the panel while the rail stays.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/button",
+        "@sando-ui/card",
+        "@sando-ui/icons",
+        "@sando-ui/stack",
+        "@sando-ui/styles",
+        "@sando-ui/tooltip"
+      ]
+    },
+    {
+      "name": "page-header",
+      "type": "registry:block",
+      "title": "Page Header",
+      "description": "A full-width page heading with optional description, breadcrumbs, and page-level actions. Composed from Breadcrumbs and Stack.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/breadcrumb",
+        "@sando-ui/stack",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "footer",
+      "type": "registry:block",
+      "title": "Footer",
+      "description": "A full-width site footer with responsive link columns and a bottom copyright row. Composed from Grid, Stack, Link, and Separator.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/grid",
+        "@sando-ui/stack",
+        "@sando-ui/link",
+        "@sando-ui/separator",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "navbar",
+      "type": "registry:block",
+      "title": "Navbar",
+      "description": "A site's global navigation bar: brand, primary destinations with the current page marked and optional dropdowns, a search slot and actions, an optional utility row above it (the two-tier GNB), on a sticky full-width SiteHeader. Collapses to a menu button on small screens.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/button",
+        "@sando-ui/link",
+        "@sando-ui/menu",
+        "@sando-ui/nav-item",
+        "@sando-ui/site-header",
+        "@sando-ui/stack",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "segmented-control",
+      "type": "registry:ui",
+      "title": "Segmented Control",
+      "description": "An iOS-style single-select control: a track of adjacent segments with a raised pill behind the selected one. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/icons",
+        "@sando-ui/styles",
+        "@sando-ui/control-size"
+      ]
+    },
+    {
+      "name": "carousel",
+      "type": "registry:ui",
+      "title": "Carousel",
+      "description": "A paged slide viewport with previous/next controls and position dots. Paging is plain React state; the arrow controls compose the Button. Look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/badge",
+        "@sando-ui/button",
+        "@sando-ui/icons",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "bottom-nav",
+      "type": "registry:block",
+      "title": "Bottom Nav",
+      "description": "A floating iOS-style bottom navigation bar with 3–5 icon+label items and a current-page highlight. Composed from Card, NavItem, and Grid.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/card",
+        "@sando-ui/grid",
+        "@sando-ui/nav-item",
+        "@sando-ui/styles",
+        "@sando-ui/use-scroll-clearance"
+      ]
+    },
+    {
+      "name": "bottom-nav-docked",
+      "type": "registry:block",
+      "title": "Bottom Nav Docked",
+      "description": "A bottom navigation bar docked full-width to the bottom edge, with an edge above and 3–5 icon+label items with a current-page highlight. The docked take of Bottom Nav. Composed from DockedBar, NavItem, and Grid.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/docked-bar",
+        "@sando-ui/grid",
+        "@sando-ui/nav-item",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "list-controls",
+      "type": "registry:block",
+      "title": "List Controls",
+      "description": "The controls above a result list: a scope Select with its label inside beside a search button, then refine actions (filter, sort) and an optional narrowing toggle. Composed from Select, Button, Switch, and Stack.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/button",
+        "@sando-ui/icons",
+        "@sando-ui/select",
+        "@sando-ui/stack",
+        "@sando-ui/styles",
+        "@sando-ui/switch",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "floating-toolbar",
+      "type": "registry:block",
+      "title": "Floating Toolbar",
+      "description": "A control bar pinned to the bottom of the viewport, floating over page content. Composed from Card (raised surface) and Toolbar (roving-focus behaviour); the Block owns only the placement.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/card",
+        "@sando-ui/toolbar",
+        "@sando-ui/styles",
+        "@sando-ui/use-scroll-clearance"
+      ]
+    },
+    {
+      "name": "floating-bar",
+      "type": "registry:block",
+      "title": "Floating Bar",
+      "description": "A bar of mixed controls (search, selects, a view switch, actions) pinned to the bottom of the viewport. Unlike Floating Toolbar it has no roving focus, so a text field inside it keeps its arrow keys. Composed from Card and Stack; the Block owns only the placement.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/card",
+        "@sando-ui/stack",
+        "@sando-ui/styles",
+        "@sando-ui/use-scroll-clearance"
+      ]
+    },
+    {
+      "name": "app-bar",
+      "type": "registry:block",
+      "title": "App Bar",
+      "description": "A mobile/app top navigation bar with a leading back button, centered title, and trailing actions. Composed from Button and Stack.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/button",
+        "@sando-ui/stack",
+        "@sando-ui/icons",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "action-sheet",
+      "type": "registry:block",
+      "title": "Action Sheet",
+      "description": "An iOS-style action sheet rising from the bottom edge with a list of actions and a cancel control. Composed from Drawer, Button, and Stack.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/drawer",
+        "@sando-ui/button",
+        "@sando-ui/stack",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "navigation-rail",
+      "type": "registry:block",
+      "title": "Navigation Rail",
+      "description": "A compact vertical navigation rail (tablet/desktop) with stacked icon+label destinations and optional header/footer slots. Composed from NavItem and Stack.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/nav-item",
+        "@sando-ui/scroll-area",
+        "@sando-ui/stack",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "post-card",
+      "type": "registry:block",
+      "title": "Post Card",
+      "description": "A social feed post with author header, body, optional media, and like/comment/share actions. Composed from Card, Avatar, and Button.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/card",
+        "@sando-ui/avatar",
+        "@sando-ui/button",
+        "@sando-ui/media",
+        "@sando-ui/icons",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "user-menu",
+      "type": "registry:block",
+      "title": "User Menu",
+      "description": "A self-contained account menu opened by an avatar trigger with an optional user name. Composed from Avatar, Button, Menu, and Stack.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/avatar",
+        "@sando-ui/button",
+        "@sando-ui/menu",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "sidebar",
+      "type": "registry:block",
+      "title": "Sidebar",
+      "description": "A full-height vertical section navigation with labelled groups, icons, a current-page highlight, and collapsible nested nav. Composed from NavItem, Stack, and React Aria Disclosure.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/nav-item",
+        "@sando-ui/stack",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "mobile-nav",
+      "type": "registry:block",
+      "title": "Mobile Nav",
+      "description": "A Drawer-based navigation for compact viewports with a Button trigger and vertical links. Composed from Drawer, Button, Link, and Stack.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/drawer",
+        "@sando-ui/button",
+        "@sando-ui/link",
+        "@sando-ui/stack",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "app-shell",
+      "type": "registry:ui",
+      "title": "App Shell",
+      "description": "A responsive application skeleton arranging optional sidebar and header slots around semantic main content, with an inset variant that lifts the header and content onto one panel beside the sidebar.",
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "confirm-dialog",
+      "type": "registry:block",
+      "title": "Confirm Dialog",
+      "description": "A reusable confirmation modal with cancel and confirm actions. Composed from Dialog, Button, and Stack.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/dialog",
+        "@sando-ui/button",
+        "@sando-ui/stack",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "form-dialog",
+      "type": "registry:block",
+      "title": "Form Dialog",
+      "description": "A modal form with consumer-supplied fields and cancel and submit actions. Composed from Dialog, Form, Button, and Stack.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/dialog",
+        "@sando-ui/form",
+        "@sando-ui/button",
+        "@sando-ui/stack",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "option-sheet",
+      "type": "registry:block",
+      "title": "Option Sheet",
+      "description": "A sheet of single-choice rows that applies the picked option at once and closes: a sort order, a view. A bottom sheet on a phone, a centred panel from the large step.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/stack",
+        "@sando-ui/text",
+        "@sando-ui/button",
+        "@sando-ui/drawer",
+        "@sando-ui/list-box",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "drawer-form",
+      "type": "registry:block",
+      "title": "Drawer Form",
+      "description": "A form panel with consumer-supplied fields and cancel and submit actions: a slide-over by default, or with `responsive` a bottom sheet below the large breakpoint and a centred panel above it, kept as one overlay so an open form keeps its values. Composed from Drawer, Form, Button, and Stack.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/icons",
+        "@sando-ui/drawer",
+        "@sando-ui/form",
+        "@sando-ui/button",
+        "@sando-ui/stack",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "quick-filter-rail",
+      "type": "registry:block",
+      "title": "Quick Filter Rail",
+      "description": "A row of round quick-filter shortcuts, each an icon plate over a caption, that scrolls sideways when it outgrows its column. Composed from Button, ScrollArea, and Stack.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/button",
+        "@sando-ui/scroll-area",
+        "@sando-ui/stack",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "plan-card",
+      "type": "registry:block",
+      "title": "Plan Card",
+      "description": "One offer in a comparison list: provider and rating, the headline spec, specs, tags, the price with its note, a favourite toggle and an optional expandable benefit row. Composed from Card, Badge, Rating, Link, ToggleButton, Collapsible, and Stack.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/card",
+        "@sando-ui/badge",
+        "@sando-ui/rating",
+        "@sando-ui/link",
+        "@sando-ui/toggle-button-group",
+        "@sando-ui/collapsible",
+        "@sando-ui/separator",
+        "@sando-ui/stack",
+        "@sando-ui/icons",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "price-comparison",
+      "type": "registry:block",
+      "title": "Price Comparison",
+      "description": "A monthly price without and with gifts, then the contract's total cost, on one sunken panel. Composed from Card, Separator, and Stack.",
+      "registryDependencies": [
+        "@sando-ui/card",
+        "@sando-ui/separator",
+        "@sando-ui/stack",
+        "@sando-ui/icons",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "price-summary",
+      "type": "registry:block",
+      "title": "Price Summary",
+      "description": "A price before and after a discount on a sunken panel, with a line explaining the difference and an optional small action. Composed from Card, Separator, and Stack.",
+      "registryDependencies": [
+        "@sando-ui/card",
+        "@sando-ui/separator",
+        "@sando-ui/stack",
+        "@sando-ui/icons",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "notification-list",
+      "type": "registry:block",
+      "title": "Notification List",
+      "description": "A vertical list of dismissible in-app notification cards. Composed from Card, Button, and Stack.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/badge",
+        "@sando-ui/card",
+        "@sando-ui/button",
+        "@sando-ui/stack",
+        "@sando-ui/icons",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "banner",
+      "type": "registry:block",
+      "title": "Banner",
+      "description": "A full-width page notice with optional action and dismissal. Composed from Alert, Button, and Stack.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/alert",
+        "@sando-ui/button",
+        "@sando-ui/stack",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "cookie-consent",
+      "type": "registry:block",
+      "title": "Cookie Consent",
+      "description": "A responsive cookie consent bar with policy link and accept and manage actions. Composed from Button, Link, and Stack.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/button",
+        "@sando-ui/link",
+        "@sando-ui/stack",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "payment-form",
+      "type": "registry:block",
+      "title": "Payment Form",
+      "description": "A card payment form with cardholder, card number, expiry, CVC, submit, and form-level error states.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/form",
+        "@sando-ui/text-field",
+        "@sando-ui/grid",
+        "@sando-ui/button",
+        "@sando-ui/alert",
+        "@sando-ui/stack",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "search-bar",
+      "type": "registry:block",
+      "title": "Search Bar",
+      "description": "A full-width inline search form with an accessible search field and submit action.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/form",
+        "@sando-ui/search-field",
+        "@sando-ui/button",
+        "@sando-ui/stack",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "filter-bar",
+      "type": "registry:block",
+      "title": "Filter Bar",
+      "description": "A responsive row of select filters, active-filter tags, and a clear action.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/select",
+        "@sando-ui/tag-group",
+        "@sando-ui/button",
+        "@sando-ui/stack",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "wizard",
+      "type": "registry:block",
+      "title": "Wizard",
+      "description": "A multi-step flow with a progress indicator, consumer-supplied step content, and back, next, and completion actions.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/progress-bar",
+        "@sando-ui/button",
+        "@sando-ui/stack",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "stat-card-grid",
+      "type": "registry:block",
+      "title": "Stat Card Grid",
+      "description": "A responsive grid of KPI cards with optional trend badges. Composed from Card, Badge, Grid, and Stack.",
+      "registryDependencies": [
+        "@sando-ui/card",
+        "@sando-ui/badge",
+        "@sando-ui/grid",
+        "@sando-ui/responsive",
+        "@sando-ui/stack",
+        "@sando-ui/icons",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "empty-state",
+      "type": "registry:block",
+      "title": "Empty State",
+      "description": "A centered empty-collection placeholder with optional icon, description, and consumer-supplied action. Composed from Stack.",
+      "registryDependencies": [
+        "@sando-ui/stack",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "result-state",
+      "type": "registry:block",
+      "title": "Result State",
+      "description": "A centered result or status section with optional code, description, and consumer-supplied actions. Composed from Stack.",
+      "registryDependencies": [
+        "@sando-ui/button",
+        "@sando-ui/stack",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "description-list",
+      "type": "registry:block",
+      "title": "Description List",
+      "description": "A responsive semantic list of term and description pairs. Composed from Grid and Stack.",
+      "registryDependencies": [
+        "@sando-ui/grid",
+        "@sando-ui/responsive",
+        "@sando-ui/stack",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "activity-feed",
+      "type": "registry:block",
+      "title": "Activity Feed",
+      "description": "A chronological feed of actor activity with avatars and timestamps. Composed from Avatar and Stack.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/avatar",
+        "@sando-ui/stack",
+        "@sando-ui/timeline",
+        "@sando-ui/skeleton-list",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "active-session",
+      "type": "registry:block",
+      "title": "Active Session",
+      "description": "A session in progress: one large figure, labelled supporting figures, a live mark and pause and end controls. Composed from Card, Badge, Button, Grid, and Stack.",
+      "registryDependencies": [
+        "@sando-ui/card",
+        "@sando-ui/badge",
+        "@sando-ui/button",
+        "@sando-ui/grid",
+        "@sando-ui/responsive",
+        "@sando-ui/stack",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "route-progress",
+      "type": "registry:block",
+      "title": "Route Progress",
+      "description": "A trip from an origin to a destination, partway done: both endpoints, a progress bar, time remaining and a status. Composed from Card, ProgressBar, Badge, and Stack.",
+      "registryDependencies": [
+        "@sando-ui/card",
+        "@sando-ui/progress-bar",
+        "@sando-ui/badge",
+        "@sando-ui/responsive",
+        "@sando-ui/stack",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "file-list",
+      "type": "registry:block",
+      "title": "File List",
+      "description": "An uploaded-file list with an optional drop zone, upload progress, and remove actions.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/drop-zone",
+        "@sando-ui/progress-bar",
+        "@sando-ui/button",
+        "@sando-ui/stack",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "data-table",
+      "type": "registry:block",
+      "title": "Data Table",
+      "description": "A searchable and paginated data table with a composed empty-state fallback.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/table",
+        "@sando-ui/scroll-area",
+        "@sando-ui/search-field",
+        "@sando-ui/pagination",
+        "@sando-ui/empty-state",
+        "@sando-ui/stack",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "color-swatch",
+      "type": "registry:ui",
+      "title": "Color Swatch",
+      "description": "A color preview swatch with alpha checkerboard support. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "color-field",
+      "type": "registry:ui",
+      "title": "Color Field",
+      "description": "A labeled field for editing a hex color or individual color channel. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/styles",
+        "@sando-ui/control-size"
+      ]
+    },
+    {
+      "name": "color-area",
+      "type": "registry:ui",
+      "title": "Color Area",
+      "description": "A two-axis color area for adjusting color channels. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "color-slider",
+      "type": "registry:ui",
+      "title": "Color Slider",
+      "description": "A channel slider for hue, alpha, or other color values. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "color-wheel",
+      "type": "registry:ui",
+      "title": "Color Wheel",
+      "description": "A circular hue control for color selection. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "color-swatch-picker",
+      "type": "registry:ui",
+      "title": "Color Swatch Picker",
+      "description": "A selectable set of color swatches. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/styles",
+        "@sando-ui/color-swatch"
+      ]
+    },
+    {
+      "name": "color-picker",
+      "type": "registry:ui",
+      "title": "Color Picker",
+      "description": "A triggerable color picker popover composed from color area, slider, field, and swatch controls. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/color-area",
+        "@sando-ui/color-field",
+        "@sando-ui/color-slider",
+        "@sando-ui/color-swatch",
+        "@sando-ui/popover",
+        "@sando-ui/styles",
+        "@sando-ui/control-size"
+      ]
+    },
+    {
+      "name": "breadcrumb",
+      "type": "registry:ui",
+      "title": "Breadcrumb",
+      "description": "A navigation trail for hierarchical page locations. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/icons",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "card",
+      "type": "registry:ui",
+      "title": "Card",
+      "description": "A structured content container with header and footer parts. No headless primitive; built and owned entirely in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/text",
+        "@sando-ui/media",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "checkbox",
+      "type": "registry:ui",
+      "title": "Checkbox",
+      "description": "A labeled control for toggling a boolean value. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "dialog",
+      "type": "registry:ui",
+      "title": "Dialog",
+      "description": "A modal overlay for focused dialog content. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/button",
+        "@sando-ui/button-group",
+        "@sando-ui/featured-icon",
+        "@sando-ui/icons",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "drawer",
+      "type": "registry:ui",
+      "title": "Drawer",
+      "description": "A modal sheet that slides in from a viewport edge. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/button",
+        "@sando-ui/button-group",
+        "@sando-ui/featured-icon",
+        "@sando-ui/icons",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "link",
+      "type": "registry:ui",
+      "title": "Link",
+      "description": "A navigational text link with standard or quiet styling. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "nav-item",
+      "type": "registry:ui",
+      "title": "Nav Item",
+      "description": "A single navigation row (icon + label + optional trailing chevron) that owns the row look — hover fill, current-page highlight, indentation. Renders as a link or a button. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/icons",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "menu",
+      "type": "registry:ui",
+      "title": "Menu",
+      "description": "A triggerable popover menu with items and separators. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/popover",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "number-field",
+      "type": "registry:ui",
+      "title": "Number Field",
+      "description": "A labeled numeric input with increment and decrement controls. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/icons",
+        "@sando-ui/styles",
+        "@sando-ui/control-size"
+      ]
+    },
+    {
+      "name": "option-group",
+      "type": "registry:block",
+      "title": "OptionGroup",
+      "description": "One option group of a product: its name, a required tag, a rule such as a maximum, and the choices as equal-width chips or as radio or checkbox rows. Owns the group contract: required groups cannot be emptied, choices past the maximum and sold-out choices disable, and on an exclusive optional group a none choice clears it. The name, required tag and rule reach assistive technology.",
+      "registryDependencies": [
+        "@sando-ui/grid",
+        "@sando-ui/styles",
+        "@sando-ui/badge",
+        "@sando-ui/checkbox",
+        "@sando-ui/checkbox-group",
+        "@sando-ui/radio-group",
+        "@sando-ui/toggle-button-group",
+        "@sando-ui/stack",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "payment-method-picker",
+      "type": "registry:block",
+      "title": "PaymentMethodPicker",
+      "description": "The choice of how to pay, where pressing a method acts at once. Methods, labels and order are data; tiles on a wide screen, a list on a narrow one. Arranges ActionTiles in a grid or a stack: each method is its own Button.",
+      "registryDependencies": [
+        "@sando-ui/styles",
+        "@sando-ui/action-tile",
+        "@sando-ui/grid",
+        "@sando-ui/stack"
+      ]
+    },
+    {
+      "name": "bottom-action-bar",
+      "type": "registry:block",
+      "title": "BottomActionBar",
+      "description": "The action row that closes a customer screen: one full-width forward Button, or an outline secondary and the primary in halves, laid out by ButtonGroup. The last row of a screen column, never floating over content; it keeps the safe area below.",
+      "registryDependencies": [
+        "@sando-ui/styles",
+        "@sando-ui/button",
+        "@sando-ui/button-group"
+      ]
+    },
+    {
+      "name": "repeater-field",
+      "type": "registry:block",
+      "title": "RepeaterField",
+      "description": "A field whose value is a list of rows the author adds and removes, such as option names with prices: the caller's fields per row in equal columns, a remove control per row disabled where a row is locked, and an outline add Button. Focus moves into the added row, or into the row that took a removed one's place. Arranges Button and Stack.",
+      "registryDependencies": [
+        "@sando-ui/icons",
+        "@sando-ui/styles",
+        "@sando-ui/button",
+        "@sando-ui/stack",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "card-prompt",
+      "type": "registry:block",
+      "title": "CardPrompt",
+      "description": "The step that waits for a card: the amount, the keyed prompt for insert, tap, swipe or any, the device's own picture of where to present it, a politely announced notice such as a failed IC read, and an outline cancel. Arranges StepHeader and Button.",
+      "registryDependencies": [
+        "@sando-ui/styles",
+        "@sando-ui/button",
+        "@sando-ui/step-header",
+        "@sando-ui/stack",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "consent-checklist",
+      "type": "registry:block",
+      "title": "ConsentChecklist",
+      "description": "The terms a person agrees to before a step: each with a required or optional tag and a read Button beside it, an agree-all that is mixed while some are checked, and a forward action disabled until every required term is checked, with an optional outline decline.",
+      "registryDependencies": [
+        "@sando-ui/icons",
+        "@sando-ui/styles",
+        "@sando-ui/badge",
+        "@sando-ui/button",
+        "@sando-ui/checkbox",
+        "@sando-ui/checkbox-group",
+        "@sando-ui/separator",
+        "@sando-ui/bottom-action-bar"
+      ]
+    },
+    {
+      "name": "keypad-entry",
+      "type": "registry:block",
+      "title": "KeypadEntry",
+      "description": "A step that asks for a number on a keypad: a phone number with a fixed prefix, an amount with its unit, a code, or a PIN shown as dots that submits itself when complete. Arranges StepHeader, a read-only TextField, NumericKeypad and the submit and decline Buttons.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/styles",
+        "@sando-ui/button",
+        "@sando-ui/button-group",
+        "@sando-ui/numeric-keypad",
+        "@sando-ui/stack",
+        "@sando-ui/step-header",
+        "@sando-ui/text-field",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "step-header",
+      "type": "registry:ui",
+      "title": "StepHeader",
+      "description": "The header that opens a step screen: an optional eyebrow in the brand ink, the step's title as a heading (a span of it can be stressed with StepHeaderEmphasis), and an optional description. Aligned to the start in a staff panel or centred on a customer screen.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "action-tile",
+      "type": "registry:ui",
+      "title": "ActionTile",
+      "description": "A tile that acts when pressed: an icon, a label and an optional second line, the whole tile the press target, vertical in a grid or horizontal in a list. Nothing stays selected, so it is a Button, not a radio card. Renders a react-aria-components Button; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "order-ticket",
+      "type": "registry:ui",
+      "title": "OrderTicket",
+      "description": "A kitchen ticket: the order's source, name, tag and elapsed time (tinted once overdue), its lines with options, each a toggle that turns struck and checked when made, an expand Button for long orders, and a footer that completes the order with an optional call action. Renders react-aria-components ToggleButtons; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/icons",
+        "@sando-ui/styles",
+        "@sando-ui/button",
+        "@sando-ui/button-group"
+      ]
+    },
+    {
+      "name": "marquee",
+      "type": "registry:ui",
+      "title": "Marquee",
+      "description": "A one-line notice, with an optional second line, that scrolls sideways only while it overflows: the idle notice on Front and Front kiosk mode. Opaque inverse surface; pressing it pauses (WCAG 2.2.2); reduced motion wraps the text instead of moving it.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/styles",
+        "@sando-ui/use-reduced-motion"
+      ]
+    },
+    {
+      "name": "masked-text",
+      "type": "registry:ui",
+      "title": "MaskedText",
+      "description": "A personal value shown masked, with an eye Button that asks the consumer to reveal it and one that masks it again. The full value reaches the DOM only once revealed; the masked form is read by a label instead of its asterisks. maskPhone masks a Korean mobile number. Look owned in Vanilla CSS.",
+      "registryDependencies": [
+        "@sando-ui/icons",
+        "@sando-ui/styles",
+        "@sando-ui/button"
+      ]
+    },
+    {
+      "name": "order-line",
+      "type": "registry:ui",
+      "title": "OrderLine",
+      "description": "One line of an order: the item's name, its chosen options, any discounts, the price with an optional struck original, and the actions that change it (a quantity stepper, change options, remove). Read-only for a mirror or a payment detail, muted for an earlier round. Selection belongs to the GridList the lines sit in.",
+      "registryDependencies": [
+        "@sando-ui/icons",
+        "@sando-ui/styles",
+        "@sando-ui/button",
+        "@sando-ui/number-field",
+        "@sando-ui/control-size"
+      ]
+    },
+    {
+      "name": "product-tile",
+      "type": "registry:ui",
+      "title": "ProductTile",
+      "description": "A product in an order grid. The whole tile is the press target: name and price, or a square photo above them, an owner colour on the start edge, a badge after the price, a sold-out state, and in edit mode a remove control in its corner. ProductTileAdd is the dashed empty position. Renders a react-aria-components Button; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/icons",
+        "@sando-ui/styles",
+        "@sando-ui/badge",
+        "@sando-ui/button"
+      ]
+    },
+    {
+      "name": "message-preview",
+      "type": "registry:ui",
+      "title": "MessagePreview",
+      "description": "A picture of a message the store will send through another channel, shown beside the form that composes it: a channel band in the caller's channel colour, an optional hero picture and title, the sender, a rule, the message with its line breaks kept, and a closing note. Not interactive; scrolls when long. Look owned in Vanilla CSS.",
+      "registryDependencies": [
+        "@sando-ui/styles",
+        "@sando-ui/separator",
+        "@sando-ui/scroll-area"
+      ]
+    },
+    {
+      "name": "use-reduced-motion",
+      "type": "registry:lib",
+      "title": "useReducedMotion",
+      "description": "A hook that is true while the person asks for reduced motion (prefers-reduced-motion: reduce), and on the server. Shared by the units that animate content: Chart and Marquee."
+    },
+    {
+      "name": "control-size",
+      "type": "registry:lib",
+      "title": "controlSize",
+      "description": "The five sizes a control takes, and the three-size type role each one sets its text in. Shared by every control that takes x-small to x-large."
+    },
+    {
+      "name": "resolve-offset",
+      "type": "registry:lib",
+      "title": "resolveOffset",
+      "description": "Reads an overlay's stand-off token off the document root as the number of pixels React Aria's offset prop takes. Shared by the overlays that hang off a trigger: Popover and Tooltip."
+    },
+    {
+      "name": "use-scroll-clearance",
+      "type": "registry:lib",
+      "title": "useScrollClearance",
+      "description": "A hook that keeps focus clear of a bar pinned over the top or bottom edge of the viewport (WCAG 2.4.11), by setting the document's scroll padding on that edge to the bar's reach. Shared by SiteHeader, DockedBar, BottomNav, FloatingBar and FloatingToolbar."
+    },
+    {
+      "name": "chart",
+      "type": "registry:ui",
+      "title": "Chart",
+      "description": "A line, bar or donut chart over categories with its title, a legend and the same data as a table read in its place. Composes Recharts; the look is Cmp tokens passed as custom properties. Colour is never the only cue: line series have their own stroke pattern, slices direct labels.",
+      "dependencies": [
+        "recharts"
+      ],
+      "registryDependencies": [
+        "@sando-ui/styles",
+        "@sando-ui/use-reduced-motion"
+      ]
+    },
+    {
+      "name": "time-grid",
+      "type": "registry:ui",
+      "title": "TimeGrid",
+      "description": "A day of bookings on a time axis, one column per staff member: hour rows down a gutter, each booking a block tinted by its product colour whose top and height are its start and length, overlapping bookings side by side, and a current-time line. Each booking renders a react-aria-components Button named with its time; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/styles",
+        "@sando-ui/scroll-area"
+      ]
+    },
+    {
+      "name": "table-tile",
+      "type": "registry:ui",
+      "title": "TableTile",
+      "description": "One table on a floor map, the whole tile the press target. Empty: the name inside an edge in the zone's colour. Seated: filled in that colour with the name, the time since seating, the first items with quantities, how many more, and the total. Renders a react-aria-components Button; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "scan-frame",
+      "type": "registry:ui",
+      "title": "ScanFrame",
+      "description": "The overlay that frames a live camera for scanning: a dimmed surround, a clear square, wide or circular window with corner brackets or a ring, and a politely announced caption. The consumer passes the camera feed as children. Look owned in Vanilla CSS.",
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "signature-pad",
+      "type": "registry:ui",
+      "title": "SignaturePad",
+      "description": "A drawing surface for a handwritten signature. Strokes are kept in 0-1 coordinates so a paired display can mirror the same signature at another size; a clear button empties it. Behavior owned in React with pointer events on an inline SVG; look owned in Vanilla CSS.",
+      "registryDependencies": [
+        "@sando-ui/styles",
+        "@sando-ui/button"
+      ]
+    },
+    {
+      "name": "numeric-keypad",
+      "type": "registry:ui",
+      "title": "NumericKeypad",
+      "description": "A 3×4 digit keypad for amounts, phone numbers and PINs: digits only, a `00` key for amounts and an empty slot otherwise, delete always bottom-right, left-to-right in every locale. One tab stop; arrow keys move linearly through the keys (Left/Right only, no Up/Down). Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/icons",
+        "@sando-ui/styles",
+        "@sando-ui/control-size"
+      ]
+    },
+    {
+      "name": "popover",
+      "type": "registry:ui",
+      "title": "Popover",
+      "description": "A triggerable floating panel with optional arrow. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/styles",
+        "@sando-ui/resolve-offset"
+      ]
+    },
+    {
+      "name": "pagination",
+      "type": "registry:ui",
+      "title": "Pagination",
+      "description": "A controlled page navigator with previous, next, page, and ellipsis controls. No headless primitive; built and owned entirely in Vanilla CSS.",
+      "registryDependencies": [
+        "@sando-ui/icons",
+        "@sando-ui/styles",
+        "@sando-ui/button"
+      ]
+    },
+    {
+      "name": "progress-circle",
+      "type": "registry:ui",
+      "title": "ProgressCircle",
+      "description": "A determinate progress ring, for progress where a bar does not fit. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "progress-bar",
+      "type": "registry:ui",
+      "title": "Progress Bar",
+      "description": "A labeled indicator for determinate or indeterminate progress. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "progress-marker",
+      "type": "registry:ui",
+      "title": "Progress Marker",
+      "description": "A decorative ring or dot for one stage in a discrete progress sequence. No headless primitive; built and owned entirely in Vanilla CSS.",
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "progress-connector",
+      "type": "registry:ui",
+      "title": "Progress Connector",
+      "description": "A decorative completion line between discrete progress markers. No headless primitive; built and owned entirely in Vanilla CSS.",
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "radio-group",
+      "type": "registry:ui",
+      "title": "Radio Group",
+      "description": "A labeled group for choosing one radio option. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "rating",
+      "type": "registry:ui",
+      "title": "Rating",
+      "description": "A star rating: an input built on a radio group, one radio per star, or a read-only picture that can show a fraction. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/icons",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "pin-field",
+      "type": "registry:ui",
+      "title": "Pin Field",
+      "description": "A code entered into separate cells (a one-time code, a PIN): one real text field under cells drawn for the eye, so paste, one-time-code autofill and screen readers work as on any field. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/styles",
+        "@sando-ui/control-size"
+      ]
+    },
+    {
+      "name": "search-field",
+      "type": "registry:ui",
+      "title": "Search Field",
+      "description": "A labeled search input with a clear control. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/icons",
+        "@sando-ui/styles",
+        "@sando-ui/control-size"
+      ]
+    },
+    {
+      "name": "field-button",
+      "type": "registry:ui",
+      "title": "FieldButton",
+      "description": "A button that shows the current choice (a label, a value, or both, with an optional count) and a trailing chevron, and opens a sheet, menu or popover. Rectangle or capsule; hugs its content unless isFullWidth.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/badge",
+        "@sando-ui/icons",
+        "@sando-ui/styles",
+        "@sando-ui/control-size"
+      ]
+    },
+    {
+      "name": "step-ladder",
+      "type": "registry:ui",
+      "title": "StepLadder",
+      "description": "A sheet of graph paper for placing several things on one numbered scale: the columns are the steps, each row picks one, and its marked cells show where it sits. Each row is a horizontal radio group; behavior borrowed from react-aria-components, look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "select",
+      "type": "registry:ui",
+      "title": "Select",
+      "description": "A labeled picker for selecting one list option. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/popover",
+        "@sando-ui/icons",
+        "@sando-ui/styles",
+        "@sando-ui/control-size"
+      ]
+    },
+    {
+      "name": "list-box",
+      "type": "registry:ui",
+      "title": "ListBox",
+      "description": "An always-visible selectable list with optional sections. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/icons",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "resize-handle",
+      "type": "registry:ui",
+      "title": "ResizeHandle",
+      "description": "A draggable edge between two panes that sets the size of one, by pointer or arrow keys (WAI-ARIA window splitter). Look owned in Vanilla CSS.",
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "spacing-field",
+      "type": "registry:ui",
+      "title": "SpacingField",
+      "description": "A box-model editor: an optional margin ring around a padding ring around the element, each side a number or a named option, with a toggle that links the four sides. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/popover",
+        "@sando-ui/select",
+        "@sando-ui/icons",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "band",
+      "type": "registry:ui",
+      "title": "Band",
+      "description": "A page section painted edge to edge of its frame, its content kept on the page's column.",
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "separator",
+      "type": "registry:ui",
+      "title": "Separator",
+      "description": "A horizontal or vertical divider between sections. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "timeline",
+      "type": "registry:ui",
+      "title": "Timeline",
+      "description": "An ordered list whose items are joined by a rail between their marks (an Avatar, an icon or a status dot). Semantic HTML with no headless primitive; look owned in Vanilla CSS.",
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "skeleton",
+      "type": "registry:ui",
+      "title": "Skeleton",
+      "description": "A placeholder block for loading content. No headless primitive; built and owned entirely in Vanilla CSS.",
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "slider",
+      "type": "registry:ui",
+      "title": "Slider",
+      "description": "A labeled control for selecting a numeric value on a track. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/number-field",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "spinner",
+      "type": "registry:ui",
+      "title": "Spinner",
+      "description": "A status indicator for loading work. No headless primitive; built and owned entirely in Vanilla CSS.",
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "toast",
+      "type": "registry:ui",
+      "title": "Toast",
+      "description": "Imperative notifications via a module queue: mount one Toaster, call toast() anywhere. No headless primitive (react-aria's Toast is UNSTABLE_); behavior and look owned in TS + Vanilla CSS.",
+      "registryDependencies": [
+        "@sando-ui/button",
+        "@sando-ui/featured-icon",
+        "@sando-ui/icons",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "switch",
+      "type": "registry:ui",
+      "title": "Switch",
+      "description": "A labeled control for toggling an on or off state. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "table",
+      "type": "registry:ui",
+      "title": "Table",
+      "description": "A structured table with header, row, column, and cell parts. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/icons",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "tabs",
+      "type": "registry:ui",
+      "title": "Tabs",
+      "description": "A tabbed interface with tab list and panels. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/icons",
+        "@sando-ui/styles",
+        "@sando-ui/scroll-area",
+        "@sando-ui/control-size"
+      ]
+    },
+    {
+      "name": "tag-group",
+      "type": "registry:ui",
+      "title": "Tag Group",
+      "description": "A labeled collection of selectable or removable tags. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/icons",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "text",
+      "type": "registry:ui",
+      "title": "Text",
+      "description": "A run of type set in one of the system's type roles (display, headline, title, subtitle, body, label, caption, code) at one of three sizes, rendered as the element the page's outline needs. Behavior borrowed from react-aria-components (it answers a TextContext slot); the role class carries the whole look, and colour is inherited.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "text-field",
+      "type": "registry:ui",
+      "title": "Text Field",
+      "description": "A labeled text input with description and validation messaging. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/styles",
+        "@sando-ui/control-size"
+      ]
+    },
+    {
+      "name": "textarea",
+      "type": "registry:ui",
+      "title": "Textarea",
+      "description": "A labeled multiline text input with validation messaging. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "toggle-button-group",
+      "type": "registry:ui",
+      "title": "Toggle Button Group",
+      "description": "A grouped set of toggleable button controls. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/icons",
+        "@sando-ui/styles",
+        "@sando-ui/control-size"
+      ]
+    },
+    {
+      "name": "contextual-help",
+      "type": "registry:ui",
+      "title": "ContextualHelp",
+      "description": "A small icon button that opens a popover holding a note about the field beside it. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/button",
+        "@sando-ui/popover",
+        "@sando-ui/icons",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "tooltip",
+      "type": "registry:ui",
+      "title": "Tooltip",
+      "description": "A delayed floating label for an anchor element. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/styles",
+        "@sando-ui/resolve-offset"
+      ]
+    },
+    {
+      "name": "date-field",
+      "type": "registry:ui",
+      "title": "Date Field",
+      "description": "A standalone segmented date input, no popover or calendar. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components",
+        "@internationalized/date"
+      ],
+      "registryDependencies": [
+        "@sando-ui/styles",
+        "@sando-ui/control-size"
+      ]
+    },
+    {
+      "name": "time-field",
+      "type": "registry:ui",
+      "title": "Time Field",
+      "description": "A standalone segmented time input. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components",
+        "@internationalized/date"
+      ],
+      "registryDependencies": [
+        "@sando-ui/styles",
+        "@sando-ui/control-size"
+      ]
+    },
+    {
+      "name": "range-calendar",
+      "type": "registry:ui",
+      "title": "Range Calendar",
+      "description": "A month grid for selecting a date range. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components",
+        "@internationalized/date"
+      ],
+      "registryDependencies": [
+        "@sando-ui/button",
+        "@sando-ui/select",
+        "@sando-ui/icons",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "date-range-picker",
+      "type": "registry:ui",
+      "title": "Date Range Picker",
+      "description": "A labeled field for picking a start and end date, combining two segmented date inputs with a Range Calendar popover. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components",
+        "@internationalized/date"
+      ],
+      "registryDependencies": [
+        "@sando-ui/popover",
+        "@sando-ui/range-calendar",
+        "@sando-ui/icons",
+        "@sando-ui/styles",
+        "@sando-ui/control-size"
+      ]
+    },
+    {
+      "name": "checkbox-group",
+      "type": "registry:ui",
+      "title": "Checkbox Group",
+      "description": "A labeled group of checkboxes with shared validation. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/styles",
+        "@sando-ui/checkbox"
+      ]
+    },
+    {
+      "name": "combo-box",
+      "type": "registry:ui",
+      "title": "Combo Box",
+      "description": "An editable text input with a filterable option list. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/popover",
+        "@sando-ui/icons",
+        "@sando-ui/styles",
+        "@sando-ui/control-size"
+      ]
+    },
+    {
+      "name": "grid-list",
+      "type": "registry:ui",
+      "title": "Grid List",
+      "description": "A selectable list of full-row items. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/checkbox",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "scroll-area",
+      "type": "registry:ui",
+      "title": "Scroll Area",
+      "description": "A dependency-free scroll container with styled native scrollbars. No headless primitive; built and owned entirely in Vanilla CSS.",
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "drop-indicator",
+      "type": "registry:ui",
+      "title": "Drop Indicator",
+      "description": "A drop-position marker rendered between items in a draggable collection (pass into useDragAndDrop's renderDropIndicator). Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "toolbar",
+      "type": "registry:ui",
+      "title": "Toolbar",
+      "description": "A roving-tabindex grouping container for a row or column of controls. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/separator",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "meter",
+      "type": "registry:ui",
+      "title": "Meter",
+      "description": "A determinate indicator of capacity used out of a known total. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "drop-zone",
+      "type": "registry:ui",
+      "title": "Drop Zone",
+      "description": "A droppable area that highlights while a drag is over it. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "featured-icon",
+      "type": "registry:ui",
+      "title": "Featured Icon",
+      "description": "A rounded neutral plate holding one icon glyph. Owns geometry only and sets no colour, so the glyph inherits its host's foreground. No headless primitive; built and owned entirely in Vanilla CSS.",
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "file-trigger",
+      "type": "registry:ui",
+      "title": "File Trigger",
+      "description": "A behavior-only wrapper that opens the OS file picker from a child button. Behavior borrowed from react-aria-components; no owned CSS (no wrapper DOM to style).",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "tree",
+      "type": "registry:ui",
+      "title": "Tree",
+      "description": "A hierarchical expandable list of items. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/icons",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "autocomplete",
+      "type": "registry:ui",
+      "title": "Autocomplete",
+      "description": "A behavior-only context wrapper that adds live filtering to a paired search field and collection (e.g. a command menu). Behavior borrowed from react-aria-components; no owned CSS (no wrapper DOM to style).",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "keyboard",
+      "type": "registry:ui",
+      "title": "Keyboard",
+      "description": "A small badge for displaying a keyboard shortcut hint. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "form",
+      "type": "registry:ui",
+      "title": "Form",
+      "description": "A form wrapper that propagates shared and server-side validation errors to its fields. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "hero",
+      "type": "registry:block",
+      "title": "Hero",
+      "description": "A centered full-width marketing introduction with a headline, supporting copy, responsive actions, and optional media.",
+      "registryDependencies": [
+        "@sando-ui/container",
+        "@sando-ui/stack",
+        "@sando-ui/media",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "feature-grid",
+      "type": "registry:block",
+      "title": "Feature Grid",
+      "description": "A responsive full-width grid of feature cards with optional icons, titles, and supporting descriptions.",
+      "registryDependencies": [
+        "@sando-ui/card",
+        "@sando-ui/grid",
+        "@sando-ui/responsive",
+        "@sando-ui/stack",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "pricing-table",
+      "type": "registry:block",
+      "title": "Pricing Table",
+      "description": "A responsive full-width plan comparison with feature lists, an optional popular badge, and plan selection actions.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/card",
+        "@sando-ui/button",
+        "@sando-ui/badge",
+        "@sando-ui/grid",
+        "@sando-ui/stack",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "cta-section",
+      "type": "registry:block",
+      "title": "CTA Section",
+      "description": "A centered full-width closing call-to-action section with optional supporting copy and consumer-supplied actions.",
+      "registryDependencies": [
+        "@sando-ui/container",
+        "@sando-ui/stack",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "testimonial-grid",
+      "type": "registry:block",
+      "title": "Testimonial Grid",
+      "description": "A responsive full-width grid of customer quotes and attribution cards.",
+      "registryDependencies": [
+        "@sando-ui/card",
+        "@sando-ui/avatar",
+        "@sando-ui/grid",
+        "@sando-ui/responsive",
+        "@sando-ui/stack",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "faq-accordion",
+      "type": "registry:block",
+      "title": "FAQ Accordion",
+      "description": "A readable, centered list of frequently asked questions composed from the Accordion element.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/accordion",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "logo-cloud",
+      "type": "registry:block",
+      "title": "Logo Cloud",
+      "description": "A responsive full-width grid for consumer-supplied partner logo nodes with an optional heading.",
+      "registryDependencies": [
+        "@sando-ui/grid",
+        "@sando-ui/responsive",
+        "@sando-ui/stack",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "newsletter-signup",
+      "type": "registry:block",
+      "title": "Newsletter Signup",
+      "description": "A compact responsive email capture form with pending and form-level error states.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/form",
+        "@sando-ui/text-field",
+        "@sando-ui/button",
+        "@sando-ui/stack",
+        "@sando-ui/alert",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "product-card",
+      "type": "registry:block",
+      "title": "Product Card",
+      "description": "A product preview card with optional media and badge, price, and a primary add-to-cart action.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/card",
+        "@sando-ui/button",
+        "@sando-ui/badge",
+        "@sando-ui/aspect-ratio",
+        "@sando-ui/stack",
+        "@sando-ui/media",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "product-grid",
+      "type": "registry:block",
+      "title": "Product Grid",
+      "description": "A responsive full-width grid of reusable product cards.",
+      "registryDependencies": [
+        "@sando-ui/grid",
+        "@sando-ui/responsive",
+        "@sando-ui/product-card",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "cart-summary",
+      "type": "registry:block",
+      "title": "Cart Summary",
+      "description": "A compact cart breakdown with line items, subtotal, optional shipping, total, and checkout action.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/button",
+        "@sando-ui/separator",
+        "@sando-ui/stack",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "order-summary",
+      "type": "registry:block",
+      "title": "Order Summary",
+      "description": "A compact read-only order breakdown with identifier, status, line values, and total.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/badge",
+        "@sando-ui/separator",
+        "@sando-ui/stack",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "profile-card",
+      "type": "registry:block",
+      "title": "Profile Card",
+      "description": "A compact user summary card with avatar, role, optional stats, and consumer-supplied actions.",
+      "registryDependencies": [
+        "@sando-ui/avatar",
+        "@sando-ui/card",
+        "@sando-ui/stack",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "avatar-group",
+      "type": "registry:block",
+      "title": "Avatar Group",
+      "description": "An overlapping group of avatars with a compact overflow count.",
+      "registryDependencies": [
+        "@sando-ui/avatar",
+        "@sando-ui/stack",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "notification-menu",
+      "type": "registry:block",
+      "title": "Notification Menu",
+      "description": "A notification trigger with an unread badge that opens a rich notification list popover.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/badge",
+        "@sando-ui/button",
+        "@sando-ui/popover",
+        "@sando-ui/notification-list",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "members-list",
+      "type": "registry:block",
+      "title": "Members List",
+      "description": "A full-width team member table with avatars, role badges, and row action menus.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/avatar",
+        "@sando-ui/badge",
+        "@sando-ui/button",
+        "@sando-ui/menu",
+        "@sando-ui/scroll-area",
+        "@sando-ui/stack",
+        "@sando-ui/styles",
+        "@sando-ui/table"
+      ]
+    },
+    {
+      "name": "invite-form",
+      "type": "registry:block",
+      "title": "Invite Form",
+      "description": "A responsive email invitation form with role selection, pending state, and form-level errors.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/alert",
+        "@sando-ui/button",
+        "@sando-ui/form",
+        "@sando-ui/select",
+        "@sando-ui/stack",
+        "@sando-ui/text-field",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "plan-selector",
+      "type": "registry:block",
+      "title": "Plan Selector",
+      "description": "A responsive set of in-app subscription plan cards with current and featured states.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/badge",
+        "@sando-ui/button",
+        "@sando-ui/card",
+        "@sando-ui/grid",
+        "@sando-ui/stack",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "command-menu",
+      "type": "registry:block",
+      "title": "Command Menu",
+      "description": "A filterable command palette with controlled or internal open state and a global Command/Ctrl-K shortcut.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/autocomplete",
+        "@sando-ui/dialog",
+        "@sando-ui/keyboard",
+        "@sando-ui/menu",
+        "@sando-ui/search-field",
+        "@sando-ui/stack",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "search-list",
+      "type": "registry:block",
+      "title": "Search List",
+      "description": "A searchable list of rich rows (leading visual + title + description) — Autocomplete filtering over a GridList, for a directory, resource picker, or result list.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/autocomplete",
+        "@sando-ui/grid-list",
+        "@sando-ui/search-field",
+        "@sando-ui/stack",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "sequence-editor",
+      "type": "registry:block",
+      "title": "Sequence Editor",
+      "description": "An ordered list whose order is the value — rows are added, removed, dragged or keyboard-moved, and edited in place through a caller-supplied row editor.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/button",
+        "@sando-ui/drop-indicator",
+        "@sando-ui/grid-list",
+        "@sando-ui/stack",
+        "@sando-ui/icons",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "multi-select-list",
+      "type": "registry:block",
+      "title": "Multi-Select List",
+      "description": "A searchable multi-select panel — Autocomplete filtering over a ListBox in multiple selection mode, for a filter, tag, or audience selector (an always-open panel, not a dropdown).",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/autocomplete",
+        "@sando-ui/list-box",
+        "@sando-ui/search-field",
+        "@sando-ui/stack",
+        "@sando-ui/styles",
+        "@sando-ui/indent",
+        "@sando-ui/scroll-area"
+      ]
+    },
+    {
+      "name": "kanban-board",
+      "type": "registry:block",
+      "title": "Kanban Board",
+      "description": "A horizontally scrolling board of status columns and actionable task cards.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/badge",
+        "@sando-ui/button",
+        "@sando-ui/card",
+        "@sando-ui/scroll-area",
+        "@sando-ui/stack",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "comment-thread",
+      "type": "registry:block",
+      "title": "Comment Thread",
+      "description": "A threaded comment list with author details and a reply composer.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/avatar",
+        "@sando-ui/button",
+        "@sando-ui/form",
+        "@sando-ui/separator",
+        "@sando-ui/stack",
+        "@sando-ui/textarea",
+        "@sando-ui/skeleton-list",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "chat-window",
+      "type": "registry:block",
+      "title": "Chat Window",
+      "description": "A bounded message feed with own-message alignment and a responsive composer.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/avatar",
+        "@sando-ui/button",
+        "@sando-ui/form",
+        "@sando-ui/scroll-area",
+        "@sando-ui/stack",
+        "@sando-ui/styles",
+        "@sando-ui/text-field"
+      ]
+    },
+    {
+      "name": "task-checklist",
+      "type": "registry:block",
+      "title": "Task Checklist",
+      "description": "A checkable task list with completion progress and consumer-controlled task state.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/checkbox",
+        "@sando-ui/progress-bar",
+        "@sando-ui/stack",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "calendar-view",
+      "type": "registry:block",
+      "title": "Calendar View",
+      "description": "A responsive month calendar paired with the selected day's agenda.",
+      "dependencies": [
+        "react-aria-components",
+        "@internationalized/date"
+      ],
+      "registryDependencies": [
+        "@sando-ui/calendar",
+        "@sando-ui/separator",
+        "@sando-ui/stack",
+        "@sando-ui/icons",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "agenda-list",
+      "type": "registry:block",
+      "title": "Agenda List",
+      "description": "A full-width agenda of time-ordered events grouped by day or period.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/badge",
+        "@sando-ui/separator",
+        "@sando-ui/stack",
+        "@sando-ui/skeleton-list",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "two-factor-setup",
+      "type": "registry:block",
+      "title": "Two-Factor Setup",
+      "description": "A two-factor authentication setup form with QR and manual secret display, code verification, pending state, and errors.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/alert",
+        "@sando-ui/button",
+        "@sando-ui/form",
+        "@sando-ui/stack",
+        "@sando-ui/text-field",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "sessions-list",
+      "type": "registry:block",
+      "title": "Sessions List",
+      "description": "A full-width responsive list of active device sessions with current-device status and revoke actions.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/badge",
+        "@sando-ui/button",
+        "@sando-ui/card",
+        "@sando-ui/stack",
+        "@sando-ui/skeleton-list",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "api-key-manager",
+      "type": "registry:block",
+      "title": "API Key Manager",
+      "description": "A full-width API key manager with labeled key creation, masked key details, and revoke actions.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/badge",
+        "@sando-ui/button",
+        "@sando-ui/form",
+        "@sando-ui/separator",
+        "@sando-ui/stack",
+        "@sando-ui/text-field",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "integrations-list",
+      "type": "registry:block",
+      "title": "Integrations List",
+      "description": "A responsive grid of connectable service cards with consumer-controlled connection switches.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/card",
+        "@sando-ui/grid",
+        "@sando-ui/responsive",
+        "@sando-ui/stack",
+        "@sando-ui/switch",
+        "@sando-ui/skeleton-list",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "social-login",
+      "type": "registry:block",
+      "title": "Social Login",
+      "description": "Sign-in through other services: one Button per provider in the provider's own colour and mark, supplied by the consumer, then optionally \"or\" and another way in.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/button",
+        "@sando-ui/separator",
+        "@sando-ui/stack",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "connected-accounts",
+      "type": "registry:block",
+      "title": "Connected Accounts",
+      "description": "A full-width list of linked third-party identities with connect and disconnect actions.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/badge",
+        "@sando-ui/button",
+        "@sando-ui/card",
+        "@sando-ui/separator",
+        "@sando-ui/stack",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "danger-zone",
+      "type": "registry:block",
+      "title": "Danger Zone",
+      "description": "A full-width section of destructive account actions, each gated by an alert dialog.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/confirm-dialog",
+        "@sando-ui/button",
+        "@sando-ui/separator",
+        "@sando-ui/stack",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "avatar-uploader",
+      "type": "registry:block",
+      "title": "Avatar Uploader",
+      "description": "An avatar preview with image upload and conditional removal actions.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/avatar",
+        "@sando-ui/button",
+        "@sando-ui/file-trigger",
+        "@sando-ui/stack",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "notification-preferences",
+      "type": "registry:block",
+      "title": "Notification Preferences",
+      "description": "A full-width list of consumer-controlled notification preference switches.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/indent",
+        "@sando-ui/separator",
+        "@sando-ui/stack",
+        "@sando-ui/switch",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "gallery",
+      "type": "registry:block",
+      "title": "Gallery",
+      "description": "An image gallery with two layouts: showcase (main image + selectable thumbnails) and grid (tiles that open a lightbox). Composed from Button, Stack, Grid, and Dialog.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/button",
+        "@sando-ui/stack",
+        "@sando-ui/grid",
+        "@sando-ui/dialog",
+        "@sando-ui/aspect-ratio",
+        "@sando-ui/media",
+        "@sando-ui/icons",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "range-filter-sheet",
+      "type": "registry:block",
+      "title": "Range Filter Sheet",
+      "description": "A sheet that narrows a list to a numeric range: a range slider on a sunken panel, named presets that each set the range in one press, and a footer that resets the range or shows the results. A bottom sheet on a phone, a centred panel on a wide screen. Composed from Drawer, Card, Slider, RadioGroup, Button, and Stack.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/drawer",
+        "@sando-ui/card",
+        "@sando-ui/slider",
+        "@sando-ui/radio-group",
+        "@sando-ui/button",
+        "@sando-ui/stack",
+        "@sando-ui/icons",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "quick-view",
+      "type": "registry:block",
+      "title": "Quick View",
+      "description": "A responsive product preview modal with a gallery, product details, and an add-to-cart action.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/dialog",
+        "@sando-ui/button",
+        "@sando-ui/stack",
+        "@sando-ui/gallery",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "review-list",
+      "type": "registry:block",
+      "title": "Review List",
+      "description": "A separated list of customer reviews with avatars, dates, and five-star rating badges.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/avatar",
+        "@sando-ui/rating",
+        "@sando-ui/separator",
+        "@sando-ui/skeleton-list",
+        "@sando-ui/stack",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "review-form",
+      "type": "registry:block",
+      "title": "Review Form",
+      "description": "A form for writing a product review: a star score, a title and the review text, with submit and form-level error states.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/form",
+        "@sando-ui/rating",
+        "@sando-ui/text-field",
+        "@sando-ui/textarea",
+        "@sando-ui/button",
+        "@sando-ui/stack",
+        "@sando-ui/alert",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "rating-summary",
+      "type": "registry:block",
+      "title": "Rating Summary",
+      "description": "A responsive average rating and five-to-one-star review distribution.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/meter",
+        "@sando-ui/rating",
+        "@sando-ui/stack",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "coupon-input",
+      "type": "registry:block",
+      "title": "Coupon Input",
+      "description": "A responsive promo-code form with a consumer-controlled applied and removable state.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/badge",
+        "@sando-ui/button",
+        "@sando-ui/form",
+        "@sando-ui/separator",
+        "@sando-ui/stack",
+        "@sando-ui/text-field",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "order-tracker",
+      "type": "registry:block",
+      "title": "Order Tracker",
+      "description": "A self-contained horizontal tracker for ordered shipping-status steps.",
+      "registryDependencies": [
+        "@sando-ui/progress-connector",
+        "@sando-ui/progress-marker",
+        "@sando-ui/stack",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "article-header",
+      "type": "registry:block",
+      "title": "Article Header",
+      "description": "A readable article heading with tags, supporting copy, author identity, and publication date.",
+      "registryDependencies": [
+        "@sando-ui/avatar",
+        "@sando-ui/badge",
+        "@sando-ui/stack",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "table-of-contents",
+      "type": "registry:block",
+      "title": "Table of Contents",
+      "description": "An accessible in-page navigation list with heading-level indentation and active-section context.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/link",
+        "@sando-ui/stack",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "code-block",
+      "type": "registry:block",
+      "title": "Code Block",
+      "description": "A dependency-free source display with an optional language label and clipboard action.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/button",
+        "@sando-ui/scroll-area",
+        "@sando-ui/stack",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "steps-how-it-works",
+      "type": "registry:block",
+      "title": "Steps: How It Works",
+      "description": "A responsive sequence of numbered or illustrated explanatory steps.",
+      "registryDependencies": [
+        "@sando-ui/badge",
+        "@sando-ui/card",
+        "@sando-ui/grid",
+        "@sando-ui/responsive",
+        "@sando-ui/stack",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "blog-post-grid",
+      "type": "registry:block",
+      "title": "Blog Post Grid",
+      "description": "A responsive grid of article preview cards with optional media, excerpts, links, and bylines.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/avatar",
+        "@sando-ui/card",
+        "@sando-ui/grid",
+        "@sando-ui/link",
+        "@sando-ui/responsive",
+        "@sando-ui/stack",
+        "@sando-ui/media",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "step-indicator",
+      "type": "registry:block",
+      "title": "Step Indicator",
+      "description": "A full-width horizontal indicator for numbered progress steps.",
+      "registryDependencies": [
+        "@sando-ui/progress-connector",
+        "@sando-ui/progress-marker",
+        "@sando-ui/stack",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "sub-nav",
+      "type": "registry:block",
+      "title": "Sub Nav",
+      "description": "A full-width secondary section navigation with an optional bottom separator.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/link",
+        "@sando-ui/separator",
+        "@sando-ui/stack",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "pagination-bar",
+      "type": "registry:block",
+      "title": "Pagination Bar",
+      "description": "A responsive results range summary paired with page navigation.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/pagination",
+        "@sando-ui/stack",
+        "@sando-ui/styles",
+        "@sando-ui/select"
+      ]
+    },
+    {
+      "name": "split-layout",
+      "type": "registry:ui",
+      "title": "Split Layout",
+      "description": "A responsive two-pane list and detail layout with a configurable list width.",
+      "registryDependencies": [
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "layout-grid",
+      "type": "registry:ui",
+      "title": "Layout Grid",
+      "description": "A responsive page grid: a centered frame (fixed margin per tier, capped at 1440px on desktop) holding a 4/8/12-column grid with gutters. Children placed via LayoutGridItem span.",
+      "registryDependencies": [
+        "@sando-ui/responsive",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "skeleton-list",
+      "type": "registry:block",
+      "title": "Skeleton List",
+      "description": "A full-width set of placeholder rows for list loading states.",
+      "registryDependencies": [
+        "@sando-ui/skeleton",
+        "@sando-ui/stack",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "loading-overlay",
+      "type": "registry:block",
+      "title": "Loading Overlay",
+      "description": "A loading status overlay positioned over consumer-supplied content.",
+      "registryDependencies": [
+        "@sando-ui/spinner",
+        "@sando-ui/stack",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "inline-edit",
+      "type": "registry:block",
+      "title": "Inline Edit",
+      "description": "A compact text value that switches between display and editable states.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/button",
+        "@sando-ui/stack",
+        "@sando-ui/text-field",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "upgrade-prompt",
+      "type": "registry:block",
+      "title": "Upgrade Prompt",
+      "description": "An upsell card with plan badge, benefits, and an upgrade action.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/badge",
+        "@sando-ui/button",
+        "@sando-ui/card",
+        "@sando-ui/stack",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "maintenance-page",
+      "type": "registry:block",
+      "title": "Maintenance Page",
+      "description": "A full-screen centered maintenance or coming-soon state.",
+      "registryDependencies": [
+        "@sando-ui/container",
+        "@sando-ui/stack",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "onboarding-checklist",
+      "type": "registry:block",
+      "title": "Onboarding Checklist",
+      "description": "A getting-started checklist with progress and per-step actions.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/button",
+        "@sando-ui/card",
+        "@sando-ui/checkbox",
+        "@sando-ui/progress-bar",
+        "@sando-ui/stack",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "stats-band",
+      "type": "registry:block",
+      "title": "Stats Band",
+      "description": "A full-width responsive band of headline marketing metrics.",
+      "registryDependencies": [
+        "@sando-ui/grid",
+        "@sando-ui/responsive",
+        "@sando-ui/stack",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "team-grid",
+      "type": "registry:block",
+      "title": "Team Grid",
+      "description": "A responsive grid of centered team member cards with a portrait (or initials avatar), roles, and biographies.",
+      "registryDependencies": [
+        "@sando-ui/aspect-ratio",
+        "@sando-ui/avatar",
+        "@sando-ui/card",
+        "@sando-ui/grid",
+        "@sando-ui/responsive",
+        "@sando-ui/stack",
+        "@sando-ui/media",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "comparison-table",
+      "type": "registry:block",
+      "title": "Comparison Table",
+      "description": "A full-width feature comparison matrix for marketing plans.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/badge",
+        "@sando-ui/scroll-area",
+        "@sando-ui/stack",
+        "@sando-ui/styles",
+        "@sando-ui/table"
+      ]
+    },
+    {
+      "name": "bento-grid",
+      "type": "registry:block",
+      "title": "Bento Grid",
+      "description": "A responsive asymmetric marketing feature grid with variable card spans.",
+      "registryDependencies": [
+        "@sando-ui/card",
+        "@sando-ui/stack",
+        "@sando-ui/media",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "contact-split",
+      "type": "registry:block",
+      "title": "Contact Split",
+      "description": "A responsive contact section pairing a message form with contact information.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/button",
+        "@sando-ui/form",
+        "@sando-ui/grid",
+        "@sando-ui/stack",
+        "@sando-ui/text-field",
+        "@sando-ui/textarea",
+        "@sando-ui/styles",
+        "@sando-ui/indent"
+      ]
+    },
+    {
+      "name": "social-proof",
+      "type": "registry:block",
+      "title": "Social Proof",
+      "description": "A centered trust section combining a customer quote, author, and wrapping logo row.",
+      "registryDependencies": [
+        "@sando-ui/avatar",
+        "@sando-ui/container",
+        "@sando-ui/stack",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "deal-card",
+      "type": "registry:block",
+      "title": "Deal Card",
+      "description": "A linked device deal with promotional discount, a device render on a plated well and list-price comparison.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/media",
+        "@sando-ui/badge",
+        "@sando-ui/card",
+        "@sando-ui/link",
+        "@sando-ui/text",
+        "@sando-ui/aspect-ratio",
+        "@sando-ui/stack",
+        "@sando-ui/styles"
+      ]
+    },
+    {
+      "name": "plan-card-compact",
+      "type": "registry:block",
+      "title": "Plan Card Compact",
+      "description": "A compact carrier-plan offer with visible benefits and a bottom-aligned price.",
+      "dependencies": [
+        "react-aria-components"
+      ],
+      "registryDependencies": [
+        "@sando-ui/avatar",
+        "@sando-ui/badge",
+        "@sando-ui/card",
+        "@sando-ui/link",
+        "@sando-ui/separator",
+        "@sando-ui/stack",
+        "@sando-ui/styles"
+      ]
+    }
+  ]
+}

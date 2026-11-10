@@ -1,0 +1,27 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "skeleton",
+  "type": "registry:ui",
+  "title": "Skeleton",
+  "description": "A placeholder block for loading content. No headless primitive; built and owned entirely in Vanilla CSS.",
+  "registryDependencies": [
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/components/Skeleton.tsx",
+      "type": "registry:component",
+      "target": "src/components/Skeleton.tsx",
+      "content": "import type { CSSProperties, HTMLAttributes, Ref } from \"react\";\nimport \"./Skeleton.css\";\n\nexport interface SkeletonProps extends Omit<HTMLAttributes<HTMLDivElement>, \"className\"> {\n  /** Box width. When omitted, uses the Cmp-token default (100%). */\n  width?: CSSProperties[\"width\"];\n  /** Box height. When omitted, uses the Cmp-token default (1rem). */\n  height?: CSSProperties[\"height\"];\n  /**\n   * Shape axis. `circle` is for a square placeholder such as an avatar position.\n   *\n   * @default \"rectangle\"\n   */\n  shape?: \"rectangle\" | \"circle\";\n  className?: string;\n  ref?: Ref<HTMLDivElement>;\n}\n\n/**\n * Skeleton — loading placeholder.\n *\n * **Accessibility contract: a skeleton is always `aria-hidden`, and the wrapping container owns\n * the loading announcement.** A screen contains multiple skeletons, so if each announces itself\n * the announcements are duplicated — the same division of responsibility as Spinner's\n * `isDecorative` mode. Therefore there is no separate announcement prop — adding one invites a\n * duplicate announcement.\n *\n * Conversely, **if the wrapper does not provide it, nothing is announced.** `SkeletonList` does,\n * but the workshop demos (`App.tsx`, this component's story) do not — they were left that way only\n * because they are not distributed; if product code does not honor this contract, loading is silent.\n */\nexport function Skeleton({\n  width,\n  height,\n  shape = \"rectangle\",\n  className,\n  style,\n  ...props\n}: SkeletonProps) {\n  // Overlay onto style **only the `width`/`height` values that were passed**. Unconditionally\n  // spreading `{ ...style, width, height }` writes `width: undefined` when the prop is absent,\n  // erasing a consumer-supplied `style={{ width: \"50%\" }}` (React applies undefined as “no value”).\n  const boxStyle: CSSProperties = { ...style };\n  if (width !== undefined) boxStyle.width = width;\n  if (height !== undefined) boxStyle.height = height;\n\n  return (\n    <div\n      {...props}\n      aria-hidden=\"true\"\n      data-shape={shape}\n      style={boxStyle}\n      className={className ? `sd-skeleton ${className}` : \"sd-skeleton\"}\n    />\n  );\n}\n"
+    },
+    {
+      "path": "src/components/Skeleton.css",
+      "type": "registry:component",
+      "target": "src/components/Skeleton.css",
+      "content": ".sd-skeleton {\n  display: block;\n  width: var(--sd-skeleton-width);\n  height: var(--sd-skeleton-height);\n  background: var(--sd-skeleton-background);\n  border-radius: var(--sd-skeleton-radius);\n  corner-shape: superellipse(var(--sd-radius-curve));\n  animation: sd-skeleton-pulse var(--sd-skeleton-animation-duration) ease-in-out infinite;\n}\n\n/* The pill sentinel, not `50%` — on the square box a circle placeholder actually gets, the two\n   are identical, and the token is what Spinner already uses to draw its ring. */\n.sd-skeleton[data-shape=\"circle\"] {\n  border-radius: var(--sd-skeleton-radius-circle);\n  corner-shape: round;\n}\n\n@keyframes sd-skeleton-pulse {\n  0%,\n  100% {\n    opacity: var(--sd-skeleton-opacity);\n  }\n\n  50% {\n    opacity: var(--sd-skeleton-opacity-pulse);\n  }\n}\n\n@media (prefers-reduced-motion: reduce) {\n  .sd-skeleton {\n    animation: none;\n  }\n}\n"
+    }
+  ]
+}

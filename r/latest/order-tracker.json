@@ -1,0 +1,30 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "order-tracker",
+  "type": "registry:block",
+  "title": "Order Tracker",
+  "description": "A self-contained horizontal tracker for ordered shipping-status steps.",
+  "registryDependencies": [
+    "@sando-ui/progress-connector",
+    "@sando-ui/progress-marker",
+    "@sando-ui/stack",
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/OrderTracker.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/OrderTracker.tsx",
+      "content": "// Block (composition) — a self-contained shipping-status tracker.\nimport { ProgressConnector } from \"../components/ProgressConnector\";\nimport { ProgressMarker } from \"../components/ProgressMarker\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./OrderTracker.css\";\n\nexport interface OrderTrackerProps {\n  steps: { label: string; done?: boolean; current?: boolean }[];\n}\n\nexport function OrderTracker({ steps }: OrderTrackerProps) {\n  return (\n    <Stack\n      as=\"ol\"\n      direction={{ small: \"column\", medium: \"row\" }}\n      align={{ medium: \"start\" }}\n      justify={{ medium: \"between\" }}\n      gap=\"none\"\n      className=\"sd-ordertracker\"\n      aria-label=\"Order progress\"\n    >\n      {/* spacing: bridged — each step's connector runs to the next, so any gap cuts it */}\n      {steps.map((step, index) => {\n        const stage = step.current ? \"current\" : step.done ? \"complete\" : \"upcoming\";\n\n        return (\n        <li\n          key={`${step.label}-${index}`}\n          className=\"sd-ordertracker__step\"\n          aria-current={step.current ? \"step\" : undefined}\n        >\n          <div className=\"sd-ordertracker__track\">\n            <ProgressConnector\n              className={\n                index === 0\n                  ? \"sd-ordertracker__connector sd-ordertracker__connector--hidden\"\n                  : \"sd-ordertracker__connector\"\n              }\n              isComplete={index > 0 && Boolean(steps[index - 1]?.done)}\n            />\n            <ProgressMarker variant=\"dot\" stage={stage} />\n            <ProgressConnector\n              className={\n                index === steps.length - 1\n                  ? \"sd-ordertracker__connector sd-ordertracker__connector--hidden\"\n                  : \"sd-ordertracker__connector\"\n              }\n              isComplete={Boolean(step.done)}\n            />\n          </div>\n          {/* `label`: a read-only indicator's name (naming-convention § Typography,\n                row 5). Below the medium rung the steps stack, so a name wraps at full width. */}\n            <span className=\"sd-ordertracker__label sd-type-label-medium\">\n            {step.label}\n            <span className=\"sd-visually-hidden\"> — {statusLabel(stage)}</span>\n          </span>\n        </li>\n        );\n      })}\n    </Stack>\n  );\n}\n\nfunction statusLabel(stage: \"upcoming\" | \"current\" | \"complete\") {\n  if (stage === \"complete\") return \"Complete\";\n  if (stage === \"current\") return \"Current step\";\n  return \"Upcoming\";\n}\n"
+    },
+    {
+      "path": "src/blocks/OrderTracker.css",
+      "type": "registry:component",
+      "target": "src/blocks/OrderTracker.css",
+      "content": "/* OrderTracker.css — arrangement only; marker and connector own the look. */\n.sd-ordertracker {\n  width: 100%;\n  padding: 0;\n  /* Structure, not look: no reset removes list markers, and the item's `display: flex`\n     suppressing them is implicit. Explicit here so a change to the item cannot bring them back. */\n  list-style: none;\n}\n\n.sd-ordertracker__step {\n  /* Mobile-first: below the medium rung the steps STACK, each a row of [track | name], because no\n     type size fits five names across 360px (\"Processing\" is 80px at the label role, 70 at the\n     next one down, against a 66px column) and the harness Chromium hyphenates nothing, so a\n     column layout there could only cut a word. From medium up the steps sit in a row again, each\n     a column of [track / name]. */\n  display: flex;\n  flex: 1 1 0;\n  gap: var(--sd-space-small);\n  min-width: 0;\n}\n\n.sd-ordertracker__track {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n}\n\n.sd-ordertracker__connector {\n  flex: 1 1 0;\n}\n\n.sd-ordertracker__connector--hidden {\n  visibility: hidden;\n}\n\n.sd-ordertracker__label {\n  /* The vertical rail's length between two markers is this padding, twice. A name wraps between\n     words; only a single word wider than the row breaks, rather than overflowing it. */\n  min-width: 0;\n  padding-block: var(--sd-space-small);\n  overflow-wrap: break-word;\n}\n\n@media (min-width: 768px) {\n  .sd-ordertracker__step {\n    flex-direction: column;\n    align-items: center;\n    gap: var(--sd-space-x-small);\n    text-align: center;\n  }\n\n  .sd-ordertracker__track {\n    width: 100%;\n    flex-direction: row;\n  }\n\n  .sd-ordertracker__label {\n    /* `max-width` holds the name to its column (a centred flex item otherwise sizes to its\n       longest word); a word still wider than that breaks rather than overlapping a neighbour. */\n    max-width: 100%;\n    padding-block: 0;\n  }\n}\n"
+    }
+  ]
+}

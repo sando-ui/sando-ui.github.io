@@ -1,0 +1,36 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "command-menu",
+  "type": "registry:block",
+  "title": "Command Menu",
+  "description": "A filterable command palette with controlled or internal open state and a global Command/Ctrl-K shortcut.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/autocomplete",
+    "@sando-ui/dialog",
+    "@sando-ui/keyboard",
+    "@sando-ui/menu",
+    "@sando-ui/search-field",
+    "@sando-ui/stack",
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/CommandMenu.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/CommandMenu.tsx",
+      "content": "// Block (composition) — a filterable command list inside a controlled Dialog overlay.\n// Dialog owns overlay/focus/dismissal; Autocomplete + Menu own filtering and list behavior.\n// The list is a trigger-less Menu — commands are actions (onAction), so the RAC-canonical\n// command-palette collection is Menu, not ListBox; it renders bare (no Popover surface) because\n// the surrounding Dialog already owns the floating surface.\n// The global Command/Ctrl+K shortcut is the only behavior orchestrated by this Block.\nimport { useCallback, useEffect, useState, type ReactNode } from \"react\";\nimport { Autocomplete } from \"../components/Autocomplete\";\nimport { DialogContent, DialogHeader, DialogTitle } from \"../components/Dialog\";\nimport { Keyboard } from \"../components/Keyboard\";\nimport { Menu, MenuItem, MenuSection } from \"../components/Menu\";\nimport { SearchField } from \"../components/SearchField\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./CommandMenu.css\";\n\nexport interface CommandMenuProps {\n  commands: {\n    id: string;\n    label: string;\n    group?: string;\n    keywords?: string;\n    /** A leading glyph, as a design tool's action list marks each command. */\n    icon?: ReactNode;\n    /** The key that runs it outside the menu, shown at the row's end (\"⌘D\"). */\n    shortcut?: string;\n    /** Listed but not runnable now, with `note` saying why (\"Nothing selected\"). */\n    isDisabled?: boolean;\n    note?: string;\n  }[];\n  onAction: (id: string) => void;\n  isOpen?: boolean;\n  onOpenChange?: (open: boolean) => void;\n  /** The dialog's title, which also names the command list. */\n  title?: string;\n  placeholder?: string;\n  enableShortcut?: boolean;\n}\n\nexport function CommandMenu({\n  commands,\n  onAction,\n  isOpen,\n  onOpenChange,\n  title = \"Command menu\",\n  placeholder = \"Type a command or search…\",\n  enableShortcut = true,\n}: CommandMenuProps) {\n  const [internalIsOpen, setInternalIsOpen] = useState(false);\n  const open = isOpen ?? internalIsOpen;\n\n  const handleOpenChange = useCallback(\n    (nextOpen: boolean) => {\n      if (isOpen === undefined) setInternalIsOpen(nextOpen);\n      onOpenChange?.(nextOpen);\n    },\n    [isOpen, onOpenChange],\n  );\n\n  useEffect(() => {\n    if (!enableShortcut) return;\n\n    const handleKeyDown = (event: KeyboardEvent) => {\n      // By the key's place, not its letter: under a Korean input source K reads \"ㅏ\".\n      if ((event.metaKey || event.ctrlKey) && event.code === \"KeyK\") {\n        event.preventDefault();\n        handleOpenChange(!open);\n      }\n    };\n\n    window.addEventListener(\"keydown\", handleKeyDown);\n    return () => window.removeEventListener(\"keydown\", handleKeyDown);\n  }, [enableShortcut, handleOpenChange, open]);\n\n  const handleAction = (id: string) => {\n    onAction(id);\n    handleOpenChange(false);\n  };\n\n  const groups = new Map<string | undefined, typeof commands>();\n  for (const command of commands) {\n    const group = command.group;\n    const items = groups.get(group);\n    if (items) items.push(command);\n    else groups.set(group, [command]);\n  }\n  const hasGroups = commands.some((command) => command.group !== undefined);\n\n  const renderCommand = (command: CommandMenuProps[\"commands\"][number]) => (\n    <MenuItem\n      key={command.id}\n      id={command.id}\n      textValue={[command.label, command.keywords].filter(Boolean).join(\" \")}\n      onAction={() => handleAction(command.id)}\n      icon={command.icon}\n      isDisabled={command.isDisabled}\n      trailing={\n        command.note || command.shortcut ? (\n          <>\n            {command.note && <span className=\"sd-commandmenu__note sd-type-caption-medium\">{command.note}</span>}\n            {command.shortcut && <Keyboard>{command.shortcut}</Keyboard>}\n          </>\n        ) : undefined\n      }\n      className=\"sd-commandmenu__item\"\n    >\n      {command.label}\n    </MenuItem>\n  );\n\n  return (\n    <DialogContent isOpen={open} onOpenChange={handleOpenChange} className=\"sd-commandmenu\"\n      header={\n        <DialogHeader>\n          <DialogTitle>{title}</DialogTitle>\n        </DialogHeader>\n      }\n    >\n      <Autocomplete\n        filter={(textValue, inputValue) =>\n          textValue.toLocaleLowerCase().includes(inputValue.trim().toLocaleLowerCase())\n        }\n      >\n        <Stack gap=\"small\" className=\"sd-commandmenu__layout\">\n          <SearchField\n            aria-label={placeholder}\n            placeholder={placeholder}\n            autoFocus\n            className=\"sd-commandmenu__search\"\n          />\n          <Menu aria-label={title} className=\"sd-commandmenu__list\">\n            {hasGroups\n              ? [...groups].map(([group, groupCommands], index) => (\n                  <MenuSection\n                    key={`command-group-${index}`}\n                    id={`command-group-${index}`}\n                    title={group}\n                    className=\"sd-commandmenu__section\"\n                  >\n                    {groupCommands.map(renderCommand)}\n                  </MenuSection>\n                ))\n              : commands.map(renderCommand)}\n          </Menu>\n        </Stack>\n      </Autocomplete>\n    </DialogContent>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/CommandMenu.css",
+      "type": "registry:component",
+      "target": "src/blocks/CommandMenu.css",
+      "content": "/* CommandMenu.css — .sd-commandmenu (Block)\n   Stack arranges the search field and command list; Dialog, SearchField, and\n   Menu own all chrome and interaction states. This Block defines no tokens.\n\n   Real layout the primitives can't express: the command list scrolls within a\n   bounded height so a long command set never grows the dialog past the viewport\n   (a command palette must stay put and scroll internally). */\n.sd-commandmenu__list {\n  max-height: min(60vh, 24rem);\n  overflow-y: auto;\n}\n\n/* Why a command cannot run now, beside its shortcut: a supporting line, so the muted ink (block-contract.md\n   § 5, a Block's own text takes a Sys text role). */\n.sd-commandmenu__note {\n  color: var(--sd-color-text-muted);\n}\n"
+    }
+  ]
+}

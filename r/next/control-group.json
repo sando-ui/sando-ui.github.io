@@ -1,0 +1,29 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "control-group",
+  "type": "registry:block",
+  "title": "Control Group",
+  "description": "A titled group of controls, spaced so each control reads as its own and the group as one. Composed from Stack.",
+  "registryDependencies": [
+    "@sando-ui/stack",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/ControlGroup.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/ControlGroup.tsx",
+      "content": "// Block (composition) — a titled group of controls, spaced so each control reads as its own and the group as one.\n// Arranges only; composes Stack. The controls are the consumer's (Slider · Select · TextField …).\n//\n// Why a Block and not the consumer's own markup: the theme studio wrote this arrangement out by\n// hand, and a spacing fix had to reach every copy: the helpers got it and the groups written out by\n// hand did not. `studio-contract.md` rule 6 files that as a gap in the\n// system, not in the studio.\n//\n// The gaps are derived, not chosen, by the two laws in `token-contract.md` § By relationship, and\n// they follow `size` because the Slider gap they are derived from does. Controls are\n// parted two rungs over the gap a Slider of that size uses between its own label, track and\n// description (`slider.gap.<size>`: x-small, small, medium), so `medium`, `large`, `x-large`. The\n// title is attached to the controls it names, so it sits at their gap and never tighter. Groups\n// stacked by a consumer part two rungs over that again; at `large` that is past the ladder's last\n// rung, which is why `large` is for a roomy panel with one group, not a stack of them.\nimport { useId, type ReactNode, type Ref } from \"react\";\n\nexport type ControlGroupSize = \"small\" | \"medium\" | \"large\";\n/** The controls' gap at each size: parting, two rungs over `slider.gap.<size>`. */\nconst GAP = { small: \"medium\", medium: \"large\", large: \"x-large\" } as const;\n/** The title, one label rung below the controls' own `label-<size>` (CONTRASTIVE), floored at `small`. */\nconst TITLE = { small: \"small\", medium: \"small\", large: \"medium\" } as const;\nimport { Stack } from \"../layouts/Stack\";\nimport \"./ControlGroup.css\";\n\nexport interface ControlGroupProps {\n  /**\n   * The group's label, rendered as a heading that names the section. Omit it when the group sits\n   * inside something that already carries the title (a `Collapsible` trigger): an empty heading is\n   * a nameless landmark a screen reader announces with nothing to say.\n   */\n  title?: string;\n  /** Heading level for `title`, so the group fits the outline of the page it is placed in. */\n  headingLevel?: 2 | 3 | 4 | 5 | 6;\n  /**\n   * The size of the controls inside, which the group's spacing follows. Pass the size the controls\n   * themselves take; a group of `small` Sliders closes up to `medium` between them.\n   *\n   * @default \"medium\"\n   */\n  size?: ControlGroupSize;\n  /** The controls, one per child. */\n  children: ReactNode;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function ControlGroup({ title, headingLevel = 2, size = \"medium\", children, className, ref }: ControlGroupProps) {\n  const titleId = useId();\n  const Heading = `h${headingLevel}` as const;\n  return (\n    <Stack\n      as=\"section\"\n      ref={ref}\n      direction=\"column\"\n      gap={GAP[size]}\n      aria-labelledby={title ? titleId : undefined}\n      className={className ? `sd-controlgroup ${className}` : \"sd-controlgroup\"}\n    >\n      {/* One rung below the controls' own labels, `label-<size>`: CONTRASTIVE, the two are read\n          together, and a group title at the same size reads as one more control's label with\n          nothing under it. `small` is the floor, where the two share a rung. The role stays `label`\n          because it names a group of controls, not a page section. */}\n      {title && (\n        <>\n          <Heading id={titleId} className={`sd-controlgroup__title sd-type-label-${TITLE[size]}`}>\n            {title}\n          </Heading>\n        </>\n      )}\n      <Stack direction=\"column\" gap={GAP[size]} className=\"sd-controlgroup__controls\">\n        {children}\n      </Stack>\n    </Stack>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/ControlGroup.css",
+      "type": "registry:component",
+      "target": "src/blocks/ControlGroup.css",
+      "content": "/* ControlGroup.css — .sd-controlgroup (Block)\n   Arrangement only: the Block's two gaps (title to controls, control to control) are Stack props\n   in ControlGroup.tsx, and the controls own their own look. The gap between one group and the next\n   is the consumer's, which ControlGroup.tsx's header derives. The one rule here resets the heading's user-agent margin, which would otherwise add to\n   the title gap the arrangement derives. */\n.sd-controlgroup__title {\n  margin: 0;\n}\n"
+    }
+  ]
+}

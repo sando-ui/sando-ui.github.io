@@ -1,0 +1,37 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "api-key-manager",
+  "type": "registry:block",
+  "title": "API Key Manager",
+  "description": "A full-width API key manager with labeled key creation, masked key details, and revoke actions.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/badge",
+    "@sando-ui/button",
+    "@sando-ui/form",
+    "@sando-ui/separator",
+    "@sando-ui/stack",
+    "@sando-ui/text-field",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/ApiKeyManager.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/ApiKeyManager.tsx",
+      "content": "// Block (composition) — API key creation and a responsive list of revocable masked keys.\n// Form controls and status Components own their look; this Block only wires and arranges them.\nimport type { FormEvent, Ref } from \"react\";\nimport { Badge } from \"../components/Badge\";\nimport { Button } from \"../components/Button\";\nimport { Form } from \"../components/Form\";\nimport { Separator } from \"../components/Separator\";\nimport { Stack } from \"../layouts/Stack\";\nimport { TextField } from \"../components/TextField\";\nimport \"./ApiKeyManager.css\";\n\nexport interface ApiKeyManagerProps {\n  keys: {\n    id: string;\n    label: string;\n    maskedKey: string;\n    created?: string;\n  }[];\n  onCreate?: (label: string) => void;\n  onRevoke?: (id: string) => void;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function ApiKeyManager({ keys, onCreate, onRevoke, className, ref }: ApiKeyManagerProps) {\n  const handleCreate = (event: FormEvent<HTMLFormElement>) => {\n    event.preventDefault();\n    const data = new FormData(event.currentTarget);\n    onCreate?.(String(data.get(\"label\") ?? \"\"));\n  };\n\n  return (\n    <Stack\n      as=\"section\"\n      ref={ref}\n      aria-label=\"API keys\"\n      gap=\"medium\"\n      className={className ? `sd-apikeymanager ${className}` : \"sd-apikeymanager\"}\n    >\n      <Form onSubmit={handleCreate}>\n        <Stack\n          direction={{ small: \"column\", medium: \"row\" }}\n          gap=\"small\"\n          align={{ medium: \"end\" }}\n          className=\"sd-apikeymanager__create\"\n        >\n          <TextField\n            className=\"sd-apikeymanager__label-field\"\n            name=\"label\"\n            label=\"Key label\"\n            placeholder=\"Production deployment\"\n            isRequired\n          />\n          <Button type=\"submit\" variant=\"primary\">Create key</Button>\n        </Stack>\n      </Form>\n      <Separator />\n      <Stack gap=\"small\" className=\"sd-apikeymanager__list\">\n        {keys.map((key) => (\n          <Stack\n            key={key.id}\n            direction={{ small: \"column\", medium: \"row\" }}\n            justify=\"between\"\n            align={{ small: \"stretch\", medium: \"center\" }}\n            gap=\"small\"\n            className=\"sd-apikeymanager__row\"\n          >\n            <Stack gap=\"x-small\" className=\"sd-apikeymanager__details\">\n              <Stack direction=\"row\" align=\"center\" gap=\"x-small\" wrap className=\"sd-apikeymanager__head\">\n                <><h3 className=\"sd-apikeymanager__label sd-type-body-medium\">{key.label}</h3></>\n                <Badge>API key</Badge>\n              </Stack>\n              <>\n                <span className=\"sd-apikeymanager__key sd-type-code-medium\">{key.maskedKey}</span>\n              </>\n              {key.created && (\n                <>\n                  <span className=\"sd-apikeymanager__created sd-type-caption-medium\">\n                    Created {key.created}\n                  </span>\n                </>\n              )}\n            </Stack>\n            <Button\n              type=\"button\"\n              variant=\"secondary\"\n              size=\"small\"\n              aria-label={`Revoke ${key.label}`}\n              onPress={() => onRevoke?.(key.id)}\n            >\n              Revoke\n            </Button>\n          </Stack>\n        ))}\n      </Stack>\n    </Stack>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/ApiKeyManager.css",
+      "type": "registry:component",
+      "target": "src/blocks/ApiKeyManager.css",
+      "content": "/* ApiKeyManager.css — .sd-apikeymanager (Block)\n   Arrangement only: the create field fills its row and key rows remain readable when narrow. */\n.sd-apikeymanager {\n  width: 100%;\n}\n\n.sd-apikeymanager__label-field {\n  flex: 1;\n  min-width: 0;\n}\n\n.sd-apikeymanager__row {\n  padding-block: var(--sd-space-small);\n}\n\n.sd-apikeymanager__details {\n  min-width: 0;\n}\n\n.sd-apikeymanager__label {\n  margin: 0;\n}\n\n.sd-apikeymanager__key {\n  overflow-wrap: anywhere;\n}\n"
+    }
+  ]
+}

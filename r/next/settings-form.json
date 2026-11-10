@@ -1,0 +1,39 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "settings-form",
+  "type": "registry:block",
+  "title": "Settings Form",
+  "description": "A sectioned account settings form for profile details and preferences, with submit and form-level error states.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/form",
+    "@sando-ui/text-field",
+    "@sando-ui/switch",
+    "@sando-ui/select",
+    "@sando-ui/button",
+    "@sando-ui/stack",
+    "@sando-ui/alert",
+    "@sando-ui/separator",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/SettingsForm.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/SettingsForm.tsx",
+      "content": "// Block (composition) — account settings assembled from form Components.\n// Arranges only; composes Form/TextField/Switch/Select/Button/Alert/Separator/Stack.\nimport type { FormEvent, Ref } from \"react\";\nimport { Form } from \"../components/Form\";\nimport { TextField } from \"../components/TextField\";\nimport { Switch } from \"../components/Switch\";\nimport { Select, SelectItem } from \"../components/Select\";\nimport { Button } from \"../components/Button\";\nimport { Alert } from \"../components/Alert\";\nimport { Stack } from \"../layouts/Stack\";\nimport { Separator } from \"../components/Separator\";\nimport \"./SettingsForm.css\";\n\nexport interface SettingsFormProps {\n  /** Heading shown above the settings. */\n  heading?: string;\n  /** Called with the submitted settings. */\n  onSubmit?: (data: Record<string, string>) => void;\n  /** Form-level error, shown above the sections. */\n  errorMessage?: string;\n  /** Puts the submit button in a pending state and blocks re-submit. */\n  isPending?: boolean;\n  className?: string;\n  ref?: Ref<HTMLFormElement>;\n}\n\nexport function SettingsForm({\n  heading,\n  onSubmit,\n  errorMessage,\n  isPending,\n  className,\n  ref,\n}: SettingsFormProps) {\n  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {\n    event.preventDefault();\n    const data = new FormData(event.currentTarget);\n    onSubmit?.({\n      displayName: String(data.get(\"displayName\") ?? \"\"),\n      email: String(data.get(\"email\") ?? \"\"),\n      notifications: String(data.get(\"notifications\") ?? \"\"),\n      theme: String(data.get(\"theme\") ?? \"\"),\n    });\n  };\n\n  return (\n    <Form isPending={isPending}\n      ref={ref}\n      onSubmit={handleSubmit}\n      className={className ? `sd-settingsform ${className}` : \"sd-settingsform\"}\n    >\n      <Stack gap=\"large\" className=\"sd-settingsform__content\">\n        {heading && (\n          <>\n            <h1 className=\"sd-settingsform__heading sd-type-headline-medium\">{heading}</h1>\n          </>\n        )}\n        {/* live=\"assertive\": see `AlertProps.live` — submit failure is the case that earns it. */}\n        {errorMessage && (\n          <Alert variant=\"error\" live=\"assertive\">\n            {errorMessage}\n          </Alert>\n        )}\n        <Stack gap=\"medium\" className=\"sd-settingsform__profile\">\n          <>\n            <h2 className=\"sd-settingsform__section-heading sd-type-title-medium\">Profile</h2>\n          </>\n          <TextField label=\"Display name\" name=\"displayName\" autoComplete=\"name\" isRequired />\n          <TextField label=\"Email\" name=\"email\" type=\"email\" autoComplete=\"email\" isRequired />\n        </Stack>\n        {/* The two sections part across a rule: an edge is a step, so `large` holds over their\n            `medium`. Air alone would need `x-large` here and then a rung the ladder does not have\n            for the Settings page above it (token-contract.md § By relationship). */}\n        <Separator />\n        <Stack gap=\"medium\" className=\"sd-settingsform__preferences\">\n          <>\n            <h2 className=\"sd-settingsform__section-heading sd-type-title-medium\">Preferences</h2>\n          </>\n          {/* The track is a box, so it sits on the fields' box line (component-contract.md §6 rule 8). */}\n          <Switch name=\"notifications\">Email notifications</Switch>\n          <Select label=\"Theme\" name=\"theme\" defaultSelectedKey=\"system\" isRequired>\n            <SelectItem id=\"light\">Light</SelectItem>\n            <SelectItem id=\"dark\">Dark</SelectItem>\n            <SelectItem id=\"system\">System</SelectItem>\n          </Select>\n        </Stack>\n        <Button size=\"large\" type=\"submit\" variant=\"primary\" isPending={isPending}>\n          Save\n        </Button>\n      </Stack>\n    </Form>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/SettingsForm.css",
+      "type": "registry:component",
+      "target": "src/blocks/SettingsForm.css",
+      "content": "/* SettingsForm.css — arrangement only; Component look stays with its owners. */\n/* A Panel: it sits beside other sections on a settings page, so its width is the page's\n   (block-contract.md §1b), so it runs to the page edge with every section around it. The narrow,\n   centred presentation belongs to its story, which sets it. */\n.sd-settingsform {\n  width: 100%;\n}\n\n.sd-settingsform__heading,\n.sd-settingsform__section-heading {\n  margin: 0;\n}\n"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "color-swatch",
+  "type": "registry:ui",
+  "title": "Color Swatch",
+  "description": "A color preview swatch with alpha checkerboard support. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/components/ColorSwatch.tsx",
+      "type": "registry:component",
+      "target": "src/components/ColorSwatch.tsx",
+      "content": "// Category A — behavior is borrowed from react-aria-components; look is owned here.\nimport { ColorSwatch as AriaColorSwatch } from \"react-aria-components\";\nimport type { ColorSwatchProps as AriaColorSwatchProps } from \"react-aria-components\";\nimport type { Ref } from \"react\";\nimport \"./ColorSwatch.css\";\n\ntype ColorSwatchSize = \"small\" | \"medium\" | \"large\";\n\nexport interface ColorSwatchProps extends Omit<AriaColorSwatchProps, \"className\"> {\n  /**\n   * Visual size.\n   *\n   * @default \"medium\"\n   */\n  size?: ColorSwatchSize;\n  /** Additional class. sd-color-swatch is always preserved. */\n  className?: string;\n  /** Passed to the underlying swatch DOM node. */\n  ref?: Ref<HTMLDivElement>;\n}\n\nexport function ColorSwatch({\n  size = \"medium\",\n  className,\n  ref,\n  ...props\n}: ColorSwatchProps) {\n  return (\n    <AriaColorSwatch\n      {...props}\n      ref={ref}\n      data-size={size}\n      className={className ? `sd-color-swatch ${className}` : \"sd-color-swatch\"}\n    />\n  );\n}\n"
+    },
+    {
+      "path": "src/components/ColorSwatch.css",
+      "type": "registry:component",
+      "target": "src/components/ColorSwatch.css",
+      "content": "/* react-aria sets the swatch's background-color to the current color; we own size,\n   border and radius. (Solid fill — no alpha checkerboard: it can't sit behind a\n   react-aria-controlled background-color on a single element without extra DOM.) */\n.sd-color-swatch {\n  width: var(--sd-color-swatch-size-medium);\n  height: var(--sd-color-swatch-size-medium);\n  border: var(--sd-color-swatch-border-width) solid var(--sd-color-swatch-border);\n  border-radius: var(--sd-color-swatch-radius);\n  corner-shape: superellipse(var(--sd-radius-curve));\n  box-sizing: border-box;\n  forced-color-adjust: none;\n  /* A swatch's box IS its content, in both axes, so it must never pay for a neighbour's width.\n     Inert outside a flex row; inside one, `flex-shrink` defaults to 1 and the declared width above\n     stops being a width: a `small` swatch beside a ColorField in a `Stack direction=\"row\"` renders\n     7x16, a sliver unrecognisable as a swatch. Same family\n     as block-contract.md §4's stretched chip: a box that is content in both axes is always a defect\n     when a layout resizes it. Fixed here rather than at the call site because any consumer that\n     puts one in a tight row hits it. */\n  flex: none;\n}\n\n.sd-color-swatch[data-size=\"small\"] {\n  width: var(--sd-color-swatch-size-small);\n  height: var(--sd-color-swatch-size-small);\n}\n.sd-color-swatch[data-size=\"medium\"] {\n  width: var(--sd-color-swatch-size-medium);\n  height: var(--sd-color-swatch-size-medium);\n}\n.sd-color-swatch[data-size=\"large\"] {\n  width: var(--sd-color-swatch-size-large);\n  height: var(--sd-color-swatch-size-large);\n}\n"
+    }
+  ]
+}

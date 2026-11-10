@@ -1,0 +1,28 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "sticky-bar",
+  "type": "registry:ui",
+  "title": "Sticky Bar",
+  "description": "A toolbar region pinned to the top of the scrolling page on the page's own fill, edge to edge of its frame, with a hairline under it; its content stays on the page column.",
+  "registryDependencies": [
+    "@sando-ui/styles",
+    "@sando-ui/use-scroll-clearance"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/components/StickyBar.tsx",
+      "type": "registry:component",
+      "target": "src/components/StickyBar.tsx",
+      "content": "// Category B: no behaviour beyond keeping focus clear of itself. The in-page sibling of SiteHeader\n// and DockedBar: a bar that sticks to the top of the window while the content after it scrolls under,\n// on the page's own fill with an edge below. It owns the look a pinned control row needs, which a\n// Block may not set (block-contract.md § 5). The fill runs edge to edge of the page frame while the\n// content stays on the page's column, as Band's does; so, like Band, it assumes a centred column.\n// It sticks within its parent, so it is placed as a child of the box that holds what scrolls under it.\nimport type { CSSProperties, HTMLAttributes, Ref } from \"react\";\nimport { useScrollClearance } from \"./useScrollClearance\";\nimport \"./StickyBar.css\";\n\nexport interface StickyBarProps extends Omit<HTMLAttributes<HTMLDivElement>, \"className\"> {\n  className?: string;\n  style?: CSSProperties;\n  ref?: Ref<HTMLDivElement>;\n}\n\nexport function StickyBar({ className, children, ref, ...props }: StickyBarProps) {\n  // The bar covers the top of the window once it sticks, so the document keeps focus clear of it\n  // (WCAG 2.4.11).\n  const clearRef = useScrollClearance(\"start\", ref);\n\n  return (\n    <div {...props} ref={clearRef} className={className ? `sd-sticky-bar ${className}` : \"sd-sticky-bar\"}>\n      {children}\n    </div>\n  );\n}\n"
+    },
+    {
+      "path": "src/components/StickyBar.css",
+      "type": "registry:component",
+      "target": "src/components/StickyBar.css",
+      "content": "/* StickyBar.css — .sd-sticky-bar\n   Sticks to the top of the window inside its parent, on the page's own fill with a decorative edge\n   below. The fill takes one frame width (`100cqi`: AppShell's panel, the viewport where there is\n   none) pulled back by the difference between frame and column, and gives that difference back as\n   inline padding, so the content starts where the column does (Band's construction). */\n.sd-sticky-bar {\n  position: sticky;\n  inset-block-start: 0;\n  z-index: var(--sd-sticky-bar-z-index);\n  width: 100cqi;\n  margin-inline-start: calc(50% - 50cqi);\n  padding-inline: calc(50cqi - 50%);\n  padding-block: var(--sd-sticky-bar-padding-block);\n  background: var(--sd-sticky-bar-background);\n  border-block-end: var(--sd-sticky-bar-border-width) solid var(--sd-sticky-bar-border);\n}\n"
+    }
+  ]
+}

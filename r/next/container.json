@@ -1,0 +1,28 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "container",
+  "type": "registry:ui",
+  "title": "Container",
+  "description": "A layout primitive that caps content width and centers it, with inline gutters. Responsive props; arrangement only, owns no look.",
+  "registryDependencies": [
+    "@sando-ui/styles",
+    "@sando-ui/responsive"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/layouts/Container.tsx",
+      "type": "registry:component",
+      "target": "src/layouts/Container.tsx",
+      "content": "// Layout primitive (Category B) — arrangement only, owns no look.\n// Carve-out 5 (component-contract.md §6): references Sys layout scales directly,\n// no Cmp token layer. A centred column that is a SPAN OF THE PAGE GRID, so its edges land on the\n// grid's column lines and it follows whatever grid the brand sets. A px width scale would know nothing\n// of the grid: in a brand whose grid caps at 1024px, a large container would be 1280.\nimport type { CSSProperties, ElementType, HTMLAttributes, Ref } from \"react\";\nimport { responsiveVars, type Responsive } from \"./responsive\";\nimport \"./Container.css\";\n\nexport interface ContainerProps extends Omit<HTMLAttributes<HTMLElement>, \"className\"> {\n  /**\n   * How many of the page grid's columns the column spans: 12 of 12 is the whole grid, 10 leaves one\n   * column each side, 8 two, 6 three (a reading column). Centred, leave an EVEN number of columns over\n   * so both edges stay on column lines. A plain number applies at every step and is clamped to the\n   * columns there (8 is the whole grid on a 4-column phone); pass `{ small, medium, large }` to set\n   * each step against its own column count. `full` removes the cap (the frame's whole width).\n   *\n   * @default 12\n   */\n  span?: Responsive<number> | \"full\";\n  /**\n   * `page` (default): the Container is the page frame and insets its content by the page-grid\n   * margin. `none`: it sits inside a frame that already does (AppShell's main region, a LayoutGrid\n   * item), so it only narrows to its span.\n   *\n   * @default \"page\"\n   */\n  padding?: \"page\" | \"none\";\n  /**\n   * Where a column narrower than its frame sits: centred, or on the frame's start edge (a form read\n   * down one column under a page title). Either way its edges are on column lines.\n   *\n   * @default \"center\"\n   */\n  align?: \"center\" | \"start\";\n  /** Render as a different element (e.g. \"main\", \"section\"). */\n  as?: ElementType;\n  className?: string;\n  style?: CSSProperties;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function Container({ span = 12, padding = \"page\", align = \"center\", as: Component = \"div\", className, style, ...props }: ContainerProps) {\n  return (\n    <Component\n      {...props}\n      data-full={span === \"full\" || undefined}\n      data-padding={padding}\n      data-align={align}\n      className={className ? `sd-container ${className}` : \"sd-container\"}\n      style={span === \"full\" ? style : { ...responsiveVars(\"span\", span, String), ...style }}\n    />\n  );\n}\n"
+    },
+    {
+      "path": "src/layouts/Container.css",
+      "type": "registry:component",
+      "target": "src/layouts/Container.css",
+      "content": "/* Container.css — .sd-container\n   Layout primitive: arrangement only. Carve-out 5 — references the Sys page grid directly (no Cmp\n   layer). A column whose width is a span of the page grid, so its edges sit on column lines.\n   `--sd-layout-span-<rung>` are local intermediates set inline (columns spanned at that rung), not\n   tokens. Single class, no descendant combinators. */\n.sd-container {\n  --sd-layout-span-small: initial;\n  --sd-layout-span-medium: initial;\n  --sd-layout-span-large: initial;\n  /* The inset this column keeps: the page margin when it is the page frame, none inside one. */\n  --sd-layout-container-inset: var(--sd-grid-margin);\n  /* The grid's content width here: what the frame allows, less the inset on both sides. */\n  --sd-layout-container-grid: calc(min(100%, var(--sd-grid-max-width)) - 2 * var(--sd-layout-container-inset));\n  /* Columns spanned at this rung, clamped to the rung's column count; unset, the whole grid. */\n  --sd-layout-container-span: min(var(--sd-layout-span-small, var(--sd-grid-columns)), var(--sd-grid-columns));\n  box-sizing: border-box;\n  width: 100%;\n  margin-inline: auto;\n  padding-inline: var(--sd-layout-container-inset);\n  max-width: calc(\n    (var(--sd-layout-container-grid) + var(--sd-grid-gutter)) * var(--sd-layout-container-span) / var(--sd-grid-columns)\n      - var(--sd-grid-gutter) + 2 * var(--sd-layout-container-inset)\n  );\n}\n\n@media (min-width: 768px) {\n  .sd-container {\n    --sd-layout-container-span: min(\n      var(--sd-layout-span-medium, var(--sd-layout-span-small, var(--sd-grid-columns))),\n      var(--sd-grid-columns)\n    );\n  }\n}\n\n@media (min-width: 1024px) {\n  .sd-container {\n    --sd-layout-container-span: min(\n      var(--sd-layout-span-large, var(--sd-layout-span-medium, var(--sd-layout-span-small, var(--sd-grid-columns)))),\n      var(--sd-grid-columns)\n    );\n  }\n}\n\n.sd-container[data-padding=\"none\"] {\n  --sd-layout-container-inset: 0px;\n}\n\n/* Start-aligned on the GRID's start line, not the window's: past the grid's cap the frame is\n   centred, so the column starts where the centred grid does. Inside a frame the gap is zero. */\n.sd-container[data-align=\"start\"] {\n  margin-inline: max(0px, (100% - var(--sd-grid-max-width)) / 2) auto;\n}\n\n.sd-container[data-full] {\n  max-width: none;\n}\n"
+    }
+  ]
+}

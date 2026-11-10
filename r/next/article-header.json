@@ -1,0 +1,31 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "article-header",
+  "type": "registry:block",
+  "title": "Article Header",
+  "description": "A readable article heading with tags, supporting copy, author identity, and publication date.",
+  "registryDependencies": [
+    "@sando-ui/avatar",
+    "@sando-ui/badge",
+    "@sando-ui/stack",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/ArticleHeader.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/ArticleHeader.tsx",
+      "content": "// Block (composition) — a readable article heading with taxonomy and author metadata.\n// Badge and Avatar own their look; Stack owns all grouping and alignment.\nimport type { Ref } from \"react\";\nimport { Avatar } from \"../components/Avatar\";\nimport { Badge } from \"../components/Badge\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./ArticleHeader.css\";\n\nexport interface ArticleHeaderProps {\n  /** Article title. */\n  title: string;\n  /** Supporting summary shown below the title. */\n  subtitle?: string;\n  /** Optional author identity. */\n  author?: {\n    name: string;\n    avatarSrc?: string;\n  };\n  /** Human-readable publication date. */\n  date?: string;\n  /** Taxonomy labels shown above the title. */\n  tags?: string[];\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function ArticleHeader({\n  title,\n  subtitle,\n  author,\n  date,\n  tags,\n  className,\n  ref,\n}: ArticleHeaderProps) {\n  return (\n    <Stack\n      as=\"header\"\n      ref={ref}\n      gap=\"small\"\n      className={className ? `sd-articleheader ${className}` : \"sd-articleheader\"}\n    >\n      {tags && tags.length > 0 && (\n        <Stack direction=\"row\" gap=\"x-small\" wrap className=\"sd-articleheader__tags\">\n          {tags.map((tag) => (\n            <Badge key={tag}>{tag}</Badge>\n          ))}\n        </Stack>\n      )}\n      {/* spacing: attachment — the tags annotate the title below them.\n          The name and its supporting line are ONE unit, so they group at `x-small` while the\n          section around them sits a rung looser. */}\n      <>\n        <Stack gap=\"x-small\" className=\"sd-articleheader__heading\">\n          <h1 className=\"sd-articleheader__title sd-type-display-medium\">{title}</h1>\n          {subtitle && (\n            <p className=\"sd-articleheader__subtitle sd-type-body-medium\">{subtitle}</p>\n          )}\n        </Stack>\n      </>\n      {(author || date) && (\n        <Stack direction=\"row\" align=\"center\" gap=\"small\" wrap className=\"sd-articleheader__meta-row\">\n          {author && (\n            <>\n              <Avatar src={author.avatarSrc} size=\"small\" alt={author.name}>\n                {author.name.charAt(0)}\n              </Avatar>\n              <span className=\"sd-articleheader__meta sd-type-caption-medium\">\n                {author.name}\n              </span>\n            </>\n          )}\n          {date && <span className=\"sd-articleheader__meta sd-type-caption-medium\">{date}</span>}\n        </Stack>\n      )}\n    </Stack>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/ArticleHeader.css",
+      "type": "registry:component",
+      "target": "src/blocks/ArticleHeader.css",
+      "content": "/* ArticleHeader.css — .sd-articleheader (Block)\n   Arrangement only: fills the column it is given; the page sets a readable measure on the grid. */\n.sd-articleheader {\n  width: 100%;\n}\n\n.sd-articleheader__title,\n.sd-articleheader__subtitle,\n.sd-articleheader__meta {\n  margin: 0;\n}\n\n.sd-articleheader__meta {\n  color: var(--sd-color-text-muted);\n}\n\n.sd-articleheader__subtitle {\n  color: var(--sd-color-text-muted);\n}\n"
+    }
+  ]
+}

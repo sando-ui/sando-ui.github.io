@@ -1,0 +1,33 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "banner",
+  "type": "registry:block",
+  "title": "Banner",
+  "description": "A full-width page notice with optional action and dismissal. Composed from Alert, Button, and Stack.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/alert",
+    "@sando-ui/button",
+    "@sando-ui/stack",
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/Banner.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/Banner.tsx",
+      "content": "// Block (composition) — a full-width page-level notice built on Alert.\n// Alert owns notice semantics and look; Stack only arranges optional actions.\nimport type { ReactNode } from \"react\";\nimport { Alert } from \"../components/Alert\";\nimport type { AlertLive, AlertVariant } from \"../components/Alert\";\nimport { Button } from \"../components/Button\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./Banner.css\";\n\nexport interface BannerProps {\n  /** Alert 의 축을 그대로 쓴다 — 손으로 베낀 유니온은 Alert 이 값을 늘려도 조용히 좁아진다. */\n  variant?: AlertVariant;\n  /**\n   * Announcement urgency, forwarded to `Alert`. Deliberately **not** derived from `variant` — a\n   * red banner is not automatically \"stop reading and listen to this\".\n   *\n   * Left undefined a banner inherits Alert's `polite` default, which is the honest choice for the\n   * usual case: a page-level notice that is already on screen at first paint is not reliably\n   * announced at all (a live region has to exist *before* its content arrives), so claiming\n   * `assertive` would promise an interruption the browser never delivers. Pass `assertive`\n   * only for a banner that appears in response to something the user just did.\n   */\n  live?: AlertLive;\n  title?: string;\n  children: ReactNode;\n  action?: ReactNode;\n  onDismiss?: () => void;\n  className?: string;\n}\n\nexport function Banner({\n  variant = \"info\",\n  live,\n  title,\n  children,\n  action,\n  onDismiss,\n  className,\n}: BannerProps) {\n  return (\n    <Alert\n      variant={variant}\n      live={live}\n      title={title}\n      className={className ? `sd-banner ${className}` : \"sd-banner\"}\n      actions={\n        (action || onDismiss) && (\n          <Stack direction=\"row\" align=\"center\" justify=\"end\" gap=\"x-small\" wrap className=\"sd-banner__actions\">\n            {action}\n            {onDismiss && (\n              <Button type=\"button\" variant=\"secondary\" size=\"small\" onPress={onDismiss}>\n                Dismiss\n              </Button>\n            )}\n          </Stack>\n        )\n      }\n    >\n      {children}\n    </Alert>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/Banner.css",
+      "type": "registry:component",
+      "target": "src/blocks/Banner.css",
+      "content": "/* Banner.css — .sd-banner (Block)\n   Full-width arrangement only. Alert owns all notice chrome and typography. */\n.sd-banner {\n  width: 100%;\n}\n"
+    }
+  ]
+}

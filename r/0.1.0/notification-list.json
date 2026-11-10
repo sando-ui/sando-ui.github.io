@@ -1,0 +1,36 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "notification-list",
+  "type": "registry:block",
+  "title": "Notification List",
+  "description": "A vertical list of dismissible in-app notification cards. Composed from Card, Button, and Stack.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/badge",
+    "@sando-ui/card",
+    "@sando-ui/button",
+    "@sando-ui/stack",
+    "@sando-ui/icons",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/NotificationList.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/NotificationList.tsx",
+      "content": "// Block (composition) — a vertical list of in-app notification cards.\n// Card owns notification chrome; Stack owns grouping; this Block only arranges content and actions.\nimport { X } from \"../components/icons\";\nimport { Badge } from \"../components/Badge\";\nimport { Button } from \"../components/Button\";\nimport { Card, CardContent } from \"../components/Card\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./NotificationList.css\";\n\nexport interface NotificationListProps {\n  /** Notifications to render in order. */\n  items: {\n    id: string;\n    title: string;\n    description?: string;\n    timestamp?: string;\n    /** Marks a notification the person has not seen yet. */\n    isUnread?: boolean;\n  }[];\n  /** Adds a dismiss action to each notification. */\n  onDismiss?: (id: string) => void;\n  /** Text shown when there are no notifications. */\n  emptyLabel?: string;\n  className?: string;\n}\n\nexport function NotificationList({\n  items,\n  onDismiss,\n  emptyLabel = \"No notifications\",\n  className,\n}: NotificationListProps) {\n  return (\n    <Stack\n      as=\"section\"\n      aria-label=\"Notifications\"\n      gap=\"small\"\n      className={className ? `sd-notificationlist ${className}` : \"sd-notificationlist\"}\n    >\n      {items.length === 0 ? (\n        <p className=\"sd-notificationlist__empty sd-type-caption-medium\">{emptyLabel}</p>\n      ) : (\n        items.map((item) => (\n          <Card key={item.id} className=\"sd-notificationlist__item\">\n            <Stack direction=\"row\" align=\"start\" justify=\"between\" gap=\"small\" className=\"sd-notificationlist__row\">\n              <CardContent className=\"sd-notificationlist__content\">\n                <>\n                  <Stack gap=\"small\" className=\"sd-notificationlist__body\">\n                    {/* The name and its supporting line are ONE unit, so they group at `x-small`\n                        while the row around them sits a rung looser — flat, the same 8px separated\n                        the title from its description as separated it from the timestamp. */}\n                    <Stack gap=\"x-small\" className=\"sd-notificationlist__heading\">\n                      <h3 className=\"sd-notificationlist__title sd-type-body-medium\">\n                        {item.title}\n                      </h3>\n                      {/* One rung below the row's own title above it — CONTRASTIVE, per\n                          naming-convention.md § The size axis defaults to `medium`. */}\n                      {item.description && (\n                        <p className=\"sd-notificationlist__description sd-type-body-small\">\n                          {item.description}\n                        </p>\n                      )}\n                    </Stack>\n                    {item.timestamp && (\n                      <span className=\"sd-notificationlist__timestamp sd-type-caption-medium\">\n                        {item.timestamp}\n                      </span>\n                    )}\n                  </Stack>\n                </>\n              </CardContent>\n              {/* spacing: attachment — the actions act on the notification beside them */}\n              {(item.isUnread || onDismiss) && (\n                <Stack direction=\"row\" align=\"center\" gap=\"x-small\" className=\"sd-notificationlist__actions\">\n                  {/* The word says it, so the state is not carried by colour alone. */}\n                  {item.isUnread && <Badge variant=\"tonal\">New</Badge>}\n                  {onDismiss && (\n                    <Button\n                      type=\"button\"\n                      variant=\"ghost\"\n                      size=\"small\"\n                      isIconOnly\n                      aria-label={`Dismiss ${item.title}`}\n                      onPress={() => onDismiss(item.id)}\n                    >\n                      <X aria-hidden size=\"1em\" />\n                    </Button>\n                  )}\n                </Stack>\n              )}\n            </Stack>\n          </Card>\n        ))\n      )}\n    </Stack>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/NotificationList.css",
+      "type": "registry:component",
+      "target": "src/blocks/NotificationList.css",
+      "content": "/* NotificationList.css — .sd-notificationlist (Block)\n   Arrangement only: Card owns surface styling; Stack owns flow and spacing. */\n.sd-notificationlist {\n  width: 100%;\n}\n\n.sd-notificationlist__content {\n  flex: 1;\n  min-width: 0;\n}\n\n.sd-notificationlist__title,\n.sd-notificationlist__description,\n.sd-notificationlist__empty {\n  margin: 0;\n}\n\n.sd-notificationlist__description {\n  color: var(--sd-color-text-muted);\n}\n"
+    }
+  ]
+}

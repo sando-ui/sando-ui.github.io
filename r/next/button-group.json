@@ -1,0 +1,24 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "button-group",
+  "type": "registry:ui",
+  "title": "ButtonGroup",
+  "description": "A row of related actions. Owns the placement Stack cannot express: a reverse column on a narrow screen so the primary action rises to the top while staying last in the DOM, and an even grid split for centered layouts.",
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/components/ButtonGroup.tsx",
+      "type": "registry:component",
+      "target": "src/components/ButtonGroup.tsx",
+      "content": "// Category B — no headless primitive, and the behaviour is arrangement only, so this owns\n// everything (component-contract.md § 3).\n//\n// A row of related actions. It is NOT `Stack` with a different name: it does three things Stack's\n// props cannot express, and that `Dialog` and `Drawer` both need.\n//\n//   1. `column-reverse` on a narrow screen, so the PRIMARY action rises to the top while staying\n//      last in the DOM for tab order. `Stack`'s direction is `\"row\" | \"column\"`; it has no reverse.\n//   2. `layout=\"center\"` lays the actions out as equal grid columns, and `layout=\"fill\"` as a hugging\n//      aside action beside a primary that fills the row. `Stack` is flex only.\n//   3. The gap is a Cmp token this component owns, not a Sys rung its caller picks — the actions\n//      are always the innermost level of their container, and Dialog and Drawer had already\n//      converged on the same rung independently.\n//\n// One copy rather than two, for the reason `figma-projection.md` records for Toolbar: \"retuning one\n// silently desynced the other\".\nimport type { ReactNode, Ref } from \"react\";\nimport \"./ButtonGroup.css\";\n\n/** How the actions are placed. */\nexport type ButtonGroupLayout = \"end\" | \"center\" | \"stack\" | \"fill\";\n\nexport interface ButtonGroupProps {\n  /**\n   * Action placement. `end` right-aligns and lets the buttons hug; `center` splits the width\n   * evenly between them; `stack` keeps the full-width column at every size; `fill` keeps one row at\n   * every size, an aside action (reset, back) hugging its label and the primary filling the rest.\n   * `fill` is a PAIR: its tracks alternate hug and fill, so a third action lands out of step.\n   * @default \"end\"\n   */\n  layout?: ButtonGroupLayout;\n  /** The actions, in DOM order. The last one is the primary — it renders first on a narrow screen. */\n  children?: ReactNode;\n  /** Additional class (optional). sd-button-group is always preserved. */\n  className?: string;\n  /** Forwarded to the underlying <div> DOM node. */\n  ref?: Ref<HTMLDivElement>;\n}\n\nexport function ButtonGroup({ layout = \"end\", children, className, ref }: ButtonGroupProps) {\n  return (\n    <div\n      ref={ref}\n      data-layout={layout}\n      className={className ? `sd-button-group ${className}` : \"sd-button-group\"}\n    >\n      {children}\n    </div>\n  );\n}\n"
+    },
+    {
+      "path": "src/components/ButtonGroup.css",
+      "type": "registry:component",
+      "target": "src/components/ButtonGroup.css",
+      "content": "/* ButtonGroup.css — .sd-button-group\n   A row of related actions, the one copy of the rules `Dialog.css` and `Drawer.css` would otherwise\n   each carry. */\n.sd-button-group {\n  display: flex;\n  flex-direction: column-reverse;\n  align-items: stretch;\n  flex-wrap: wrap;\n  justify-content: flex-end;\n  gap: var(--sd-button-group-gap);\n}\n\n.sd-button-group[data-layout=\"center\"] {\n  display: grid;\n  grid-auto-flow: column;\n  grid-auto-columns: minmax(0, 1fr);\n}\n\n/* fill: one row at every size, the aside action hugging its label and the primary (last) taking the\n   rest. Grid tracks rather than a grow on the last child, which only a child selector could reach. */\n.sd-button-group[data-layout=\"fill\"] {\n  display: grid;\n  grid-auto-flow: column;\n  grid-auto-columns: max-content minmax(0, 1fr);\n}\n\n.sd-button-group[data-layout=\"stack\"] {\n  flex-direction: column-reverse;\n  align-items: stretch;\n}\n\n/* mobile: the default (end) actions stack full-width, primary (last child) on top.\n   mobile-first (naming-convention § Modes): the stacked, full-width action list is the BASE —\n   on a narrow panel a side-by-side row would squeeze the buttons — and the `medium` step restores\n   the right-aligned row. Never a `max-width` query: that would author desktop as the base and\n   invert the ladder every other responsive rule in the system follows. */\n@media (min-width: 768px) {\n  .sd-button-group[data-layout=\"end\"] {\n    flex-direction: row;\n    align-items: initial;\n  }\n}\n"
+    }
+  ]
+}

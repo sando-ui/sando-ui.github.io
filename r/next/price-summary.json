@@ -1,0 +1,32 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "price-summary",
+  "type": "registry:block",
+  "title": "Price Summary",
+  "description": "A price before and after a discount on a sunken panel, with a line explaining the difference and an optional small action. Composed from Card, Separator, and Stack.",
+  "registryDependencies": [
+    "@sando-ui/card",
+    "@sando-ui/separator",
+    "@sando-ui/stack",
+    "@sando-ui/icons",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/PriceSummary.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/PriceSummary.tsx",
+      "content": "// Block (composition) — a price before and after a discount, read left to right, on a sunken panel.\n// Card owns the panel; this Block arranges the two amounts, the arrow between them and the line\n// that explains the difference. The discounted amount takes the emphasis ink: a price the product\n// flags for attention (naming-convention.md § Text colour roles, row 10). Without `after` there is\n// nothing to compare, so the one amount is the price on offer: it takes that ink and no arrow shows.\nimport type { ReactNode, Ref } from \"react\";\nimport { ArrowRight } from \"../components/icons\";\nimport { Card, CardContent } from \"../components/Card\";\nimport { Separator } from \"../components/Separator\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./PriceSummary.css\";\n\nexport interface PriceSummaryAmount {\n  /** What the amount is, e.g. \"Monthly bill\". */\n  label: string;\n  /** The formatted amount, e.g. \"49,000 won\". */\n  amount: string;\n}\n\nexport interface PriceSummaryProps {\n  /** The price before the discount. Alone (no `after`), it is the price on offer and takes the\n   *  emphasis ink itself. */\n  before: PriceSummaryAmount;\n  /** The price after it; drawn in the emphasis ink. Omit it when no discount applies, e.g. a\n   *  \"payback included\" switch is off: the summary then shows `before` alone, with no arrow. */\n  after?: PriceSummaryAmount;\n  /** One line saying where the difference comes from. */\n  note?: ReactNode;\n  /** One small action at the end of the note line, such as a details Button. The panel is a sunken\n   *  canvas, so a secondary Button there takes `variant=\"surface\"` (prop-usage-contract.md, canvas). */\n  action?: ReactNode;\n  className?: string;\n  ref?: Ref<HTMLDivElement>;\n}\n\nexport function PriceSummary({ before, after, note, action, className, ref }: PriceSummaryProps) {\n  return (\n    <Card ref={ref} variant=\"sunken\" className={className ? `sd-pricesummary ${className}` : \"sd-pricesummary\"}>\n      <CardContent>\n        <Stack gap=\"medium\">\n          {/* Each amount is its own term-description pair, and the arrow sits between them outside\n              both: a `dl` may hold only `dt`, `dd` and `div`, so a glyph cannot go inside one. */}\n          <>\n            <Stack direction=\"row\" align=\"end\" gap=\"medium\" wrap className=\"sd-pricesummary__amounts\">\n              <dl className=\"sd-pricesummary__amount\">\n                <dt className=\"sd-pricesummary__label sd-type-label-medium\">{before.label}</dt>\n                <dd data-emphasized={after ? undefined : true} className=\"sd-pricesummary__value sd-type-headline-medium\">{before.amount}</dd>\n              </dl>\n              {after && (\n                <>\n                  <ArrowRight aria-hidden size=\"1.5em\" className=\"sd-pricesummary__arrow\" />\n                  <dl className=\"sd-pricesummary__amount\">\n                    <dt className=\"sd-pricesummary__label sd-type-label-medium\">{after.label}</dt>\n                    <dd data-emphasized className=\"sd-pricesummary__value sd-type-headline-medium\">{after.amount}</dd>\n                  </dl>\n                </>\n              )}\n            </Stack>\n          </>\n          {(note || action) && (\n            <>\n              {/* The card's closing row is punctuation the spacing already parts, so the rule is trim. */}\n              <Separator isDecorative />\n              <Stack direction=\"row\" align=\"center\" justify=\"between\" gap=\"small\" className=\"sd-pricesummary__footer\">\n                {note && (\n                  <>\n                    <p className=\"sd-pricesummary__note sd-type-body-medium\">{note}</p>\n                  </>\n                )}\n                {action}\n              </Stack>\n            </>\n          )}\n        </Stack>\n      </CardContent>\n    </Card>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/PriceSummary.css",
+      "type": "registry:component",
+      "target": "src/blocks/PriceSummary.css",
+      "content": "/* PriceSummary.css — .sd-pricesummary (Block)\n   Arrangement, plus the ink of this Block's own text (block-contract.md § 5): the amount names are\n   supporting text beside the amounts, the amount on offer (the discounted one, or the only one) is\n   flagged. Card owns the panel. */\n.sd-pricesummary__amounts,\n.sd-pricesummary__label,\n.sd-pricesummary__value,\n.sd-pricesummary__note {\n  margin: 0;\n}\n\n.sd-pricesummary__amount {\n  margin: 0;\n  display: flex;\n  flex-direction: column;\n}\n\n.sd-pricesummary__label {\n  color: var(--sd-color-text-muted);\n}\n\n.sd-pricesummary__value[data-emphasized] {\n  color: var(--sd-color-text-emphasis);\n}\n\n/* The arrow reads as a separator between two peers, so it takes the muted ink and sits on the\n   amounts' baseline row rather than centred against the two-line columns. */\n.sd-pricesummary__arrow {\n  flex: none;\n  color: var(--sd-color-text-muted);\n  margin-block-end: var(--sd-space-2x-small);\n}\n\n.sd-pricesummary__note {\n  color: var(--sd-color-text-muted);\n}\n"
+    }
+  ]
+}

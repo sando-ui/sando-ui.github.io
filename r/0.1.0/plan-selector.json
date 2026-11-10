@@ -1,0 +1,36 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "plan-selector",
+  "type": "registry:block",
+  "title": "Plan Selector",
+  "description": "A responsive set of in-app subscription plan cards with current and featured states.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/badge",
+    "@sando-ui/button",
+    "@sando-ui/card",
+    "@sando-ui/grid",
+    "@sando-ui/stack",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/PlanSelector.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/PlanSelector.tsx",
+      "content": "// Block (composition) — selectable in-app subscription plan cards.\n// Existing Card, Badge, and Button variants own all visual treatment.\nimport type { Ref } from \"react\";\nimport { Badge } from \"../components/Badge\";\nimport { Button } from \"../components/Button\";\nimport { Card } from \"../components/Card\";\nimport { Grid } from \"../layouts/Grid\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./PlanSelector.css\";\n\nexport interface PlanSelectorProps {\n  plans: {\n    id: string;\n    name: string;\n    price: string;\n    period?: string;\n    features: string[];\n    current?: boolean;\n    featured?: boolean;\n  }[];\n  onSelect?: (id: string) => void;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function PlanSelector({ plans, onSelect, className, ref }: PlanSelectorProps) {\n  const desktopColumns = Math.min(Math.max(plans.length, 1), 3);\n\n  // A grid of bordered Cards: the gutter is token-contract.md's card-grid row, as in `PricingTable`.\n  return (\n    <Grid\n      as=\"section\"\n      ref={ref}\n      aria-label=\"Subscription plans\"\n      columns={{ small: 1, medium: desktopColumns }}\n      gap=\"medium\"\n      className={className ? `sd-planselector ${className}` : \"sd-planselector\"}\n    >\n      {plans.map((plan) => (\n        <Card key={plan.id}>\n          <Stack gap=\"small\" className=\"sd-planselector__content\">\n            {/* The plan name and its price are ONE unit, at a tighter rung than the card's\n                own, the pair `ProductCard` already groups. Flat, the same 8px separated the\n                name from its price as separated that price from the feature list below it. */}\n            <Stack gap=\"x-small\" className=\"sd-planselector__header\">\n              <Stack direction=\"row\" align=\"center\" gap=\"x-small\" wrap className=\"sd-planselector__heading\">\n                <><h3 className=\"sd-planselector__name sd-type-title-medium\">{plan.name}</h3></>\n                {plan.featured && <Badge variant=\"tonal\">Popular</Badge>}\n                {plan.current && <Badge>Current</Badge>}\n              </Stack>\n              <>\n                <p className=\"sd-planselector__price sd-type-headline-medium\">\n                  {plan.price}\n                  {plan.period && (\n                    <small className=\"sd-planselector__period sd-type-caption-medium\">\n                      {plan.period}\n                    </small>\n                  )}\n                </p>\n              </>\n            </Stack>\n            {/* spacing: attachment — the plan's name and price head the features it lists */}\n            <ul className=\"sd-planselector__features sd-type-body-medium\">\n              {plan.features.map((feature) => (\n                <li key={feature}>{feature}</li>\n              ))}\n            </ul>\n            <Button\n              variant={plan.featured ? \"primary\" : \"secondary\"}\n              isDisabled={plan.current}\n              onPress={() => onSelect?.(plan.id)}\n            >\n              {plan.current ? \"Current plan\" : \"Choose\"}\n            </Button>\n          </Stack>\n        </Card>\n      ))}\n    </Grid>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/PlanSelector.css",
+      "type": "registry:component",
+      "target": "src/blocks/PlanSelector.css",
+      "content": "/* PlanSelector.css — .sd-planselector (Block)\n   Arrangement only: full-width grid and native text/list spacing normalization. */\n.sd-planselector {\n  width: 100%;\n}\n\n.sd-planselector__name,\n.sd-planselector__price,\n.sd-planselector__features {\n  margin: 0;\n}\n\n.sd-planselector__period {\n  margin-inline-start: var(--sd-space-2x-small);\n}\n\n.sd-planselector__features {\n  padding-inline-start: var(--sd-space-large);\n}\n"
+    }
+  ]
+}

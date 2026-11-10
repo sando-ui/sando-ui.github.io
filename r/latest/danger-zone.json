@@ -1,0 +1,34 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "danger-zone",
+  "type": "registry:block",
+  "title": "Danger Zone",
+  "description": "A full-width section of destructive account actions, each gated by an alert dialog.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/confirm-dialog",
+    "@sando-ui/button",
+    "@sando-ui/separator",
+    "@sando-ui/stack",
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/DangerZone.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/DangerZone.tsx",
+      "content": "// Block (composition) — destructive account actions gated by confirmation dialogs.\n// ConfirmDialog owns confirmation behavior; Button, Separator, and Stack own their look/layout.\nimport { Fragment, useId } from \"react\";\nimport type { Ref } from \"react\";\nimport { Button } from \"../components/Button\";\nimport { Separator } from \"../components/Separator\";\nimport { Stack } from \"../layouts/Stack\";\nimport { ConfirmDialog } from \"./ConfirmDialog\";\nimport \"./DangerZone.css\";\n\nexport interface DangerZoneProps {\n  heading?: string;\n  actions: {\n    id: string;\n    label: string;\n    description?: string;\n    confirmTitle: string;\n    confirmMessage?: string;\n    onConfirm?: () => void;\n  }[];\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function DangerZone({\n  heading = \"Danger zone\",\n  actions,\n  className,\n  ref,\n}: DangerZoneProps) {\n  const headingId = useId();\n\n  return (\n    <Stack\n      as=\"section\"\n      ref={ref}\n      gap=\"small\"\n      aria-labelledby={heading ? headingId : undefined}\n      aria-label={heading ? undefined : \"Danger zone\"}\n      className={className ? `sd-dangerzone ${className}` : \"sd-dangerzone\"}\n    >\n      {heading && (\n        <h2 id={headingId} className=\"sd-dangerzone__heading sd-type-title-medium\">\n          {heading}\n        </h2>\n      )}\n      {actions.map((action, index) => (\n        <Fragment key={action.id}>\n          {index > 0 && <Separator />}\n          <Stack\n            direction=\"row\"\n            justify=\"between\"\n            align=\"center\"\n            gap=\"small\"\n            className=\"sd-dangerzone__row\"\n          >\n            {action.description && (\n              <p className=\"sd-dangerzone__description sd-type-caption-medium\">\n                {action.description}\n              </p>\n            )}\n            <ConfirmDialog\n              trigger={\n                <Button type=\"button\" variant=\"destructive\" size=\"small\" className=\"sd-dangerzone__action\">\n                  {action.label}\n                </Button>\n              }\n              title={action.confirmTitle}\n              message={action.confirmMessage}\n              confirmLabel={action.label}\n              onConfirm={action.onConfirm}\n              confirmVariant=\"destructive\"\n            />\n          </Stack>\n        </Fragment>\n      ))}\n    </Stack>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/DangerZone.css",
+      "type": "registry:component",
+      "target": "src/blocks/DangerZone.css",
+      "content": "/* DangerZone.css — arrangement only; destructive visual treatment remains token-owned. */\n.sd-dangerzone {\n  width: 100%;\n}\n\n.sd-dangerzone__heading,\n.sd-dangerzone__description {\n  margin: 0;\n}\n\n.sd-dangerzone__row,\n.sd-dangerzone__description {\n  min-width: 0;\n}\n\n/* The row gives the description the slack; the action keeps its label on one line. At 390 the\n   button was the shrinking item and folded \"Delete account\" onto two lines. */\n.sd-dangerzone__action {\n  flex: none;\n}\n"
+    }
+  ]
+}

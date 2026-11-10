@@ -1,0 +1,34 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "search-bar",
+  "type": "registry:block",
+  "title": "Search Bar",
+  "description": "A full-width inline search form with an accessible search field and submit action.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/form",
+    "@sando-ui/search-field",
+    "@sando-ui/button",
+    "@sando-ui/stack",
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/SearchBar.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/SearchBar.tsx",
+      "content": "// Block (composition) — an inline search form assembled from search Components.\n// Arranges only; composes Form/SearchField/Button/Stack.\nimport type { FormEvent, Ref } from \"react\";\nimport { Form } from \"../components/Form\";\nimport { SearchField } from \"../components/SearchField\";\nimport { Button } from \"../components/Button\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./SearchBar.css\";\n\nexport interface SearchBarProps {\n  /** Hint shown in the search input. */\n  placeholder?: string;\n  /** Accessible label for the search field. */\n  label?: string;\n  /** Called with the entered query on submit. */\n  onSubmit?: (query: string) => void;\n  /** Text shown in the submit button. */\n  buttonLabel?: string;\n  className?: string;\n  ref?: Ref<HTMLFormElement>;\n}\n\nexport function SearchBar({\n  placeholder,\n  label = \"Search\",\n  onSubmit,\n  buttonLabel = \"Search\",\n  className,\n  ref,\n}: SearchBarProps) {\n  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {\n    event.preventDefault();\n    const data = new FormData(event.currentTarget);\n    onSubmit?.(String(data.get(\"q\") ?? \"\"));\n  };\n\n  return (\n    <Form\n      ref={ref}\n      role=\"search\"\n      onSubmit={handleSubmit}\n      className={className ? `sd-searchbar ${className}` : \"sd-searchbar\"}\n    >\n      <Stack direction=\"row\" gap=\"small\" align=\"end\" className=\"sd-searchbar__row\">\n        <SearchField\n          className=\"sd-searchbar__field\"\n          label={label}\n          name=\"q\"\n          placeholder={placeholder}\n        />\n        <Button type=\"submit\" variant=\"primary\">\n          {buttonLabel}\n        </Button>\n      </Stack>\n    </Form>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/SearchBar.css",
+      "type": "registry:component",
+      "target": "src/blocks/SearchBar.css",
+      "content": "/* SearchBar.css — full-width inline arrangement only. */\n.sd-searchbar {\n  width: 100%;\n}\n\n.sd-searchbar__field {\n  flex: 1;\n  min-width: 0;\n}\n"
+    }
+  ]
+}

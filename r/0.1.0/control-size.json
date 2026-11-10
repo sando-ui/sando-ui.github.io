@@ -1,0 +1,18 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "control-size",
+  "type": "registry:lib",
+  "title": "controlSize",
+  "description": "The five sizes a control takes, and the three-size type role each one sets its text in. Shared by every control that takes x-small to x-large.",
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/components/controlSize.ts",
+      "type": "registry:lib",
+      "target": "src/components/controlSize.ts",
+      "content": "// controlSize: the five sizes a control takes, and the type-role size each one sets its text in.\n// A control's height, padding, icon and corner have a rung per size; the type roles keep three\n// (ADR-0054 Amendment 1), so `x-small` sets its text in the `small` role and `x-large` in `large`.\nexport type ControlSize = \"x-small\" | \"small\" | \"medium\" | \"large\" | \"x-large\";\n\nexport type RoleSize = \"small\" | \"medium\" | \"large\";\n\nexport const roleSize = (size: ControlSize): RoleSize =>\n  size === \"x-small\" ? \"small\" : size === \"x-large\" ? \"large\" : size;\n"
+    }
+  ]
+}

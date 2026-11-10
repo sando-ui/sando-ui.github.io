@@ -1,0 +1,27 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "media",
+  "type": "registry:ui",
+  "title": "Media",
+  "description": "A rounded frame that clips one picture, video or artwork to the system's corner. Compose AspectRatio inside it for a ratio.",
+  "registryDependencies": [
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/components/Media.tsx",
+      "type": "registry:component",
+      "target": "src/components/Media.tsx",
+      "content": "// Category B: no behaviour at all. It owns the one look a picture needs inside a page, its corner and\n// the clip that draws it, so a Block can place a photo, video or artwork without setting a radius it\n// is not allowed to own (block-contract.md § 3). The ratio stays AspectRatio's: compose it inside.\nimport type { CSSProperties, HTMLAttributes, Ref } from \"react\";\nimport \"./Media.css\";\n\ntype MediaVariant = \"plain\" | \"well\";\ntype MediaFit = \"cover\" | \"contain\";\n\nexport interface MediaProps extends Omit<HTMLAttributes<HTMLDivElement>, \"className\"> {\n  /**\n   * `plain` (default) paints nothing behind the picture, which brings its own background.\n   * `well` sets the picture on a neutral plate, for a cut-out with a transparent background (a\n   * device render), which would otherwise float on the card's surface.\n   *\n   * @default \"plain\"\n   */\n  variant?: MediaVariant;\n  /**\n   * How a picture that is Media's direct child, or the direct child of an `AspectRatio` inside it,\n   * fills the box: Media sizes it to 100% and sets this `object-fit`. `cover` crops a photograph\n   * to the box; `contain` fits a cut-out whole on the plate. Only `img`, `svg` and `video` are\n   * fitted; any other node sizes itself.\n   *\n   * @default `\"cover\"` when `variant=\"plain\"`, `\"contain\"` when `variant=\"well\"`\n   */\n  fit?: MediaFit;\n  /**\n   * Sits flush in a band that draws its own corners (Card's `CardMedia`): no radius of its own, so\n   * the picture meets the band's edges square and the band's curve is the only one.\n   *\n   * @default false\n   */\n  isFlush?: boolean;\n  className?: string;\n  style?: CSSProperties;\n  ref?: Ref<HTMLDivElement>;\n}\n\n/**\n * A rounded frame around a picture, video or artwork. It clips, so a link or button belongs AROUND it,\n * never inside: the clip would cut that control's focus ring.\n */\nexport function Media({ variant = \"plain\", fit, isFlush = false, className, ...props }: MediaProps) {\n  return (\n    <div\n      {...props}\n      data-variant={variant}\n      data-fit={fit ?? (variant === \"well\" ? \"contain\" : \"cover\")}\n      data-flush={isFlush || undefined}\n      className={className ? `sd-media ${className}` : \"sd-media\"}\n    />\n  );\n}\n"
+    },
+    {
+      "path": "src/components/Media.css",
+      "type": "registry:component",
+      "target": "src/components/Media.css",
+      "content": "/* Media.css — .sd-media\n   A corner and the clip that draws it, around a picture. A plain block box, so whatever the slot holds\n   keeps its normal flow. Media also fills and fits the picture itself (prop-usage-contract.md § Fill),\n   so no consumer hand-writes `object-fit`: the one it forgets renders at its intrinsic size. */\n.sd-media {\n  /* State on root, style on child (component-contract.md § 6.5): `data-fit` picks the object-fit\n     the picture below reads. */\n  --sd-media-fit-current: cover;\n  overflow: hidden;\n  border-radius: var(--sd-media-radius);\n  corner-shape: superellipse(var(--sd-radius-curve));\n}\n\n/* isFlush: the band around the picture owns the corner, so Media draws none. */\n.sd-media[data-flush] {\n  border-radius: 0;\n}\n\n/* well: a neutral plate behind a cut-out that brings no background of its own. */\n.sd-media[data-variant=\"well\"] {\n  background: var(--sd-media-background-well);\n}\n\n.sd-media[data-fit=\"contain\"] {\n  --sd-media-fit-current: contain;\n}\n\n/* The picture: a direct child, or the direct child of the AspectRatio that owns the ratio inside\n   Media. Child combinators only, two fixed steps (§ 6.2 forbids descendant ones); any other node\n   (a placeholder div, a thumbnail) sizes itself. Inside an auto-height Media the 100% block size\n   resolves to auto, so a picture at its own ratio keeps it. */\n.sd-media > img,\n.sd-media > svg,\n.sd-media > video,\n.sd-media > .sd-aspect-ratio > img,\n.sd-media > .sd-aspect-ratio > svg,\n.sd-media > .sd-aspect-ratio > video {\n  display: block;\n  inline-size: 100%;\n  block-size: 100%;\n  object-fit: var(--sd-media-fit-current);\n}\n"
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "notification-preferences",
+  "type": "registry:block",
+  "title": "Notification Preferences",
+  "description": "A full-width list of consumer-controlled notification preference switches.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/indent",
+    "@sando-ui/separator",
+    "@sando-ui/stack",
+    "@sando-ui/switch",
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/NotificationPreferences.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/NotificationPreferences.tsx",
+      "content": "// Block (composition) — consumer-controlled notification preference switches.\n// Switch and Separator own look/behavior; Stack owns arrangement.\nimport { Fragment, useId } from \"react\";\nimport type { Ref } from \"react\";\nimport { Separator } from \"../components/Separator\";\nimport { Stack } from \"../layouts/Stack\";\nimport { Switch } from \"../components/Switch\";\nimport \"./NotificationPreferences.css\";\n\nexport interface NotificationPreferencesProps {\n  preferences: {\n    id: string;\n    label: string;\n    description?: string;\n    enabled?: boolean;\n  }[];\n  onToggle?: (id: string, enabled: boolean) => void;\n  heading?: string;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function NotificationPreferences({\n  preferences,\n  onToggle,\n  heading,\n  className,\n  ref,\n}: NotificationPreferencesProps) {\n  const headingId = useId();\n\n  return (\n    <Stack\n      as=\"section\"\n      ref={ref}\n      gap=\"small\"\n      aria-labelledby={heading ? headingId : undefined}\n      aria-label={heading ? undefined : \"Notification preferences\"}\n      className={\n        className\n          ? `sd-notificationpreferences ${className}`\n          : \"sd-notificationpreferences\"\n      }\n    >\n      {/* The heading labels the section's group of settings (its aria-labelledby), as a field's\n          label names its field, so it takes the inset (rule 8). */}\n      {heading && (\n        <>\n          <h2 id={headingId} className=\"sd-notificationpreferences__heading sd-type-title-medium\">\n            {heading}\n          </h2>\n        </>\n      )}\n      {preferences.map((preference, index) => (\n        <Fragment key={preference.id}>\n          {index > 0 && <Separator />}\n          <Stack\n            direction=\"row\"\n            justify=\"between\"\n            align=\"center\"\n            gap=\"small\"\n            className=\"sd-notificationpreferences__row\"\n          >\n            {/* A label and the helper text belonging to it: `switch.field-gap` derives that\n                relationship at `2x-small` for the same pair INSIDE the control, and six\n                sibling Blocks spend the same rung on it. This row builds the pair itself\n                because the settings layout puts the text left and the control right, which\n                Switch's own label placement cannot express, but the RUNG is not the Block's\n                to re-choose. */}\n            <Stack gap=\"2x-small\" className=\"sd-notificationpreferences__details\">\n              <span className=\"sd-notificationpreferences__label sd-type-label-medium\">\n                {preference.label}\n              </span>\n              {preference.description && (\n                <span className=\"sd-notificationpreferences__description sd-type-caption-medium\">\n                  {preference.description}\n                </span>\n              )}\n            </Stack>\n            <Switch\n              aria-label={preference.label}\n              isSelected={Boolean(preference.enabled)}\n              onChange={(enabled) => onToggle?.(preference.id, enabled)}\n            />\n          </Stack>\n        </Fragment>\n      ))}\n    </Stack>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/NotificationPreferences.css",
+      "type": "registry:component",
+      "target": "src/blocks/NotificationPreferences.css",
+      "content": "/* NotificationPreferences.css — arrangement only; composed Components own all look. */\n.sd-notificationpreferences {\n  width: 100%;\n}\n\n.sd-notificationpreferences__heading {\n  margin: 0;\n}\n\n.sd-notificationpreferences__row,\n.sd-notificationpreferences__details {\n  min-width: 0;\n}\n\n.sd-notificationpreferences__description {\n  color: var(--sd-color-text-muted);\n}\n"
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "pagination-bar",
+  "type": "registry:block",
+  "title": "Pagination Bar",
+  "description": "A responsive results range summary paired with page navigation.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/pagination",
+    "@sando-ui/stack",
+    "@sando-ui/styles",
+    "@sando-ui/select"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/PaginationBar.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/PaginationBar.tsx",
+      "content": "// Block (composition) — range context paired with page navigation.\nimport type { Ref } from \"react\";\nimport { Pagination } from \"../components/Pagination\";\nimport { Select, SelectItem } from \"../components/Select\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./PaginationBar.css\";\n\nexport interface PaginationBarProps {\n  /** Current page, starting at one. */\n  page: number;\n  pageSize: number;\n  total: number;\n  onPageChange?: (page: number) => void;\n  /**\n   * Page sizes to offer. When set, a page-size selector (a `filled` Select at the Pagination's own size) joins the bar, as\n   * in a dashboard's \"50개씩 보기\". Leave unset for a fixed page size.\n   */\n  pageSizeOptions?: number[];\n  /** Called with the chosen page size. */\n  onPageSizeChange?: (pageSize: number) => void;\n  /** Builds each page-size option's text. */\n  pageSizeLabel?: (pageSize: number) => string;\n  /** Accessible name for the page-size selector, which has no visible label. */\n  pageSizeSelectorLabel?: string;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function PaginationBar({\n  page,\n  pageSize,\n  total,\n  onPageChange,\n  pageSizeOptions,\n  onPageSizeChange,\n  pageSizeLabel = (size) => `${size} per page`,\n  pageSizeSelectorLabel = \"Rows per page\",\n  className,\n  ref,\n}: PaginationBarProps) {\n  const safeTotal = Math.max(total, 0);\n  const safePageSize = Math.max(pageSize, 1);\n  const totalPages = Math.max(1, Math.ceil(safeTotal / safePageSize));\n  const currentPage = Math.min(Math.max(page, 1), totalPages);\n  const rangeStart = safeTotal === 0 ? 0 : (currentPage - 1) * safePageSize + 1;\n  const rangeEnd = Math.min(currentPage * safePageSize, safeTotal);\n  // The current size is always offered, so the selector never shows an empty placeholder when a\n  // consumer's page size is not one of its options.\n  const sizeOptions = !pageSizeOptions?.length\n    ? []\n    : pageSizeOptions.includes(safePageSize)\n      ? [...new Set(pageSizeOptions)]\n      : [...new Set([...pageSizeOptions, safePageSize])].sort((a, b) => a - b);\n\n  return (\n    <Stack\n      ref={ref}\n      direction={{ small: \"column\", medium: \"row\" }}\n      justify=\"between\"\n      align=\"center\"\n      gap=\"small\"\n      className={className ? `sd-paginationbar ${className}` : \"sd-paginationbar\"}\n    >\n      <span className=\"sd-paginationbar__summary sd-type-caption-medium\">\n        Showing {rangeStart}–{rangeEnd} of {safeTotal}\n      </span>\n      {/* spacing: attachment — the summary reads the pager beside it */}\n      <Stack direction=\"row\" align=\"center\" gap=\"small\">\n        {sizeOptions.length > 0 && (\n          <Select\n            variant=\"filled\"\n            size=\"medium\"\n            aria-label={pageSizeSelectorLabel}\n            selectedKey={String(safePageSize)}\n            onSelectionChange={(key) => {\n              if (key != null) onPageSizeChange?.(Number(key));\n            }}\n          >\n            {sizeOptions.map((size) => (\n              <SelectItem key={size} id={String(size)}>\n                {pageSizeLabel(size)}\n              </SelectItem>\n            ))}\n          </Select>\n        )}\n        <Pagination\n          page={currentPage}\n          total={totalPages}\n          onPageChange={onPageChange ?? (() => undefined)}\n        />\n      </Stack>\n    </Stack>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/PaginationBar.css",
+      "type": "registry:component",
+      "target": "src/blocks/PaginationBar.css",
+      "content": "/* PaginationBar.css — full-width responsive arrangement only. */\n.sd-paginationbar {\n  width: 100%;\n}\n\n.sd-paginationbar__summary {\n  flex: none;\n}\n"
+    }
+  ]
+}

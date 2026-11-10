@@ -1,0 +1,34 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "active-session",
+  "type": "registry:block",
+  "title": "Active Session",
+  "description": "A session in progress: one large figure, labelled supporting figures, a live mark and pause and end controls. Composed from Card, Badge, Button, Grid, and Stack.",
+  "registryDependencies": [
+    "@sando-ui/card",
+    "@sando-ui/badge",
+    "@sando-ui/button",
+    "@sando-ui/grid",
+    "@sando-ui/responsive",
+    "@sando-ui/stack",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/ActiveSession.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/ActiveSession.tsx",
+      "content": "// Block (composition) — a session in progress: a run, a focus block, a race.\n// Card owns the surface, Badge the live mark, Button the controls; Stack and Grid arrange.\nimport { useId } from \"react\";\nimport type { Ref } from \"react\";\nimport { Badge } from \"../components/Badge\";\nimport { Button } from \"../components/Button\";\nimport { Card } from \"../components/Card\";\nimport { Grid } from \"../layouts/Grid\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./ActiveSession.css\";\n\nexport interface ActiveSessionMetric {\n  /** What the value measures (\"Distance\"). */\n  label: string;\n  /** The value as it should read (\"4.2 km\"). */\n  value: string;\n}\n\nexport interface ActiveSessionProps {\n  /** The session's name (\"Morning run\"). It names the section. */\n  title: string;\n  /** The one figure the session is about, usually the elapsed time. */\n  primary: ActiveSessionMetric;\n  /** Supporting figures under it; three read best. */\n  metrics?: ActiveSessionMetric[];\n  /** Whether the session is running now. Paused, the live mark is replaced by `pausedLabel`. */\n  isPaused?: boolean;\n  /** Called with the new paused state when Pause or Resume is pressed. */\n  onPauseChange?: (isPaused: boolean) => void;\n  /** Called when End is pressed. */\n  onEnd?: () => void;\n  liveLabel?: string;\n  pausedLabel?: string;\n  pauseLabel?: string;\n  resumeLabel?: string;\n  endLabel?: string;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function ActiveSession({\n  title,\n  primary,\n  metrics = [],\n  isPaused = false,\n  onPauseChange,\n  onEnd,\n  liveLabel = \"Live\",\n  pausedLabel = \"Paused\",\n  pauseLabel = \"Pause\",\n  resumeLabel = \"Resume\",\n  endLabel = \"End\",\n  className,\n  ref,\n}: ActiveSessionProps) {\n  const titleId = useId();\n  return (\n    <Card className={className ? `sd-activesession ${className}` : \"sd-activesession\"}>\n      <Stack as=\"section\" ref={ref} aria-labelledby={titleId} gap=\"large\" className=\"sd-activesession__content\">\n        {/* `start`, so the Badge sits on the title's first line when a long title wraps. The title and the\n            status sit at the row's two ends, so the gap is spread-regions' `small` (token-contract.md\n            § By relationship), a clearance under the free space between them. */}\n        <Stack direction=\"row\" justify=\"between\" align=\"start\" gap=\"small\" className=\"sd-activesession__header\">\n          <>\n            <h2 id={titleId} className=\"sd-activesession__title sd-type-title-medium\">\n              {title}\n            </h2>\n          </>\n          {/* A running session is happening now (`live`); a paused one is a plain state. */}\n          <Badge variant={isPaused ? \"neutral\" : \"live\"} className=\"sd-activesession__status\">\n            {isPaused ? pausedLabel : liveLabel}\n          </Badge>\n        </Stack>\n        <>\n          <Stack gap=\"2x-small\" className=\"sd-activesession__primary-group\">\n            <span className=\"sd-activesession__label sd-type-label-medium\">{primary.label}</span>\n            <span className=\"sd-activesession__primary sd-type-display-medium\">{primary.value}</span>\n          </Stack>\n        </>\n        {metrics.length > 0 && (\n          <>\n            <Grid as=\"dl\" columns={Math.min(metrics.length, 3)} gap=\"medium\" className=\"sd-activesession__metrics\">\n              {metrics.map((metric) => (\n                <Stack key={metric.label} gap=\"2x-small\" className=\"sd-activesession__metric\">\n                  <dt className=\"sd-activesession__label sd-type-label-medium\">{metric.label}</dt>\n                  <dd className=\"sd-activesession__value sd-type-body-medium-emphasized\">{metric.value}</dd>\n                </Stack>\n              ))}\n            </Grid>\n          </>\n        )}\n        <Stack direction=\"row\" gap=\"x-small\" className=\"sd-activesession__actions\">\n          <Button variant=\"secondary\" onPress={() => onPauseChange?.(!isPaused)}>\n            {isPaused ? resumeLabel : pauseLabel}\n          </Button>\n          {/* Ending a live session cannot be undone from here, so it is the destructive press. */}\n          <Button variant=\"destructive\" onPress={onEnd}>\n            {endLabel}\n          </Button>\n        </Stack>\n      </Stack>\n    </Card>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/ActiveSession.css",
+      "type": "registry:component",
+      "target": "src/blocks/ActiveSession.css",
+      "content": "/* ActiveSession.css — .sd-activesession (Block)\n   Arrangement only: Card owns the surface, Badge and Button their look. */\n.sd-activesession__title {\n  margin: 0;\n}\n\n/* The Badge is a chip beside the title: content-sized, never stretched. */\n.sd-activesession__status {\n  flex: none;\n}\n\n/* Figures that change in place keep their width, so they do not jitter as digits change. */\n.sd-activesession__primary,\n.sd-activesession__value {\n  font-variant-numeric: tabular-nums;\n}\n\n.sd-activesession__metrics {\n  margin: 0;\n}\n\n.sd-activesession__value {\n  margin: 0;\n}\n"
+    }
+  ]
+}

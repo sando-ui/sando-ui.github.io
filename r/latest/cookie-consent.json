@@ -1,0 +1,33 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "cookie-consent",
+  "type": "registry:block",
+  "title": "Cookie Consent",
+  "description": "A responsive cookie consent bar with policy link and accept and manage actions. Composed from Button, Link, and Stack.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/button",
+    "@sando-ui/link",
+    "@sando-ui/stack",
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/CookieConsent.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/CookieConsent.tsx",
+      "content": "// Block (composition) — a responsive consent bar assembled from Link, Button, and Stack.\n// The composed Components own their look; this Block only arranges consent copy and actions.\nimport type { ReactNode } from \"react\";\nimport { Button } from \"../components/Button\";\nimport { Link } from \"../components/Link\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./CookieConsent.css\";\n\nexport interface CookieConsentProps {\n  message?: ReactNode;\n  acceptLabel?: string;\n  manageLabel?: string;\n  policyHref?: string;\n  onAccept?: () => void;\n  onManage?: () => void;\n  className?: string;\n}\n\nexport function CookieConsent({\n  message = \"We use cookies to improve your experience.\",\n  acceptLabel = \"Accept\",\n  manageLabel = \"Manage\",\n  policyHref,\n  onAccept,\n  onManage,\n  className,\n}: CookieConsentProps) {\n  return (\n    <Stack\n      as=\"section\"\n      role=\"region\"\n      aria-label=\"Cookie consent\"\n      direction={{ small: \"column\", medium: \"row\" }}\n      justify=\"between\"\n      align=\"center\"\n      gap=\"medium\"\n      className={className ? `sd-cookieconsent ${className}` : \"sd-cookieconsent\"}\n    >\n      <p className=\"sd-cookieconsent__message sd-type-body-medium\">\n        {message}\n        {policyHref && (\n          <>\n            {\" \"}\n            <Link href={policyHref}>Privacy policy</Link>\n          </>\n        )}\n      </p>\n      <Stack direction=\"row\" align=\"center\" gap=\"x-small\" className=\"sd-cookieconsent__actions\">\n        <Button type=\"button\" variant=\"secondary\" onPress={onManage}>\n          {manageLabel}\n        </Button>\n        <Button type=\"button\" variant=\"primary\" onPress={onAccept}>\n          {acceptLabel}\n        </Button>\n      </Stack>\n    </Stack>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/CookieConsent.css",
+      "type": "registry:component",
+      "target": "src/blocks/CookieConsent.css",
+      "content": "/* CookieConsent.css — .sd-cookieconsent (Block)\n   Full-width arrangement only; Stack owns responsive flow and spacing. */\n.sd-cookieconsent {\n  width: 100%;\n}\n\n.sd-cookieconsent__message {\n  margin: 0;\n}\n"
+    }
+  ]
+}

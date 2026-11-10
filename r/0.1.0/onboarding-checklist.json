@@ -1,0 +1,36 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "onboarding-checklist",
+  "type": "registry:block",
+  "title": "Onboarding Checklist",
+  "description": "A getting-started checklist with progress and per-step actions.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/button",
+    "@sando-ui/card",
+    "@sando-ui/checkbox",
+    "@sando-ui/progress-bar",
+    "@sando-ui/stack",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/OnboardingChecklist.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/OnboardingChecklist.tsx",
+      "content": "// Block (composition) — a progress-tracked onboarding checklist with per-step actions.\n// Card owns the surface, Stack owns arrangement, and ProgressBar/Checkbox/Button own Component behavior and look.\nimport { useId, type Ref } from \"react\";\nimport { Button } from \"../components/Button\";\nimport { Card } from \"../components/Card\";\nimport { Checkbox } from \"../components/Checkbox\";\nimport { ProgressBar } from \"../components/ProgressBar\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./OnboardingChecklist.css\";\n\nexport interface OnboardingChecklistProps {\n  steps: {\n    id: string;\n    label: string;\n    description?: string;\n    done?: boolean;\n    actionLabel?: string;\n  }[];\n  onStepAction?: (id: string) => void;\n  heading?: string;\n  className?: string;\n  ref?: Ref<HTMLDivElement>;\n}\n\nexport function OnboardingChecklist({\n  steps,\n  onStepAction,\n  heading = \"Get started\",\n  className,\n  ref,\n}: OnboardingChecklistProps) {\n  const headingId = useId();\n  const completed = steps.filter((step) => step.done).length;\n  const progress = steps.length > 0 ? (completed / steps.length) * 100 : 0;\n\n  return (\n    <Card\n      ref={ref}\n      role=\"region\"\n      aria-labelledby={headingId}\n      className={className ? `sd-onboardingchecklist ${className}` : \"sd-onboardingchecklist\"}\n    >\n      <Stack gap={{ small: \"large\", medium: \"medium\" }} className=\"sd-onboardingchecklist__body\">\n        <>\n          <h2 id={headingId} className=\"sd-onboardingchecklist__heading sd-type-title-medium\">{heading}</h2>\n        </>\n        {/* \"3 of 5 complete\" is the bar's VALUE, not its name — so it goes to `valueLabel`, which\n            drives both the visible value and `aria-valuetext`. Putting it in `label` made the\n            visible text a label the accessible name (\"Onboarding progress\") did not contain. The\n            card's own heading already names this region, so the bar stays visually label-less. */}\n        {/* The value ends a line on the Card's surface, so it takes the end inset (rule 8). The bar\n            has no surface of its own to justify the inset inside ProgressBar, so the Block applies\n            it; the track is a line, not a box, and moves with it. */}\n        <>\n          <ProgressBar\n            value={progress}\n            showValue\n            aria-label=\"Onboarding progress\"\n            valueLabel={`${completed} of ${steps.length} complete`}\n          />\n        </>\n        <Stack gap={{ small: \"large\", medium: \"medium\" }} className=\"sd-onboardingchecklist__steps\">\n          {steps.map((step) => (\n            <Stack\n              key={step.id}\n              direction={{ small: \"column\", medium: \"row\" }}\n              align={{ small: \"stretch\", medium: \"center\" }}\n              justify=\"between\"\n              gap=\"small\"\n              className=\"sd-onboardingchecklist__step\"\n            >\n              {/* The step's helper line is the Checkbox's own description slot, so it becomes the\n                  box's aria-describedby and takes the Checkbox's own description styling, which a\n                  sibling <p> did neither of. */}\n              <div className=\"sd-onboardingchecklist__content\">\n                <Checkbox isSelected={Boolean(step.done)} isReadOnly description={step.description}>\n                  {step.label}\n                </Checkbox>\n              </div>\n              {!step.done && step.actionLabel && (\n                <Button\n                  variant=\"secondary\"\n                  size=\"small\"\n                  className=\"sd-onboardingchecklist__action\"\n                  onPress={() => onStepAction?.(step.id)}\n                >\n                  {step.actionLabel}\n                </Button>\n              )}\n            </Stack>\n          ))}\n        </Stack>\n      </Stack>\n    </Card>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/OnboardingChecklist.css",
+      "type": "registry:component",
+      "target": "src/blocks/OnboardingChecklist.css",
+      "content": ".sd-onboardingchecklist,\n.sd-onboardingchecklist__content {\n  width: 100%;\n}\n\n.sd-onboardingchecklist__heading {\n  margin: 0;\n}\n\n/* The action must not shrink. `__content` is `width: 100%`, so from the `medium` rung up — where\n   the step becomes a row — the pair is over-wide by the button's own size and flex takes the\n   shortfall out of both: at 1024 the button loses 10px and its label wraps onto two lines beside\n   300px of empty card. */\n.sd-onboardingchecklist__action {\n  flex-shrink: 0;\n}\n"
+    }
+  ]
+}

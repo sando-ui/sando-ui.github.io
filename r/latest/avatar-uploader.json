@@ -1,0 +1,34 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "avatar-uploader",
+  "type": "registry:block",
+  "title": "Avatar Uploader",
+  "description": "An avatar preview with image upload and conditional removal actions.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/avatar",
+    "@sando-ui/button",
+    "@sando-ui/file-trigger",
+    "@sando-ui/stack",
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/AvatarUploader.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/AvatarUploader.tsx",
+      "content": "// Block (composition) — avatar preview with image selection and removal actions.\n// Avatar, FileTrigger, and Button own behavior/look; Stack owns arrangement.\nimport type { Ref } from \"react\";\nimport { Avatar } from \"../components/Avatar\";\nimport { Button } from \"../components/Button\";\nimport { FileTrigger } from \"../components/FileTrigger\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./AvatarUploader.css\";\n\nexport interface AvatarUploaderProps {\n  src?: string;\n  name?: string;\n  onSelect?: (file: File) => void;\n  onRemove?: () => void;\n  className?: string;\n  ref?: Ref<HTMLDivElement>;\n}\n\nexport function AvatarUploader({\n  src,\n  name,\n  onSelect,\n  onRemove,\n  className,\n  ref,\n}: AvatarUploaderProps) {\n  const fallback = name\n    ?.split(/\\s+/)\n    .filter(Boolean)\n    .slice(0, 2)\n    .map((part) => part[0]?.toUpperCase())\n    .join(\"\");\n\n  return (\n    <Stack\n      ref={ref}\n      direction=\"row\"\n      align=\"center\"\n      gap=\"small\"\n      className={className ? `sd-avataruploader ${className}` : \"sd-avataruploader\"}\n    >\n      <Avatar size=\"large\" src={src} alt={name ?? \"Profile avatar\"}>\n        {fallback}\n      </Avatar>\n      <Stack gap=\"x-small\" className=\"sd-avataruploader__actions\">\n        <FileTrigger\n          acceptedFileTypes={[\"image/*\"]}\n          onSelect={(files) => {\n            const file = files?.item(0);\n            if (file) onSelect?.(file);\n          }}\n        >\n          <Button type=\"button\">Upload</Button>\n        </FileTrigger>\n        {src && (\n          <Button type=\"button\" variant=\"secondary\" onPress={onRemove}>\n            Remove\n          </Button>\n        )}\n      </Stack>\n    </Stack>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/AvatarUploader.css",
+      "type": "registry:component",
+      "target": "src/blocks/AvatarUploader.css",
+      "content": "/* AvatarUploader.css — arrangement is fully expressed by Stack. */\n.sd-avataruploader {\n  width: 100%;\n}\n"
+    }
+  ]
+}

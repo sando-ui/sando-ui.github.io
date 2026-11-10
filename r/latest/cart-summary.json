@@ -1,0 +1,34 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "cart-summary",
+  "type": "registry:block",
+  "title": "Cart Summary",
+  "description": "A compact cart breakdown with line items, subtotal, optional shipping, total, and checkout action.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/button",
+    "@sando-ui/separator",
+    "@sando-ui/stack",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/CartSummary.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/CartSummary.tsx",
+      "content": "// Block (composition) — cart line items, totals, and a primary checkout action.\nimport { Fragment, type Ref } from \"react\";\nimport { Button } from \"../components/Button\";\nimport { Separator } from \"../components/Separator\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./CartSummary.css\";\n\nexport interface CartSummaryProps {\n  items: { id: string; name: string; quantity: number; price: string }[];\n  subtotal: string;\n  total: string;\n  shipping?: string;\n  onCheckout?: () => void;\n  checkoutLabel?: string;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function CartSummary({\n  items,\n  subtotal,\n  total,\n  shipping,\n  onCheckout,\n  checkoutLabel = \"Checkout\",\n  className,\n  ref,\n}: CartSummaryProps) {\n  return (\n    <Stack\n      as=\"section\"\n      ref={ref}\n      gap=\"small\"\n      aria-label=\"Cart summary\"\n      className={className ? `sd-cartsummary ${className}` : \"sd-cartsummary\"}\n    >\n      {items.map((item) => (\n        <Fragment key={item.id}>\n          <Stack direction=\"row\" justify=\"between\" gap=\"small\" className=\"sd-cartsummary__row\">\n            <span className=\"sd-cartsummary__item sd-type-body-medium\">\n              {item.name} × {item.quantity}\n            </span>\n            <span className=\"sd-cartsummary__price sd-type-body-medium\">{item.price}</span>\n          </Stack>\n        </Fragment>\n      ))}\n      <Separator />\n      <>\n        <Stack direction=\"row\" justify=\"between\" align=\"baseline\" gap=\"small\" className=\"sd-cartsummary__row\">\n          <span className=\"sd-cartsummary__label sd-type-label-medium\">Subtotal</span>\n          <span className=\"sd-cartsummary__price sd-type-body-medium\">{subtotal}</span>\n        </Stack>\n      </>\n      {shipping !== undefined && (\n        <>\n          <Stack direction=\"row\" justify=\"between\" align=\"baseline\" gap=\"small\" className=\"sd-cartsummary__row\">\n            <span className=\"sd-cartsummary__label sd-type-label-medium\">Shipping</span>\n            <span className=\"sd-cartsummary__price sd-type-body-medium\">{shipping}</span>\n          </Stack>\n        </>\n      )}\n      <>\n        <Stack direction=\"row\" justify=\"between\" align=\"baseline\" gap=\"small\" className=\"sd-cartsummary__row\">\n          <span className=\"sd-cartsummary__total-label sd-type-label-medium\">Total</span>\n          <span className=\"sd-cartsummary__total-value sd-type-headline-medium\">{total}</span>\n        </Stack>\n      </>\n      {/* usage: completing-action — checkout ends the summary; it is a plain Button, not a submit */}\n      <Button\n        variant=\"primary\"\n        size=\"large\"\n        onPress={onCheckout}\n        className=\"sd-cartsummary__checkout\"\n      >\n        {checkoutLabel}\n      </Button>\n    </Stack>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/CartSummary.css",
+      "type": "registry:component",
+      "target": "src/blocks/CartSummary.css",
+      "content": "/* CartSummary.css — .sd-cartsummary (Block)\n   Arrangement only: a compact commerce section that fills the column it is given. */\n.sd-cartsummary {\n  width: 100%;\n}\n\n.sd-cartsummary__item {\n  min-width: 0;\n}\n\n.sd-cartsummary__price {\n  flex: none;\n}\n\n.sd-cartsummary__checkout {\n  width: 100%;\n}\n"
+    }
+  ]
+}

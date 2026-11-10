@@ -1,0 +1,29 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "skeleton-list",
+  "type": "registry:block",
+  "title": "Skeleton List",
+  "description": "A full-width set of placeholder rows for list loading states.",
+  "registryDependencies": [
+    "@sando-ui/skeleton",
+    "@sando-ui/stack",
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/SkeletonList.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/SkeletonList.tsx",
+      "content": "// Block (composition) — a configurable list of loading-placeholder rows.\n// Stack owns row arrangement; Skeleton owns placeholder look and this Block owns repeated-row structure.\nimport type { Ref } from \"react\";\nimport { Skeleton } from \"../components/Skeleton\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./SkeletonList.css\";\n\nexport interface SkeletonListProps {\n  rows?: number;\n  showAvatar?: boolean;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function SkeletonList({\n  rows = 5,\n  showAvatar = false,\n  className,\n  ref,\n}: SkeletonListProps) {\n  const rowCount = Math.max(0, Math.floor(rows));\n\n  return (\n    <Stack\n      ref={ref}\n      gap=\"small\"\n      aria-busy=\"true\"\n      className={className ? `sd-skeletonlist ${className}` : \"sd-skeletonlist\"}\n    >\n      {Array.from({ length: rowCount }, (_, index) => (\n        <Stack key={index} direction=\"row\" align=\"center\" gap=\"small\" className=\"sd-skeletonlist__row\">\n          {showAvatar && (\n            <Skeleton\n              width=\"var(--sd-control-height-medium)\"\n              height=\"var(--sd-control-height-medium)\"\n              shape=\"circle\"\n              className=\"sd-skeletonlist__avatar\"\n            />\n          )}\n          <Stack gap=\"2x-small\" className=\"sd-skeletonlist__lines\">\n            <Skeleton width=\"100%\" height=\"1rem\" />\n            <Skeleton width=\"62%\" height=\"0.75rem\" />\n          </Stack>\n        </Stack>\n      ))}\n    </Stack>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/SkeletonList.css",
+      "type": "registry:component",
+      "target": "src/blocks/SkeletonList.css",
+      "content": ".sd-skeletonlist,\n.sd-skeletonlist__lines {\n  width: 100%;\n}\n\n/* The avatar is a CIRCLE: width and height are the same token, so it must not shrink. The lines\n   beside it are `width: 100%`, which in a flex row makes the pair over-wide by the avatar's own\n   size and distributes the shortfall by flex-basis, which takes a declared 40x40 down to 36.9x40: an\n   oval at every width. Same rule, same reason, as\n   `.sd-avatargroup__avatar`. */\n.sd-skeletonlist__avatar {\n  flex-shrink: 0;\n}\n"
+    }
+  ]
+}

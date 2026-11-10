@@ -1,0 +1,30 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "color-wheel",
+  "type": "registry:ui",
+  "title": "Color Wheel",
+  "description": "A circular hue control for color selection. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/components/ColorWheel.tsx",
+      "type": "registry:component",
+      "target": "src/components/ColorWheel.tsx",
+      "content": "// Category A — React Aria owns the hue wheel behavior and conic track gradient.\nimport {\n  ColorWheel as AriaColorWheel,\n  ColorWheelTrack,\n  ColorThumb,\n} from \"react-aria-components\";\nimport type { ColorWheelProps as AriaColorWheelProps } from \"react-aria-components\";\nimport { useId, type Ref } from \"react\";\nimport \"./ColorWheel.css\";\n\nexport interface ColorWheelProps\n  extends Omit<AriaColorWheelProps, \"className\" | \"children\" | \"outerRadius\" | \"innerRadius\"> {\n  /** Outer wheel radius in pixels. */\n  outerRadius?: number;\n  /** Inner wheel radius in pixels. */\n  innerRadius?: number;\n  /**\n   * Helper text describing the control, wired to its `aria-describedby`.\n   *\n   * React Aria provides no description slot for any of the three `Color*` controls (in the\n   * installed package `ColorSlider.mjs`, `ColorArea.mjs` and `ColorWheel.mjs`\n   * mention `description` zero times, where `TagGroup` and `ListBox` hand `descriptionProps` to a\n   * `TextContext`), so a `Text` slotted here would render and describe nothing. The id is\n   * generated and passed explicitly, the same way `Slider` does it.\n   *\n   * It goes on the ROOT, not the thumb: `ColorThumb` reads its props from context and does not\n   * render the input, so the element carrying the control role is built by the root from React\n   * Aria's own hook. (`Slider` is the opposite — there `SliderThumb` renders it, so the id goes on\n   * the thumb.) Merged with any\n   * `aria-describedby` the consumer passes, rather than replacing it.\n   */\n  description?: string;\n  /** Additional class. sd-color-wheel is always preserved. */\n  className?: string;\n  /** Passed to the underlying wheel DOM node. */\n  ref?: Ref<HTMLDivElement>;\n}\n\nexport function ColorWheel({\n  outerRadius = 100,\n  innerRadius = 74,\n  description,\n  className,\n  ref,\n  ...props\n}: ColorWheelProps) {\n  const descriptionId = useId();\n  return (\n    <AriaColorWheel\n      outerRadius={outerRadius}\n      innerRadius={innerRadius}\n      {...props}\n      aria-describedby={\n        [props[\"aria-describedby\"], description ? descriptionId : null].filter(Boolean).join(\" \") ||\n        undefined\n      }\n      ref={ref}\n      className={className ? `sd-color-wheel ${className}` : \"sd-color-wheel\"}\n    >\n      <ColorWheelTrack className=\"sd-color-wheel__track\" />\n      <ColorThumb className=\"sd-color-wheel__thumb\" />\n      {description && (\n        <div id={descriptionId} className=\"sd-color-wheel__description sd-type-caption-medium\">\n          {description}\n        </div>\n      )}\n    </AriaColorWheel>\n  );\n}\n"
+    },
+    {
+      "path": "src/components/ColorWheel.css",
+      "type": "registry:component",
+      "target": "src/components/ColorWheel.css",
+      "content": ".sd-color-wheel {\n  flex-shrink: 0;\n}\n.sd-color-wheel[data-disabled] {\n  opacity: var(--sd-state-disabled);\n}\n\n.sd-color-wheel__track {\n  border-radius: var(--sd-color-wheel-track-radius);\n  corner-shape: round;\n  forced-color-adjust: none;\n}\n\n.sd-color-wheel__thumb {\n  width: var(--sd-color-wheel-thumb-size);\n  height: var(--sd-color-wheel-thumb-size);\n  border: var(--sd-color-wheel-thumb-border-width) solid var(--sd-color-wheel-thumb-border);\n  border-radius: var(--sd-color-wheel-thumb-radius);\n  corner-shape: round;\n  box-shadow: var(--sd-color-wheel-thumb-shadow);\n  box-sizing: border-box;\n}\n/* Hover/drag feedback halo (RAC ColorThumb emits data-hovered/data-dragging), mirrors Slider. */\n.sd-color-wheel__thumb[data-hovered] {\n  box-shadow: var(--sd-color-wheel-thumb-shadow-hover);\n}\n.sd-color-wheel__thumb[data-dragging] {\n  box-shadow: var(--sd-color-wheel-thumb-shadow-dragging);\n}\n.sd-color-wheel__thumb[data-focus-visible] {\n  width: var(--sd-color-wheel-thumb-size-focused);\n  height: var(--sd-color-wheel-thumb-size-focused);\n}\n\n.sd-color-wheel__description {\n  padding-inline: var(--sd-color-wheel-text-padding-inline);\n  color: var(--sd-color-wheel-description-foreground);\n}\n"
+    }
+  ]
+}

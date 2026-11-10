@@ -1,0 +1,30 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "separator",
+  "type": "registry:ui",
+  "title": "Separator",
+  "description": "A horizontal or vertical divider between sections. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/components/Separator.tsx",
+      "type": "registry:component",
+      "target": "src/components/Separator.tsx",
+      "content": "import { Separator as AriaSeparator } from \"react-aria-components\";\nimport type { SeparatorProps as AriaSeparatorProps } from \"react-aria-components\";\nimport type { Ref } from \"react\";\nimport \"./Separator.css\";\n\nexport interface SeparatorProps extends Omit<AriaSeparatorProps, \"className\"> {\n  /**\n   * `band` is a thick neutral strip between sections of a page; `line` is a rule. A band is drawn only for a horizontal separator: a vertical one\n   * stays a line, since a vertical band has no use. Bleeding the band past the page's inset is the\n   * screen's layout, not the Separator's.\n   *\n   * @default \"line\"\n   */\n  variant?: \"line\" | \"band\";\n  /**\n   * A rule that only punctuates: the items it sits between are already parted by spacing, so it\n   * conveys no grouping. Hidden from assistive tech and drawn in the light decorative edge rather\n   * than the boundary colour a Separator otherwise carries (WCAG 1.4.11 asks nothing of trim).\n   *\n   * @default false\n   */\n  isDecorative?: boolean;\n  className?: string;\n  /**\n   * Passed to the underlying separator DOM element. React Aria renders a horizontal\n   * separator as an `<hr>` and swaps to a `<div>` only for `orientation=\"vertical\"`\n   * (`react-aria-components/dist/private/Separator.mjs`), so the ref can be either —\n   * the default (horizontal) case is the `<hr>`.\n   */\n  ref?: Ref<HTMLHRElement | HTMLDivElement>;\n}\n\nexport function Separator({\n  variant = \"line\",\n  isDecorative = false,\n  orientation = \"horizontal\",\n  className,\n  ...props\n}: SeparatorProps) {\n  if (isDecorative)\n    return (\n      <div\n        aria-hidden=\"true\"\n        data-orientation={orientation}\n        data-variant={variant}\n        data-decorative=\"\"\n        className={className ? `sd-separator ${className}` : \"sd-separator\"}\n        ref={props.ref as Ref<HTMLDivElement>}\n      />\n    );\n  return (\n    <AriaSeparator\n      {...props}\n      orientation={orientation}\n      data-orientation={orientation}\n      data-variant={variant}\n      className={className ? `sd-separator ${className}` : \"sd-separator\"}\n    />\n  );\n}\n"
+    },
+    {
+      "path": "src/components/Separator.css",
+      "type": "registry:component",
+      "target": "src/components/Separator.css",
+      "content": ".sd-separator {\n  flex-shrink: 0;\n  /* RAC renders horizontal Separator as <hr>; kill the UA inset border so only\n     the flat --sd-separator-background bar shows (reset.css doesn't cover this). */\n  border: none;\n  background: var(--sd-separator-background);\n}\n\n/* Punctuation, not a boundary: the light decorative edge. */\n.sd-separator[data-decorative] {\n  background: var(--sd-separator-decorative-background);\n}\n\n.sd-separator[data-orientation=\"horizontal\"] {\n  width: 100%;\n  height: var(--sd-separator-size);\n}\n\n/* band: a thick neutral strip between page sections; a vertical separator stays a line. It parts\n   the PAGE, so it runs edge to edge of its frame rather than stopping at the content's inset: one\n   frame width (`100cqi`, the nearest inline-size container, which AppShell's panel is; the viewport\n   where there is none), pulled back by the difference between the two. Centred content is assumed,\n   which a page's sections are. */\n.sd-separator[data-orientation=\"horizontal\"][data-variant=\"band\"] {\n  width: 100cqi;\n  margin-inline-start: calc(50% - 50cqi);\n  height: var(--sd-separator-band-size);\n  background: var(--sd-separator-band-background);\n}\n\n.sd-separator[data-orientation=\"vertical\"] {\n  width: var(--sd-separator-size);\n  /* In a flex row (e.g. Toolbar) stretch to the line's height. `height: 100%` collapses\n     when the parent has no definite height, so it would fall back to min-height (a short\n     floating bar) — align-self:stretch is what actually fills the row. min-height is the\n     fallback for non-flex contexts. */\n  align-self: stretch;\n  min-height: var(--sd-separator-min-height-vertical);\n}\n"
+    }
+  ]
+}

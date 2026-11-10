@@ -1,0 +1,37 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "invite-form",
+  "type": "registry:block",
+  "title": "Invite Form",
+  "description": "A responsive email invitation form with role selection, pending state, and form-level errors.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/alert",
+    "@sando-ui/button",
+    "@sando-ui/form",
+    "@sando-ui/select",
+    "@sando-ui/stack",
+    "@sando-ui/text-field",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/InviteForm.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/InviteForm.tsx",
+      "content": "// Block (composition) — an email invitation form with a responsive role row.\n// Form fields and actions own their look/behavior; Stack owns responsive arrangement.\nimport type { FormEvent, Ref } from \"react\";\nimport { Alert } from \"../components/Alert\";\nimport { Button } from \"../components/Button\";\nimport { Form } from \"../components/Form\";\nimport { Select, SelectItem } from \"../components/Select\";\nimport { Stack } from \"../layouts/Stack\";\nimport { TextField } from \"../components/TextField\";\nimport \"./InviteForm.css\";\n\nexport interface InviteFormProps {\n  heading?: string;\n  roles: { id: string; label: string }[];\n  onSubmit?: (data: { email: string; role: string }) => void;\n  isPending?: boolean;\n  errorMessage?: string;\n  className?: string;\n  ref?: Ref<HTMLFormElement>;\n}\n\nexport function InviteForm({\n  heading,\n  roles,\n  onSubmit,\n  isPending,\n  errorMessage,\n  className,\n  ref,\n}: InviteFormProps) {\n  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {\n    event.preventDefault();\n    const data = new FormData(event.currentTarget);\n    onSubmit?.({\n      email: String(data.get(\"email\") ?? \"\"),\n      role: String(data.get(\"role\") ?? \"\"),\n    });\n  };\n\n  return (\n    <Form isPending={isPending}\n      ref={ref}\n      onSubmit={handleSubmit}\n      className={className ? `sd-inviteform ${className}` : \"sd-inviteform\"}\n    >\n      {/* `large`: this holds a fields GROUP and a submit, which is the shape the other nine\n          full forms take. `small` is for a Stack holding field(s) DIRECTLY beside their button. */}\n      <Stack gap=\"large\" className=\"sd-inviteform__content\">\n        {heading && (\n          <>\n            <h2 className=\"sd-inviteform__heading sd-type-title-medium\">{heading}</h2>\n          </>\n        )}\n        {/* live=\"assertive\": see `AlertProps.live` — submit failure is the case that earns it. */}\n        {errorMessage && (\n          <Alert variant=\"error\" live=\"assertive\">\n            {errorMessage}\n          </Alert>\n        )}\n        <Stack direction={{ small: \"column\", medium: \"row\" }} gap=\"medium\" className=\"sd-inviteform__fields\">\n          <TextField\n            label=\"Email\"\n            name=\"email\"\n            type=\"email\"\n            autoComplete=\"email\"\n            isRequired\n            className=\"sd-inviteform__email\"\n          />\n          <Select\n            label=\"Role\"\n            name=\"role\"\n            isRequired\n            defaultSelectedKey={roles[0]?.id}\n            className=\"sd-inviteform__role\"\n          >\n            {roles.map((role) => (\n              <SelectItem key={role.id} id={role.id}>\n                {role.label}\n              </SelectItem>\n            ))}\n          </Select>\n        </Stack>\n        <Button size=\"large\" type=\"submit\" variant=\"primary\" isPending={isPending}>\n          Send invite\n        </Button>\n      </Stack>\n    </Form>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/InviteForm.css",
+      "type": "registry:component",
+      "target": "src/blocks/InviteForm.css",
+      "content": "/* InviteForm.css — .sd-inviteform (Block)\n   Arrangement only: caps the form and lets both responsive fields share the row. */\n.sd-inviteform {\n  width: 100%;\n}\n\n.sd-inviteform__heading {\n  margin: 0;\n}\n\n.sd-inviteform__email,\n.sd-inviteform__role {\n  flex: 1;\n  min-width: 0;\n}\n"
+    }
+  ]
+}

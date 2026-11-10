@@ -1,0 +1,34 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "wizard",
+  "type": "registry:block",
+  "title": "Wizard",
+  "description": "A multi-step flow with a progress indicator, consumer-supplied step content, and back, next, and completion actions.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/progress-bar",
+    "@sando-ui/button",
+    "@sando-ui/stack",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/Wizard.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/Wizard.tsx",
+      "content": "// Block (composition) — multi-step orchestration with progress and navigation.\n// Arranges only; composes ProgressBar/Button/Stack.\nimport { useCallback, useEffect, useId, useRef, useState } from \"react\";\nimport type { ReactNode, Ref } from \"react\";\nimport { ProgressBar } from \"../components/ProgressBar\";\nimport { Button } from \"../components/Button\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./Wizard.css\";\n\nexport interface WizardProps {\n  steps: { title: string; content: ReactNode }[];\n  /** The current step, controlled. Pair with `onStepChange`; omit both to let the wizard keep it. */\n  stepIndex?: number;\n  /** The step the wizard opens on when it keeps its own state. @default 0 */\n  defaultStepIndex?: number;\n  /** Called with the step Back or Next moves to. */\n  onStepChange?: (index: number) => void;\n  onComplete?: () => void;\n  completeLabel?: string;\n  backLabel?: string;\n  nextLabel?: string;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function Wizard({\n  steps,\n  stepIndex: controlledIndex,\n  defaultStepIndex = 0,\n  onStepChange,\n  onComplete,\n  completeLabel = \"Finish\",\n  backLabel = \"Back\",\n  nextLabel = \"Next\",\n  className,\n  ref,\n}: WizardProps) {\n  const titleId = useId();\n  const titleRef = useRef<HTMLHeadingElement>(null);\n  const shownIndex = useRef<number | null>(null);\n  // Controlled when `stepIndex` is given, the React Aria convention for a value with an onChange.\n  const [ownIndex, setOwnIndex] = useState(defaultStepIndex);\n  const stepIndex = controlledIndex ?? ownIndex;\n  const setStepIndex = (index: number) => {\n    if (controlledIndex === undefined) setOwnIndex(index);\n    onStepChange?.(index);\n  };\n\n  /* A step reached from outside the wizard (a checklist beside it, a link) leaves focus wherever the\n     jump started, often on a control that the jump just removed. So when the step changes and focus is\n     not inside the wizard, it goes to the new step's title, as a multi-page form moves it to the page\n     heading. Back and Next keep focus where it is. */\n  const sectionRef = useRef<HTMLElement | null>(null);\n  // One stable callback for the internal node and the caller's ref, keeping a cleanup the caller's\n  // callback returns (React 19), the pattern ScrollArea states in full.\n  const attach = useCallback(\n    (node: HTMLElement | null) => {\n      sectionRef.current = node;\n      if (typeof ref === \"function\") {\n        const cleanup = ref(node);\n        return () => {\n          sectionRef.current = null;\n          if (typeof cleanup === \"function\") cleanup();\n          else ref(null);\n        };\n      }\n      if (ref) ref.current = node;\n      return () => {\n        sectionRef.current = null;\n        if (ref) ref.current = null;\n      };\n    },\n    [ref],\n  );\n  useEffect(() => {\n    const index = Math.max(0, Math.min(Math.trunc(controlledIndex ?? ownIndex) || 0, steps.length - 1));\n    if (shownIndex.current !== null && shownIndex.current !== index && !sectionRef.current?.contains(document.activeElement))\n      titleRef.current?.focus();\n    shownIndex.current = index;\n  });\n\n  if (steps.length === 0) return null;\n\n  // Any index lands on a real step: a negative, fractional or NaN one would otherwise index nothing.\n  const currentIndex = Math.max(0, Math.min(Math.trunc(stepIndex) || 0, steps.length - 1));\n  const currentStep = steps[currentIndex];\n  const isLastStep = currentIndex === steps.length - 1;\n\n  const handleNext = () => {\n    if (isLastStep) {\n      onComplete?.();\n      return;\n    }\n    setStepIndex(currentIndex + 1);\n  };\n\n  return (\n    <section\n      ref={attach}\n      aria-labelledby={titleId}\n      className={className ? `sd-wizard ${className}` : \"sd-wizard\"}\n    >\n      <Stack gap=\"large\" className=\"sd-wizard__body\">\n        <ProgressBar\n          value={((currentIndex + 1) / steps.length) * 100}\n          aria-label={currentStep.title}\n        />\n        {/* spacing: attachment — the progress bar heads the step it measures */}\n        <Stack gap=\"medium\" className=\"sd-wizard__step\">\n          <>\n            <h2 id={titleId} ref={titleRef} tabIndex={-1} className=\"sd-wizard__title sd-type-title-medium\">{currentStep.title}</h2>\n          </>\n          <div className=\"sd-wizard__content\">{currentStep.content}</div>\n        </Stack>\n        {/* usage: completing-action — Next ends each step and, on the last, the wizard; Back shares its row */}\n        <Stack direction=\"row\" gap=\"small\" justify=\"between\" className=\"sd-wizard__actions\">\n          <Button\n            type=\"button\"\n            variant=\"secondary\"\n            size=\"large\"\n            isDisabled={currentIndex === 0}\n            onPress={() => setStepIndex(currentIndex - 1)}\n          >\n            {backLabel}\n          </Button>\n          <Button type=\"button\" variant=\"primary\" size=\"large\" onPress={handleNext}>\n            {isLastStep ? completeLabel : nextLabel}\n          </Button>\n        </Stack>\n      </Stack>\n    </section>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/Wizard.css",
+      "type": "registry:component",
+      "target": "src/blocks/Wizard.css",
+      "content": "/* Wizard.css — arrangement only; Component look stays with its owners. */\n/* A Panel (block-contract § 1b): it fills its parent, which owns the width. */\n.sd-wizard {\n  width: 100%;\n}\n\n.sd-wizard__title {\n  margin: 0;\n}\n\n/* The title takes focus only when a step is reached from outside the wizard, as a landing point for a\n   screen reader. It is not a tab stop and not a control, so it draws no focus indicator. */\n.sd-wizard__title {\n  outline: none;\n}\n"
+    }
+  ]
+}

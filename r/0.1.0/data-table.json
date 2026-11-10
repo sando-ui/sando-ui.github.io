@@ -1,0 +1,36 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "data-table",
+  "type": "registry:block",
+  "title": "Data Table",
+  "description": "A searchable and paginated data table with a composed empty-state fallback.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/table",
+    "@sando-ui/scroll-area",
+    "@sando-ui/search-field",
+    "@sando-ui/pagination",
+    "@sando-ui/empty-state",
+    "@sando-ui/stack",
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/DataTable.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/DataTable.tsx",
+      "content": "// Block (composition) — searchable, paginated tabular data with an empty fallback.\n// Table owns all table-part visuals; this Block only wires collections and arrangement.\nimport type { ReactNode, Ref } from \"react\";\nimport { Pagination } from \"../components/Pagination\";\nimport { ScrollArea } from \"../components/ScrollArea\";\nimport { SearchField } from \"../components/SearchField\";\nimport { Stack } from \"../layouts/Stack\";\nimport {\n  Table,\n  TableBody,\n  TableCell,\n  TableColumn,\n  TableHeader,\n  TableRow,\n} from \"../components/Table\";\nimport { EmptyState } from \"./EmptyState\";\nimport \"./DataTable.css\";\n\nexport interface DataTableProps {\n  /** Column definitions, in display order. `align: \"end\"` for a numeric column (an amount, a count). */\n  columns: { id: string; label: string; align?: \"start\" | \"end\" }[];\n  /** Row records keyed by column id. Each row must also include an id. */\n  rows: Record<string, ReactNode>[];\n  searchValue?: string;\n  onSearchChange?: (value: string) => void;\n  page?: number;\n  totalPages?: number;\n  onPageChange?: (page: number) => void;\n  emptyLabel?: string;\n  /** Optional controls displayed opposite the search field. */\n  actions?: ReactNode;\n  /** Names the table. Prefer `aria-labelledby` when a visible heading already names it. */\n  \"aria-label\"?: string;\n  /** Id of the visible heading that names the table. */\n  \"aria-labelledby\"?: string;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function DataTable({\n  columns,\n  rows,\n  searchValue,\n  onSearchChange,\n  page = 1,\n  totalPages,\n  onPageChange,\n  emptyLabel = \"No results\",\n  actions,\n  \"aria-label\": ariaLabel,\n  \"aria-labelledby\": ariaLabelledby,\n  className,\n  ref,\n}: DataTableProps) {\n  return (\n    <Stack\n      as=\"section\"\n      ref={ref}\n      gap=\"medium\"\n      aria-label=\"Data table\"\n      className={className ? `sd-datatable ${className}` : \"sd-datatable\"}\n    >\n      <Stack\n        direction={{ small: \"column\", medium: \"row\" }}\n        align={{ small: \"stretch\", medium: \"center\" }}\n        justify=\"between\"\n        gap=\"small\"\n        className=\"sd-datatable__toolbar\"\n      >\n        <SearchField\n          aria-label=\"Search table\"\n          placeholder=\"Search\"\n          value={searchValue}\n          onChange={onSearchChange}\n          className=\"sd-datatable__search\"\n        />\n        {actions}\n      </Stack>\n\n      {/* A search that empties the table moves no focus, so the empty state below is never heard.\n          The live region stays mounted and only its text changes, which is what gets announced\n          (WCAG 4.1.3). */}\n      <p role=\"status\" className=\"sd-visually-hidden\">\n        {searchValue && rows.length === 0 ? emptyLabel : \"\"}\n      </p>\n\n      {/* spacing: attachment — the toolbar searches and acts on the table below it */}\n      {rows.length > 0 ? (\n        // A `<table>` is `display: table`: it refuses to shrink below its min-content width, and its\n        // own `overflow` cannot constrain it — `Table.css`'s `overflow: hidden` clips the border\n        // radius and does nothing here. So a Table in any container narrower than its columns spills\n        // out SILENTLY: a 427px table in a 300px grid track paints 127px of itself over its neighbour\n        // while every box stays inside its own cell, which no sibling-overlap check would catch.\n        // The scrollport is the library's existing answer (ScrollArea, same as Carousel's viewport),\n        // and it brings the obligation with it: ScrollArea is a tab stop with the token focus ring,\n        // so the region stays reachable without a pointer (axe scrollable-region-focusable / 2.1.1).\n        <ScrollArea orientation=\"horizontal\" className=\"sd-datatable__scroll\">\n        <Table\n          aria-label={ariaLabel ?? (ariaLabelledby ? undefined : \"Results\")}\n          aria-labelledby={ariaLabelledby}\n        >\n          <TableHeader columns={columns}>\n            {(column) => (\n              <TableColumn id={column.id} align={column.align} isRowHeader={column.id === columns[0]?.id}>\n                {column.label}\n              </TableColumn>\n            )}\n          </TableHeader>\n          <TableBody items={rows}>\n            {(row) => (\n              <TableRow id={String(row.id)} columns={columns}>\n                {(column) => <TableCell align={column.align}>{row[column.id]}</TableCell>}\n              </TableRow>\n            )}\n          </TableBody>\n        </Table>\n        </ScrollArea>\n      ) : (\n        <EmptyState title={emptyLabel} />\n      )}\n\n      {/* spacing: attachment — the pagination pages the table above it */}\n      {totalPages ? (\n        <Pagination\n          page={page}\n          total={totalPages}\n          onPageChange={onPageChange ?? (() => undefined)}\n        />\n      ) : null}\n    </Stack>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/DataTable.css",
+      "type": "registry:component",
+      "target": "src/blocks/DataTable.css",
+      "content": "/* DataTable.css — .sd-datatable (Block)\n   Arrangement only. Table and every Table part retain their owned look. */\n.sd-datatable {\n  width: 100%;\n}\n\n.sd-datatable__search {\n  width: 100%;\n}\n\n@media (min-width: 768px) {\n  .sd-datatable__search {\n    max-width: 20rem;\n  }\n}\n\n/* The scrollport must be allowed to be NARROWER than the table it holds. Both halves are needed:\n   `min-width: 0` because a flex item defaults to `min-width: auto` and would otherwise grow to the\n   table's min-content, and `width: 100%` so it fills the track it is given rather than the content. */\n.sd-datatable__scroll {\n  min-width: 0;\n  width: 100%;\n}\n"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "drop-indicator",
+  "type": "registry:ui",
+  "title": "Drop Indicator",
+  "description": "A drop-position marker rendered between items in a draggable collection (pass into useDragAndDrop's renderDropIndicator). Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/components/DropIndicator.tsx",
+      "type": "registry:component",
+      "target": "src/components/DropIndicator.tsx",
+      "content": "// Category A — the between-items drop position line. When reorder is wired onto a draggable\n// collection (GridList/Table/ListBox…) through dragAndDropHooks, the consumer renders this\n// inside useDragAndDrop({ renderDropIndicator }). Behavior borrowed from\n// react-aria-components, look owned here.\nimport { DropIndicator as AriaDropIndicator } from \"react-aria-components\";\nimport type { DropIndicatorProps as AriaDropIndicatorProps } from \"react-aria-components\";\nimport type { Ref } from \"react\";\nimport \"./DropIndicator.css\";\n\nexport interface DropIndicatorProps extends Omit<AriaDropIndicatorProps, \"className\"> {\n  /** Additional class. sd-drop-indicator is always retained. */\n  className?: string;\n  /** Passed to the underlying DOM node. */\n  ref?: Ref<HTMLElement>;\n}\n\nexport function DropIndicator({ className, ref, ...props }: DropIndicatorProps) {\n  return (\n    <AriaDropIndicator\n      {...props}\n      ref={ref}\n      className={className ? `sd-drop-indicator ${className}` : \"sd-drop-indicator\"}\n    />\n  );\n}\n"
+    },
+    {
+      "path": "src/components/DropIndicator.css",
+      "type": "registry:component",
+      "target": "src/components/DropIndicator.css",
+      "content": ".sd-drop-indicator {\n  height: var(--sd-drop-indicator-height);\n  margin-block: var(--sd-drop-indicator-margin-block);\n  background: transparent;\n  border-radius: var(--sd-drop-indicator-radius);\n  corner-shape: round;\n  outline: none;\n}\n\n.sd-drop-indicator[data-drop-target] {\n  background: var(--sd-drop-indicator-background-active);\n}\n"
+    }
+  ]
+}

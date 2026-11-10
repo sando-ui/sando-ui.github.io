@@ -1,0 +1,28 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "site-header",
+  "type": "registry:ui",
+  "title": "Site Header",
+  "description": "A full-width top bar on the page's fill with an edge below, sticky by default, whose content follows the page grid's frame. Holds a Navbar.",
+  "registryDependencies": [
+    "@sando-ui/styles",
+    "@sando-ui/use-scroll-clearance"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/components/SiteHeader.tsx",
+      "type": "registry:component",
+      "target": "src/components/SiteHeader.tsx",
+      "content": "// Category B: no behaviour beyond keeping focus clear of itself. It owns the look a site's top bar\n// needs, which a Block may not set: the fill that content scrolls under, the edge that ends it, and\n// its place on the sticky layer. Its content stops at the page grid's frame, so a Navbar inside\n// lines up with the page below it.\nimport type { CSSProperties, HTMLAttributes, Ref } from \"react\";\nimport { useScrollClearance } from \"./useScrollClearance\";\nimport \"./SiteHeader.css\";\n\nexport interface SiteHeaderProps extends Omit<HTMLAttributes<HTMLElement>, \"className\"> {\n  /** Keeps the bar at the top of the viewport while the page scrolls. */\n  isSticky?: boolean;\n  className?: string;\n  style?: CSSProperties;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function SiteHeader({ isSticky = true, className, children, ref, ...props }: SiteHeaderProps) {\n  // A sticky bar sits over the top of the page, so the document's top scroll padding follows its\n  // height while it sticks (a wrapped row on a phone included).\n  const clearRef = useScrollClearance(\"start\", ref, isSticky);\n\n  return (\n    <header\n      {...props}\n      ref={clearRef}\n      data-sticky={isSticky || undefined}\n      className={className ? `sd-site-header ${className}` : \"sd-site-header\"}\n    >\n      <div className=\"sd-site-header__frame\">{children}</div>\n    </header>\n  );\n}\n"
+    },
+    {
+      "path": "src/components/SiteHeader.css",
+      "type": "registry:component",
+      "target": "src/components/SiteHeader.css",
+      "content": "/* SiteHeader.css — .sd-site-header (+ __frame)\n   A full-width bar on the page's own fill with a decorative edge below. The frame inside takes the\n   page grid's margin and cap (token-contract.md: Cmp(site-header) reads `grid` as the page frame),\n   so the bar's content starts and stops where the page's does. */\n.sd-site-header {\n  inline-size: 100%;\n  background: var(--sd-site-header-background);\n  border-block-end: var(--sd-site-header-border-width) solid var(--sd-site-header-border);\n}\n\n.sd-site-header[data-sticky] {\n  position: sticky;\n  inset-block-start: 0;\n  z-index: var(--sd-site-header-z-index);\n}\n\n.sd-site-header__frame {\n  max-inline-size: var(--sd-site-header-max-width);\n  margin-inline: auto;\n  padding-inline: var(--sd-site-header-padding-inline);\n}\n"
+    }
+  ]
+}

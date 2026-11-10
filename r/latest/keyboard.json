@@ -1,0 +1,30 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "keyboard",
+  "type": "registry:ui",
+  "title": "Keyboard",
+  "description": "A small badge for displaying a keyboard shortcut hint. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/components/Keyboard.tsx",
+      "type": "registry:component",
+      "target": "src/components/Keyboard.tsx",
+      "content": "// Category A — almost no behavior (purely static display), owns the look.\n// A small <kbd> badge (\"⌘K\") that displays keyboard shortcuts in menu items, etc.\nimport { Keyboard as AriaKeyboard } from \"react-aria-components\";\nimport type { ComponentProps, Ref } from \"react\";\nimport \"./Keyboard.css\";\n\n// react-aria-components doesn't export a standalone `KeyboardProps` type;\n// derive it from the component itself.\ntype AriaKeyboardProps = Omit<ComponentProps<typeof AriaKeyboard>, \"ref\">;\n\nexport interface KeyboardProps extends Omit<AriaKeyboardProps, \"className\"> {\n  /** Additional class (optional). sd-keyboard is always preserved. */\n  className?: string;\n  /** Forwarded to the underlying <kbd> DOM node. */\n  ref?: Ref<HTMLElement>;\n}\n\nexport function Keyboard({ className, ref, ...props }: KeyboardProps) {\n  return (\n    <AriaKeyboard\n      {...props}\n      ref={ref}\n      className={className ? `sd-keyboard sd-type-code-medium ${className}` : \"sd-keyboard sd-type-code-medium\"}\n    />\n  );\n}\n"
+    },
+    {
+      "path": "src/components/Keyboard.css",
+      "type": "registry:component",
+      "target": "src/components/Keyboard.css",
+      "content": ".sd-keyboard {\n  display: inline-flex;\n  align-items: center;\n  padding-inline: var(--sd-keyboard-padding-inline);\n  color: var(--sd-keyboard-foreground);\n  background: var(--sd-keyboard-background);\n  border: var(--sd-keyboard-border-width) solid var(--sd-keyboard-border);\n  border-radius: var(--sd-keyboard-radius);\n  corner-shape: superellipse(var(--sd-radius-curve));\n}\n"
+    }
+  ]
+}

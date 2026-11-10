@@ -1,0 +1,28 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "empty-state",
+  "type": "registry:block",
+  "title": "Empty State",
+  "description": "A centered empty-collection placeholder with optional icon, description, and consumer-supplied action. Composed from Stack.",
+  "registryDependencies": [
+    "@sando-ui/stack",
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/EmptyState.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/EmptyState.tsx",
+      "content": "// Block (composition) — a centered empty-collection placeholder.\n// Stack owns arrangement; icon and action are consumer-supplied slots.\nimport { useId, type ReactNode, type Ref } from \"react\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./EmptyState.css\";\n\nexport interface EmptyStateProps {\n  /** Optional decorative or illustrative icon. */\n  icon?: ReactNode;\n  /** Empty-state heading. */\n  title: string;\n  /** Supporting explanation or guidance. */\n  description?: string;\n  /** Consumer-supplied action, typically a Button. */\n  action?: ReactNode;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function EmptyState({\n  icon,\n  title,\n  description,\n  action,\n  className,\n  ref,\n}: EmptyStateProps) {\n  const titleId = useId();\n\n  return (\n    <Stack\n      as=\"section\"\n      ref={ref}\n      aria-labelledby={titleId}\n      align=\"center\"\n      gap=\"small\"\n      className={className ? `sd-emptystate ${className}` : \"sd-emptystate\"}\n    >\n      {icon}\n      {/* spacing: attachment — the glyph heads the title under it.\n          The name and its supporting line read as ONE unit, so they are a group at a tighter rung\n          than the section's own — the same pair `PageHeader` groups. Flat siblings put the same\n          12px between the title and its description as between the description and the action,\n          which is what made the two read as three unrelated things. */}\n      <Stack gap=\"x-small\" align=\"center\" className=\"sd-emptystate__heading\">\n        <h2 id={titleId} className=\"sd-emptystate__title sd-type-title-medium\">\n          {title}\n        </h2>\n        {description && (\n          <p className=\"sd-emptystate__description sd-type-body-medium\">{description}</p>\n        )}\n      </Stack>\n      {action}\n    </Stack>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/EmptyState.css",
+      "type": "registry:component",
+      "target": "src/blocks/EmptyState.css",
+      "content": "/* EmptyState.css — .sd-emptystate (Block)\n   Arrangement only: a compact section centred in the column it is given; Stack owns flow. */\n.sd-emptystate {\n  width: 100%;\n  text-align: center;\n}\n\n.sd-emptystate__title,\n.sd-emptystate__description {\n  margin: 0;\n}\n\n.sd-emptystate__description {\n  color: var(--sd-color-text-muted);\n}\n"
+    }
+  ]
+}

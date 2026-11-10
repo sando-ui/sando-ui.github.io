@@ -1,0 +1,31 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "tooltip",
+  "type": "registry:ui",
+  "title": "Tooltip",
+  "description": "A delayed floating label for an anchor element. Behavior borrowed from react-aria-components; look owned in Vanilla CSS.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/styles",
+    "@sando-ui/resolve-offset"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/components/Tooltip.tsx",
+      "type": "registry:component",
+      "target": "src/components/Tooltip.tsx",
+      "content": "// Category A (overlay) — behavior borrowed from react-aria-components, look owned in src.\nimport {\n  OverlayArrow,\n  Tooltip as AriaTooltip,\n  TooltipTrigger,\n} from \"react-aria-components\";\nimport type {\n  TooltipProps as AriaTooltipProps,\n  TooltipTriggerComponentProps,\n} from \"react-aria-components\";\nimport type { ReactNode, Ref } from \"react\";\nimport { resolveOffset } from \"./resolveOffset\";\nimport \"./Tooltip.css\";\n\nexport interface TooltipProps\n  extends Omit<AriaTooltipProps, \"className\" | \"children\">,\n    Pick<TooltipTriggerComponentProps, \"delay\" | \"closeDelay\"> {\n  /** Whether to show the arrow. */\n  showArrow?: boolean;\n  /** Tooltip content. */\n  content: ReactNode;\n  /** Target element that opens the tooltip. */\n  children: ReactNode;\n  /** Additional class (optional). sd-tooltip is always preserved. */\n  className?: string;\n  /** Forwarded to the underlying tooltip DOM node. */\n  ref?: Ref<HTMLDivElement>;\n}\n\nexport function Tooltip({\n  showArrow = true,\n  content,\n  children,\n  delay,\n  closeDelay,\n  className,\n  ref,\n  // TooltipTrigger owns the open state. Passing it straight through to AriaTooltip makes RAC create\n  // a **separate** local state (Tooltip.mjs: adopts localState when\n  // `props.isOpen != null || props.defaultOpen != null`), leaving two owners: local state controls\n  // rendering while the trigger's context state controls internal behavior — they diverge from\n  // hover/focus. Pass it to the trigger the same way as Menu.\n  isOpen,\n  defaultOpen,\n  onOpenChange,\n  offset,\n  ...props\n}: TooltipProps) {\n  return (\n    <TooltipTrigger\n      delay={delay}\n      closeDelay={closeDelay}\n      isOpen={isOpen}\n      defaultOpen={defaultOpen}\n      onOpenChange={onOpenChange}\n    >\n      {children}\n      <AriaTooltip\n        {...props}\n        ref={ref}\n        // The stand-off from the trigger, read off `tooltip.offset` (see resolveOffset.ts). RAC's\n        // own default is 0, which set the box flush against the trigger and the arrow over it.\n        offset={offset ?? resolveOffset(\"--sd-tooltip-offset\")}\n        className={\n          className ? `sd-tooltip sd-type-caption-medium ${className}` : \"sd-tooltip sd-type-caption-medium\"\n        }\n      >\n        {showArrow && (\n          <OverlayArrow className=\"sd-tooltip__arrow\">\n            <svg\n              width=\"10\"\n              height=\"10\"\n              viewBox=\"0 0 10 10\"\n              aria-hidden=\"true\"\n              className=\"sd-tooltip__arrow-icon\"\n            >\n              <path d=\"M0 0 L5 5 L10 0\" />\n            </svg>\n          </OverlayArrow>\n        )}\n        {content}\n      </AriaTooltip>\n    </TooltipTrigger>\n  );\n}\n"
+    },
+    {
+      "path": "src/components/Tooltip.css",
+      "type": "registry:component",
+      "target": "src/components/Tooltip.css",
+      "content": "/* Tooltip.css — .sd-tooltip\n   규칙: sd- 프리픽스 / 평평한 단일 클래스 / 상태는 react-aria data-* / Cmp 토큰 참조. */\n.sd-tooltip {\n  max-width: var(--sd-tooltip-max-width);\n  background: var(--sd-tooltip-background);\n  color: var(--sd-tooltip-foreground);\n  border: var(--sd-tooltip-border-width) solid var(--sd-tooltip-border);\n  border-radius: var(--sd-tooltip-radius);\n  corner-shape: superellipse(var(--sd-radius-curve));\n  box-shadow: var(--sd-tooltip-shadow);\n  padding: var(--sd-tooltip-padding-block) var(--sd-tooltip-padding-inline);\n}\n\n.sd-tooltip[data-entering] {\n  animation: sd-tooltip-enter var(--sd-tooltip-animation-duration) var(--sd-easing-decelerate);\n}\n\n.sd-tooltip[data-exiting] {\n  animation: sd-tooltip-exit var(--sd-tooltip-animation-duration) var(--sd-easing-accelerate);\n}\n\n.sd-tooltip__arrow {\n  display: block;\n  fill: var(--sd-tooltip-arrow-background);\n  stroke: var(--sd-tooltip-arrow-border);\n  stroke-width: var(--sd-tooltip-arrow-stroke-width);\n  /* react-aria sets an inline transform (translate) here to position the arrow, which\n     would override a rotate. So the placement rotation lives on the svg child via this\n     inherited local var. Base points down; values point the arrow AT the trigger. */\n  --sd-tooltip-arrow-rotate-current: 0deg;\n}\n.sd-tooltip__arrow[data-placement=\"bottom\"] {\n  --sd-tooltip-arrow-rotate-current: 180deg;\n}\n.sd-tooltip__arrow[data-placement=\"left\"] {\n  --sd-tooltip-arrow-rotate-current: -90deg;\n}\n.sd-tooltip__arrow[data-placement=\"right\"] {\n  --sd-tooltip-arrow-rotate-current: 90deg;\n}\n.sd-tooltip__arrow-icon {\n  display: block;\n  transform: rotate(var(--sd-tooltip-arrow-rotate-current, 0deg));\n}\n\n@keyframes sd-tooltip-enter {\n  from {\n    opacity: 0;\n    transform: translateY(var(--sd-tooltip-translate-enter));\n  }\n  to {\n    opacity: 1;\n    transform: translateY(0);\n  }\n}\n\n@keyframes sd-tooltip-exit {\n  from {\n    opacity: 1;\n    transform: translateY(0);\n  }\n  to {\n    opacity: 0;\n    transform: translateY(var(--sd-tooltip-translate-exit));\n  }\n}\n\n@media (prefers-reduced-motion: reduce) {\n  .sd-tooltip[data-entering],\n  .sd-tooltip[data-exiting] {\n    animation: none;\n  }\n}\n"
+    }
+  ]
+}

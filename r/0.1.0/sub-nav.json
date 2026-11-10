@@ -1,0 +1,33 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "sub-nav",
+  "type": "registry:block",
+  "title": "Sub Nav",
+  "description": "A full-width secondary section navigation with an optional bottom separator.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/link",
+    "@sando-ui/separator",
+    "@sando-ui/stack",
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/SubNav.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/SubNav.tsx",
+      "content": "// Block (composition) — a full-width secondary section navigation.\nimport type { Ref } from \"react\";\nimport { Link } from \"../components/Link\";\nimport { Separator } from \"../components/Separator\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./SubNav.css\";\n\nexport interface SubNavProps {\n  /**\n   * Page-navigation prominence. Size follows the Blocks' medium/large vocabulary rather than\n   * adding a visual variant axis: large promotes sibling-page names to headlines, omits the\n   * separator and scrolls horizontally. Medium preserves the compact, wrapping navigation.\n   *\n   * @default \"medium\"\n   */\n  size?: \"medium\" | \"large\";\n  items: { label: string; href: string }[];\n  activeHref?: string;\n  /** Show a separator beneath medium navigation; large never draws one. */\n  showSeparator?: boolean;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function SubNav({\n  size = \"medium\",\n  items,\n  activeHref,\n  showSeparator = true,\n  className,\n  ref,\n}: SubNavProps) {\n  // CONTRASTIVE: sibling-page names sit below a page headline-medium; compact names stay labels.\n  const typeClass = size === \"large\" ? \"sd-type-headline-small\" : \"sd-type-label-medium\";\n  // The large row lends its weight too: Link's relative current weight resolves against its parent.\n  const links = (\n    <Stack\n      as={size === \"large\" ? \"ul\" : \"div\"}\n      direction=\"row\"\n      gap=\"medium\"\n      align=\"center\"\n      wrap={size !== \"large\"}\n      data-size={size}\n      className={size === \"large\" ? `sd-subnav__links ${typeClass}` : \"sd-subnav__links\"}\n    >\n      {items.map((item, index) => {\n        const link = (\n          <Link\n            key={`${item.label}-${index}`}\n            href={item.href}\n            aria-current={activeHref === item.href ? \"page\" : undefined}\n            variant={size === \"large\" ? \"subtle\" : \"quiet\"}\n            className={typeClass}\n          >\n            {item.label}\n          </Link>\n        );\n        return size === \"large\" ? (\n          <li key={`${item.label}-${index}`} className=\"sd-subnav__item\">{link}</li>\n        ) : link;\n      })}\n    </Stack>\n  );\n\n  return (\n    <nav\n      ref={ref}\n      aria-label=\"Secondary\"\n      data-size={size}\n      className={className ? `sd-subnav ${className}` : \"sd-subnav\"}\n    >\n      {links}\n      {size === \"medium\" && showSeparator && <Separator className=\"sd-subnav__separator\" />}\n    </nav>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/SubNav.css",
+      "type": "registry:component",
+      "target": "src/blocks/SubNav.css",
+      "content": "/* SubNav.css — full-width secondary navigation arrangement only. */\n.sd-subnav {\n  width: 100%;\n}\n\n.sd-subnav__links {\n  width: 100%;\n}\n\n.sd-subnav__separator {\n  margin-top: var(--sd-space-small);\n}\n\n.sd-subnav__links[data-size=\"large\"] {\n  /* Compensated room for focus rings; tabbing to each anchor scrolls it into view. */\n  width: calc(100% + 2 * var(--sd-state-focus-ring-width));\n  margin: calc(-1 * var(--sd-state-focus-ring-width));\n  padding: var(--sd-state-focus-ring-width);\n  list-style: none;\n  overflow-x: auto;\n}\n\n.sd-subnav__item {\n  flex: none;\n  white-space: nowrap;\n}\n"
+    }
+  ]
+}

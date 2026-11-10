@@ -1,0 +1,36 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "coupon-input",
+  "type": "registry:block",
+  "title": "Coupon Input",
+  "description": "A responsive promo-code form with a consumer-controlled applied and removable state.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/badge",
+    "@sando-ui/button",
+    "@sando-ui/form",
+    "@sando-ui/separator",
+    "@sando-ui/stack",
+    "@sando-ui/text-field",
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/CouponInput.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/CouponInput.tsx",
+      "content": "// Block (composition) — promo-code entry with a consumer-controlled applied state.\nimport type { FormEvent } from \"react\";\nimport { Badge } from \"../components/Badge\";\nimport { Button } from \"../components/Button\";\nimport { Form } from \"../components/Form\";\nimport { Separator } from \"../components/Separator\";\nimport { Stack } from \"../layouts/Stack\";\nimport { TextField } from \"../components/TextField\";\nimport \"./CouponInput.css\";\n\nexport interface CouponInputProps {\n  onApply?: (code: string) => void;\n  onRemove?: () => void;\n  appliedCode?: string;\n  label?: string;\n}\n\nexport function CouponInput({\n  onApply,\n  onRemove,\n  appliedCode,\n  label = \"Promo code\",\n}: CouponInputProps) {\n  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {\n    event.preventDefault();\n    const code = String(new FormData(event.currentTarget).get(\"code\") ?? \"\").trim();\n    if (code) onApply?.(code);\n  };\n\n  return (\n    <div className=\"sd-couponinput\">\n      {appliedCode ? (\n        <Stack direction=\"row\" align=\"center\" justify=\"between\" gap=\"small\" className=\"sd-couponinput__applied\">\n          <Badge variant=\"neutral\">{appliedCode}</Badge>\n          <Separator orientation=\"vertical\" />\n          {/* usage: item-action — it removes the one applied code shown beside it */}\n          <Button type=\"button\" variant=\"secondary\" size=\"small\" onPress={onRemove}>\n            Remove\n          </Button>\n        </Stack>\n      ) : (\n        <Form onSubmit={handleSubmit}>\n          <Stack\n            direction={{ small: \"column\", medium: \"row\" }}\n            align={{ small: \"stretch\", medium: \"end\" }}\n            gap=\"small\"\n            className=\"sd-couponinput__form\"\n          >\n            <TextField\n              name=\"code\"\n              label={label}\n              autoComplete=\"off\"\n              isRequired\n              className=\"sd-couponinput__field\"\n            />\n            <Button type=\"submit\" className=\"sd-couponinput__action\">\n              Apply\n            </Button>\n          </Stack>\n        </Form>\n      )}\n    </div>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/CouponInput.css",
+      "type": "registry:component",
+      "target": "src/blocks/CouponInput.css",
+      "content": "/* CouponInput.css — arrangement only; composed Components own their look. */\n.sd-couponinput {\n  width: 100%;\n}\n\n.sd-couponinput__field {\n  flex: 1;\n  min-width: 0;\n}\n\n.sd-couponinput__action {\n  flex: none;\n}\n"
+    }
+  ]
+}

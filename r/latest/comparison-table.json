@@ -1,0 +1,34 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "comparison-table",
+  "type": "registry:block",
+  "title": "Comparison Table",
+  "description": "A full-width feature comparison matrix for marketing plans.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/badge",
+    "@sando-ui/scroll-area",
+    "@sando-ui/stack",
+    "@sando-ui/styles",
+    "@sando-ui/table"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/ComparisonTable.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/ComparisonTable.tsx",
+      "content": "// Block (composition) — a horizontally scrollable feature-by-plan comparison.\n// Table owns tabular behavior, ScrollArea owns overflow, Badge owns plan labels, and Stack arranges the section.\nimport type { ReactNode, Ref } from \"react\";\nimport { ScrollArea } from \"../components/ScrollArea\";\nimport { Badge } from \"../components/Badge\";\nimport { Stack } from \"../layouts/Stack\";\nimport {\n  Table,\n  TableBody,\n  TableCell,\n  TableColumn,\n  TableHeader,\n  TableRow,\n} from \"../components/Table\";\nimport \"./ComparisonTable.css\";\n\nexport interface ComparisonTableProps {\n  features: string[];\n  plans: {\n    name: string;\n    values: (boolean | string)[];\n  }[];\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\ntype ComparisonColumn = {\n  id: string;\n  label: ReactNode;\n};\n\ntype ComparisonRow = {\n  id: string;\n  feature: string;\n  [key: string]: boolean | string;\n};\n\nfunction formatValue(value: boolean | string) {\n  if (typeof value === \"boolean\") return value ? \"✓\" : \"—\";\n  return value;\n}\n\nexport function ComparisonTable({\n  features,\n  plans,\n  className,\n  ref,\n}: ComparisonTableProps) {\n  const columns: ComparisonColumn[] = [\n    { id: \"feature\", label: \"Feature\" },\n    ...plans.map((plan, index) => ({\n      id: `plan-${index}`,\n      label: <Badge variant=\"neutral\">{plan.name}</Badge>,\n    })),\n  ];\n\n  const rows: ComparisonRow[] = features.map((feature, featureIndex) => {\n    const row: ComparisonRow = { id: `feature-${featureIndex}`, feature };\n    plans.forEach((plan, planIndex) => {\n      row[`plan-${planIndex}`] = plan.values[featureIndex] ?? \"—\";\n    });\n    return row;\n  });\n\n  return (\n    <Stack\n      as=\"section\"\n      ref={ref}\n      gap=\"none\"\n      aria-label=\"Plan comparison\"\n      className={className ? `sd-comparisontable ${className}` : \"sd-comparisontable\"}\n    >\n      {/* The Block root used to carry `overflow-x: auto` directly, which made it a scroll region\n          with no way to reach it from a keyboard (axe scrollable-region-focusable / WCAG 2.1.1).\n          ScrollArea is the same container plus the tab stop, gated on real overflow. */}\n      <ScrollArea orientation=\"horizontal\" className=\"sd-comparisontable__scroll\">\n        <Table aria-label=\"Feature comparison by plan\">\n          <TableHeader columns={columns}>\n            {(column) => (\n              <TableColumn id={column.id} isRowHeader={column.id === \"feature\"}>\n                {column.label}\n              </TableColumn>\n            )}\n          </TableHeader>\n          <TableBody items={rows}>\n            {(row) => (\n              <TableRow id={row.id} columns={columns}>\n                {(column) => <TableCell>{formatValue(row[column.id])}</TableCell>}\n              </TableRow>\n            )}\n          </TableBody>\n        </Table>\n      </ScrollArea>\n    </Stack>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/ComparisonTable.css",
+      "type": "registry:component",
+      "target": "src/blocks/ComparisonTable.css",
+      "content": ".sd-comparisontable {\n  width: 100%;\n}\n\n/* The scrollport, not the root. `overflow-x` lived on the root and gave it scrolling without\n   focusability; ScrollArea owns the overflow now, and this only has to let it be NARROWER than the\n   table it holds (a flex/grid item defaults to `min-width: auto` and would grow to min-content). */\n.sd-comparisontable__scroll {\n  min-width: 0;\n  width: 100%;\n}\n"
+    }
+  ]
+}

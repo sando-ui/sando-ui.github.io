@@ -1,0 +1,35 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "upgrade-prompt",
+  "type": "registry:block",
+  "title": "Upgrade Prompt",
+  "description": "An upsell card with plan badge, benefits, and an upgrade action.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/badge",
+    "@sando-ui/button",
+    "@sando-ui/card",
+    "@sando-ui/stack",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/UpgradePrompt.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/UpgradePrompt.tsx",
+      "content": "// Block (composition) — an upgrade offer with optional badge, features, and action.\n// Card owns the surface, Stack owns arrangement, and Badge/Button own Component labels and behavior.\nimport { useId, type Ref } from \"react\";\nimport { Badge } from \"../components/Badge\";\nimport { Button } from \"../components/Button\";\nimport { Card } from \"../components/Card\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./UpgradePrompt.css\";\n\nexport interface UpgradePromptProps {\n  title: string;\n  description?: string;\n  features?: string[];\n  ctaLabel?: string;\n  onUpgrade?: () => void;\n  badge?: string;\n  className?: string;\n  ref?: Ref<HTMLDivElement>;\n}\n\nexport function UpgradePrompt({\n  title,\n  description,\n  features,\n  ctaLabel = \"Upgrade\",\n  onUpgrade,\n  badge,\n  className,\n  ref,\n}: UpgradePromptProps) {\n  const titleId = useId();\n\n  return (\n    <Card\n      ref={ref}\n      role=\"region\"\n      aria-labelledby={titleId}\n      className={className ? `sd-upgradeprompt ${className}` : \"sd-upgradeprompt\"}\n    >\n      <Stack gap=\"small\" className=\"sd-upgradeprompt__content\">\n        {/* The name and its supporting line are ONE unit; here the name shares a row with its\n            badge, so the group is that ROW plus the description. */}\n        <Stack gap=\"x-small\" className=\"sd-upgradeprompt__heading\">\n          <Stack direction=\"row\" align=\"center\" gap=\"x-small\" wrap className=\"sd-upgradeprompt__title-row\">\n            <>\n              <h2 id={titleId} className=\"sd-upgradeprompt__title sd-type-title-medium\">{title}</h2>\n            </>\n            {badge && <Badge variant=\"tonal\">{badge}</Badge>}\n          </Stack>\n          {description && (\n            <>\n              <p className=\"sd-upgradeprompt__description sd-type-body-medium\">{description}</p>\n            </>\n          )}\n        </Stack>\n        {/* One rung below the `description` that introduces it — CONTRASTIVE, per\n            naming-convention.md § The size axis defaults to `medium`. */}\n        {features && features.length > 0 && (\n          <ul className=\"sd-upgradeprompt__features sd-type-body-small\">\n            {features.map((feature) => <li key={feature}>{feature}</li>)}\n          </ul>\n        )}\n        <Button onPress={onUpgrade}>{ctaLabel}</Button>\n      </Stack>\n    </Card>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/UpgradePrompt.css",
+      "type": "registry:component",
+      "target": "src/blocks/UpgradePrompt.css",
+      "content": ".sd-upgradeprompt {\n  width: 100%;\n}\n\n.sd-upgradeprompt__title,\n.sd-upgradeprompt__description,\n.sd-upgradeprompt__features {\n  margin: 0;\n}\n\n.sd-upgradeprompt__features {\n  padding-inline-start: var(--sd-space-large);\n}\n\n.sd-upgradeprompt__description {\n  color: var(--sd-color-text-muted);\n}\n"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "band",
+  "type": "registry:ui",
+  "title": "Band",
+  "description": "A page section painted edge to edge of its frame, its content kept on the page's column.",
+  "registryDependencies": [
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/components/Band.tsx",
+      "type": "registry:component",
+      "target": "src/components/Band.tsx",
+      "content": "import type { CSSProperties, HTMLAttributes, ReactNode, Ref } from \"react\";\nimport \"./Band.css\";\n\n// Band (Component) — a page section on its own ground: the tint runs edge to edge of the page frame\n// while the content stays on the page's column. Category B: a painted region with no behaviour, so\n// plain elements and no React Aria. It is the filled counterpart of `Separator variant=\"band\"`, which\n// parts two sections with a strip; a Band IS the section.\n//\n// `tone=\"inverse\"` puts the section on an INVERSE GROUND: it sets `data-ground=\"inverse\"`, and the token\n// build re-declares every colour role inside it at the opposite theme's value (a light page's band goes\n// dark, a dark page's goes light). Everything inside, the band's own paint included, then resolves there,\n// so nothing in it needs an inverse variant of its own.\nexport interface BandProps extends Omit<HTMLAttributes<HTMLElement>, \"className\" | \"style\"> {\n  /** The element the section renders as. A labelled `section` is a region landmark. @default \"section\" */\n  as?: \"section\" | \"div\" | \"aside\";\n  /** The section's ground. `inverse` turns the band and everything in it to the opposite theme, the\n   *  way a page-closing footer sits dark on a light page. @default \"neutral\" */\n  tone?: \"neutral\" | \"inverse\";\n  /** The section's content, laid out on the page's column. */\n  children?: ReactNode;\n  /** Additional class. sd-band is always retained. */\n  className?: string;\n  style?: CSSProperties;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function Band({ as: Element = \"section\", tone = \"neutral\", children, className, style, ref, ...props }: BandProps) {\n  return (\n    <Element\n      {...props}\n      ref={ref as Ref<HTMLElement & HTMLDivElement>}\n      style={style}\n      data-ground={tone === \"inverse\" ? \"inverse\" : undefined}\n      className={className ? `sd-band ${className}` : \"sd-band\"}\n    >\n      {children}\n    </Element>\n  );\n}\n"
+    },
+    {
+      "path": "src/components/Band.css",
+      "type": "registry:component",
+      "target": "src/components/Band.css",
+      "content": "/* Band — a page section painted edge to edge of its frame, its content kept on the page's column.\n   One frame width (`100cqi`: the nearest inline-size container, which AppShell's panel declares; the\n   viewport where there is none) pulled back by the difference between frame and column, then that same\n   difference given back as inline padding, so the children start exactly where the column does.\n   Centred content is assumed, which a page's sections are (Separator `band` makes the same assumption).\n   On an inverse ground (`tone=\"inverse\"`) the same paint resolves to the opposite theme's value, because\n   the token build re-declares the band's background token inside the ground; no second rule is needed. */\n.sd-band {\n  width: 100cqi;\n  margin-inline-start: calc(50% - 50cqi);\n  padding-inline: calc(50cqi - 50%);\n  padding-block: var(--sd-band-padding-block);\n  background: var(--sd-band-background);\n}\n"
+    }
+  ]
+}

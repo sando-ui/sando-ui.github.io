@@ -1,0 +1,33 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "floating-bar",
+  "type": "registry:block",
+  "title": "Floating Bar",
+  "description": "A bar of mixed controls (search, selects, a view switch, actions) pinned to the bottom of the viewport. Unlike Floating Toolbar it has no roving focus, so a text field inside it keeps its arrow keys. Composed from Card and Stack; the Block owns only the placement.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/card",
+    "@sando-ui/stack",
+    "@sando-ui/styles",
+    "@sando-ui/use-scroll-clearance"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/FloatingBar.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/FloatingBar.tsx",
+      "content": "// Block (composition) — a floating bar of mixed controls pinned to the bottom of the viewport.\n// Contract: docs/rules/block-contract.md. FloatingToolbar's sibling for a control set a toolbar\n// cannot hold: a `role=\"toolbar\"` takes the arrow keys for roving focus (React Aria's useToolbar\n// catches ArrowLeft/Right in the capture phase), so a SearchField inside one cannot move its caret.\n// This bar has no roving focus: every control keeps its own keys, and Tab walks them.\n//   Card    → SURFACE   (size=\"small\" variant=\"raised\", as FloatingToolbar)\n//   Stack   → the row, wrapping inside the bar when the controls outgrow the viewport\n//   Block   → PLACEMENT (position: fixed on the sticky layer)\n// It renders a named `<section>`, so the bar is a region landmark a screen reader can jump to.\n// The bar covers the bottom of the page, so it sets the document's `scroll-padding-block-end` to its\n// own reach, and a control scrolled into view stops above it (WCAG 2.4.11). It reserves no space in\n// flow, so the consumer still keeps room after the page's last content, or the last row can never\n// scroll clear of the bar. FloatingToolbar does and needs the same.\n// Posture: self-contained floating chrome.\nimport type { CSSProperties, ReactNode, Ref } from \"react\";\nimport { Card } from \"../components/Card\";\nimport { useScrollClearance } from \"../components/useScrollClearance\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./FloatingBar.css\";\n\nexport interface FloatingBarProps {\n  /** The controls: fields, Selects, a SegmentedControl, Buttons. Each is chrome owned by a bar,\n   *  so pass them at `size=\"small\"` (prop-usage-contract.md § Size, row chrome). */\n  children?: ReactNode;\n  /** Accessible name for the bar's region. Required: the bar has no visible heading. */\n  \"aria-label\": string;\n  /** The horizontal span the bar centres within, as CSS inline insets (`\"600px 24px\"`). Omit for\n   *  the viewport. The same seam FloatingToolbar takes. */\n  insetInline?: string;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function FloatingBar({\n  children,\n  \"aria-label\": ariaLabel,\n  insetInline,\n  className,\n  ref,\n}: FloatingBarProps) {\n  const clearRef = useScrollClearance(\"end\", ref);\n  return (\n    <section\n      ref={clearRef}\n      aria-label={ariaLabel}\n      style={\n        insetInline\n          ? ({ \"--sd-layout-floating-bar-inline\": insetInline } as CSSProperties)\n          : undefined\n      }\n      className={className ? `sd-floatingbar ${className}` : \"sd-floatingbar\"}\n    >\n      {/* `raised` because the bar floats over page content; `small` because it IS a bar. */}\n      <Card size=\"small\" variant=\"raised\" className=\"sd-floatingbar__bar\">\n        {/* spacing: action-row — the controls are one unit of peers, as a toolbar's are */}\n        <Stack direction=\"row\" gap=\"x-small\" align=\"center\" wrap className=\"sd-floatingbar__row\">\n          {children}\n        </Stack>\n      </Card>\n    </section>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/FloatingBar.css",
+      "type": "registry:component",
+      "target": "src/blocks/FloatingBar.css",
+      "content": "/* FloatingBar.css — .sd-floatingbar (Block)\n   Arrangement only: pin the bar to the bottom centre of the viewport, as FloatingToolbar.css does.\n   The surface is the composed Card's, the row the composed Stack's. References Sys layout scales\n   only; defines no tokens. */\n.sd-floatingbar {\n  position: fixed;\n  /* The span the bar centres within, as inline insets; `0` is the viewport. Declared `initial` so\n     it cannot inherit from an ancestor: it comes through the `insetInline` prop. */\n  --sd-layout-floating-bar-inline: initial;\n  inset-inline: var(--sd-layout-floating-bar-inline, 0);\n  inset-block-end: var(--sd-overlay-margin-medium);\n  display: flex;\n  justify-content: center;\n  z-index: var(--sd-layer-sticky);\n  /* Clicks fall through the transparent gutter beside the bar; the bar re-enables them. */\n  pointer-events: none;\n}\n\n.sd-floatingbar__bar {\n  pointer-events: auto;\n  /* Hug the controls, never wider than the viewport gutter allows; past that the Stack wraps. */\n  width: max-content;\n  max-width: calc(100% - 2 * var(--sd-overlay-margin-medium));\n}\n"
+    }
+  ]
+}

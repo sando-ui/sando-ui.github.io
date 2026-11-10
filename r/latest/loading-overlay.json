@@ -1,0 +1,29 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "loading-overlay",
+  "type": "registry:block",
+  "title": "Loading Overlay",
+  "description": "A loading status overlay positioned over consumer-supplied content.",
+  "registryDependencies": [
+    "@sando-ui/spinner",
+    "@sando-ui/stack",
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/LoadingOverlay.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/LoadingOverlay.tsx",
+      "content": "// Block (composition) — a content wrapper with a conditional loading scrim.\n// Stack owns scrim arrangement; Spinner owns loading status and this Block owns busy-state composition.\nimport type { ReactNode, Ref } from \"react\";\nimport { Spinner } from \"../components/Spinner\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./LoadingOverlay.css\";\n\nexport interface LoadingOverlayProps {\n  isLoading: boolean;\n  label?: string;\n  children: ReactNode;\n  className?: string;\n  ref?: Ref<HTMLDivElement>;\n}\n\nexport function LoadingOverlay({\n  isLoading,\n  label = \"Loading…\",\n  children,\n  className,\n  ref,\n}: LoadingOverlayProps) {\n  return (\n    <div\n      ref={ref}\n      aria-busy={isLoading}\n      className={className ? `sd-loadingoverlay ${className}` : \"sd-loadingoverlay\"}\n    >\n      {children}\n      {isLoading && (\n        <Stack\n          className=\"sd-loadingoverlay__scrim\"\n          align=\"center\"\n          justify=\"center\"\n          gap=\"x-small\"\n          aria-live=\"polite\"\n        >\n          <Spinner aria-label={label} />\n          <span aria-hidden=\"true\" className=\"sd-loadingoverlay__label sd-type-label-medium\">\n            {label}\n          </span>\n        </Stack>\n      )}\n    </div>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/LoadingOverlay.css",
+      "type": "registry:component",
+      "target": "src/blocks/LoadingOverlay.css",
+      "content": ".sd-loadingoverlay {\n  position: relative;\n}\n\n.sd-loadingoverlay__scrim {\n  position: absolute;\n  z-index: 1;\n  inset: 0;\n}\n"
+    }
+  ]
+}

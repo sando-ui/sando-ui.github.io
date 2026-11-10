@@ -1,0 +1,38 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "blog-post-grid",
+  "type": "registry:block",
+  "title": "Blog Post Grid",
+  "description": "A responsive grid of article preview cards with optional media, excerpts, links, and bylines.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/avatar",
+    "@sando-ui/card",
+    "@sando-ui/grid",
+    "@sando-ui/link",
+    "@sando-ui/responsive",
+    "@sando-ui/stack",
+    "@sando-ui/media",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/BlogPostGrid.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/BlogPostGrid.tsx",
+      "content": "// Block (composition) — responsive article previews for editorial landing pages.\n// Card, Link, and Avatar own their look; Grid and Stack own arrangement.\nimport type { ReactNode, Ref } from \"react\";\nimport { Avatar } from \"../components/Avatar\";\nimport { Card } from \"../components/Card\";\nimport { Media } from \"../components/Media\";\nimport { Grid } from \"../layouts/Grid\";\nimport { Link } from \"../components/Link\";\nimport type { Responsive } from \"../layouts/responsive\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./BlogPostGrid.css\";\n\nexport interface BlogPostGridProps {\n  posts: {\n    id: string;\n    title: string;\n    excerpt?: string;\n    author?: string;\n    date?: string;\n    image?: ReactNode;\n    href?: string;\n  }[];\n  columns?: Responsive<number>;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function BlogPostGrid({\n  posts,\n  columns = { small: 1, medium: 3 },\n  className,\n  ref,\n}: BlogPostGridProps) {\n  return (\n    <Grid\n      as=\"section\"\n      ref={ref}\n      aria-label=\"Blog posts\"\n      columns={columns}\n      gap=\"medium\"\n      className={className ? `sd-blogpostgrid ${className}` : \"sd-blogpostgrid\"}\n    >\n      {posts.map((post) => (\n        <Card key={post.id} role=\"article\">\n          <Stack gap=\"medium\" className=\"sd-blogpostgrid__content\">\n            {post.image && <Media className=\"sd-blogpostgrid__media\">{post.image}</Media>}\n            {/* The name and its supporting line are ONE unit, so they group at `x-small` while the\n              card around them parts them two rungs looser — otherwise the same gap separates the\n              pair as separates it from everything else. The media is a consumer's node, not a\n              painted edge, so the parting law holds against it. */}\n            <>\n              <Stack gap=\"x-small\" className=\"sd-blogpostgrid__heading\">\n                <h3 className=\"sd-blogpostgrid__title sd-type-title-medium\">\n                  {post.href ? <Link href={post.href}>{post.title}</Link> : post.title}\n                </h3>\n                {post.excerpt && (\n                  <p className=\"sd-blogpostgrid__excerpt sd-type-body-medium\">{post.excerpt}</p>\n                )}\n              </Stack>\n            </>\n            {(post.author || post.date) && (\n              <Stack direction=\"row\" align=\"center\" gap=\"small\" className=\"sd-blogpostgrid__meta-row\">\n                {/* With no avatar to lead the row, the date is text on the card's surface and takes\n                    the inset (rule 8). After an avatar the author and date wrap in their own row, so\n                    a wrapped date still starts after the avatar, not leading, at 0. */}\n                {post.author ? (\n                  <>\n                    <Avatar size=\"small\" alt={post.author}>\n                      {post.author.charAt(0)}\n                    </Avatar>\n                    <Stack direction=\"row\" align=\"center\" gap=\"small\" wrap>\n                      <span className=\"sd-blogpostgrid__meta sd-type-caption-medium\">\n                        {post.author}\n                      </span>\n                      {post.date && (\n                        <span className=\"sd-blogpostgrid__meta sd-type-caption-medium\">{post.date}</span>\n                      )}\n                    </Stack>\n                  </>\n                ) : (\n                  <>\n                    <span className=\"sd-blogpostgrid__meta sd-type-caption-medium\">{post.date}</span>\n                  </>\n                )}\n              </Stack>\n            )}\n          </Stack>\n        </Card>\n      ))}\n    </Grid>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/BlogPostGrid.css",
+      "type": "registry:component",
+      "target": "src/blocks/BlogPostGrid.css",
+      "content": "/* BlogPostGrid.css — .sd-blogpostgrid (Block)\n   Arrangement only: fills its section and normalizes editorial text margins. */\n.sd-blogpostgrid {\n  width: 100%;\n}\n\n.sd-blogpostgrid__title,\n.sd-blogpostgrid__excerpt,\n.sd-blogpostgrid__meta {\n  margin: 0;\n}\n\n.sd-blogpostgrid__meta {\n  color: var(--sd-color-text-muted);\n}\n\n.sd-blogpostgrid__media {\n  width: 100%;\n}\n\n.sd-blogpostgrid__excerpt {\n  color: var(--sd-color-text-muted);\n}\n"
+    }
+  ]
+}

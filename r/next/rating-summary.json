@@ -1,0 +1,33 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "rating-summary",
+  "type": "registry:block",
+  "title": "Rating Summary",
+  "description": "A responsive average rating and five-to-one-star review distribution.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/meter",
+    "@sando-ui/rating",
+    "@sando-ui/stack",
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/RatingSummary.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/RatingSummary.tsx",
+      "content": "// Block (composition) — an aggregate rating paired with a five-to-one-star distribution.\n// Meter, Rating and Stack own their look and responsive layout behavior.\nimport { useLocale } from \"react-aria-components\";\nimport { Meter } from \"../components/Meter\";\nimport { Rating } from \"../components/Rating\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./RatingSummary.css\";\n\nexport interface RatingSummaryProps {\n  average: number;\n  count: number;\n  distribution: { stars: number; count: number }[];\n  /** The scale under the score, in the page's language. @default \"out of 5\" */\n  scaleLabel?: string;\n  /** The review count line; `count` arrives raw, so format it with the page's locale. @default `${n} review(s)`, `n` grouped by the locale */\n  countLabel?: (count: number) => string;\n  /** A distribution row's name. @default `${stars} star` */\n  starLabel?: (stars: number) => string;\n  /** The section's accessible name. @default \"Rating summary\" */\n  \"aria-label\"?: string;\n}\n\nconst starLevels = [5, 4, 3, 2, 1];\n\nexport function RatingSummary({\n  average,\n  count,\n  distribution,\n  scaleLabel = \"out of 5\",\n  countLabel,\n  starLabel = (stars) => `${stars} star`,\n  \"aria-label\": ariaLabel = \"Rating summary\",\n}: RatingSummaryProps) {\n  // The locale React Aria resolves from the nearest I18nProvider (or the browser), as KeypadEntry\n  // reads it: counts are grouped for the reader (2,410), never printed raw.\n  const { locale } = useLocale();\n  const formatCount = new Intl.NumberFormat(locale).format;\n  const countText = countLabel\n    ? countLabel(count)\n    : `${formatCount(count)} ${count === 1 ? \"review\" : \"reviews\"}`;\n  return (\n    // A section, so its accessible name has a role to belong to: `aria-label` on a bare div is\n    // prohibited (axe `aria-prohibited-attr`), and a labelled section is a region landmark.\n    <Stack\n      as=\"section\"\n      direction={{ small: \"column\", medium: \"row\" }}\n      gap=\"large\"\n      className=\"sd-ratingsummary\"\n      aria-label={ariaLabel}\n    >\n      <Stack align=\"center\" gap=\"2x-small\" className=\"sd-ratingsummary__average\">\n        <span className=\"sd-ratingsummary__value sd-type-display-medium\">\n          {average.toFixed(1)}\n        </span>\n        {/* The stars restate the number beside them, so they are decoration: the score is read once,\n            from the text. */}\n        <Rating isReadOnly aria-hidden value={average} />\n        <span className=\"sd-ratingsummary__scale sd-type-caption-medium\">{scaleLabel}</span>\n        <span className=\"sd-ratingsummary__count sd-type-caption-medium\">\n          {countText}\n        </span>\n      </Stack>\n      {/* One grid, every row a subgrid of it: the label and count columns size to their widest\n          cell, so all five meters start and end on the same lines whatever the digits. */}\n      <div className=\"sd-ratingsummary__distribution\">\n        {starLevels.map((stars) => {\n          const starCount = distribution.find((item) => item.stars === stars)?.count ?? 0;\n          const percentage = count > 0 ? (starCount / count) * 100 : 0;\n\n          return (\n            <div key={stars} className=\"sd-ratingsummary__row\">\n              <span className=\"sd-ratingsummary__label sd-type-label-medium\">{starLabel(stars)}</span>\n              <Meter\n                value={percentage}\n                aria-label={starLabel(stars)}\n                className=\"sd-ratingsummary__meter\"\n              />\n              <span className=\"sd-ratingsummary__row-count sd-type-body-medium\">\n                {formatCount(starCount)}\n              </span>\n            </div>\n          );\n        })}\n      </div>\n    </Stack>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/RatingSummary.css",
+      "type": "registry:component",
+      "target": "src/blocks/RatingSummary.css",
+      "content": "/* RatingSummary.css — .sd-ratingsummary (Block)\n   Arrangement only: gives the aggregate and distribution flexible responsive columns. The\n   distribution is one grid and each row a subgrid of it, so the label and count columns are shared\n   and every meter track starts and ends on the same lines. */\n.sd-ratingsummary {\n  width: 100%;\n}\n\n.sd-ratingsummary__average {\n  flex: 0 0 auto;\n}\n\n.sd-ratingsummary__value,\n.sd-ratingsummary__scale,\n.sd-ratingsummary__count {\n  margin: 0;\n}\n\n.sd-ratingsummary__distribution {\n  flex: 1 1 auto;\n  min-width: 0;\n  display: grid;\n  grid-template-columns: max-content minmax(0, 1fr) max-content;\n  column-gap: var(--sd-space-small);\n  row-gap: var(--sd-space-2x-small);\n}\n\n.sd-ratingsummary__row {\n  grid-column: 1 / -1;\n  display: grid;\n  grid-template-columns: subgrid;\n  align-items: center;\n}\n\n.sd-ratingsummary__row-count {\n  font-variant-numeric: tabular-nums;\n  text-align: end;\n}\n"
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "task-checklist",
+  "type": "registry:block",
+  "title": "Task Checklist",
+  "description": "A checkable task list with completion progress and consumer-controlled task state.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/checkbox",
+    "@sando-ui/progress-bar",
+    "@sando-ui/stack",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/TaskChecklist.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/TaskChecklist.tsx",
+      "content": "// Block (composition) — a task checklist paired with aggregate completion progress.\n// Stack owns arrangement; Checkbox owns task interaction and ProgressBar owns progress representation.\nimport type { Ref } from \"react\";\nimport { Checkbox } from \"../components/Checkbox\";\nimport { ProgressBar } from \"../components/ProgressBar\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./TaskChecklist.css\";\n\nexport interface TaskChecklistProps {\n  tasks: { id: string; label: string; done?: boolean }[];\n  onToggle?: (id: string, done: boolean) => void;\n  heading?: string;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function TaskChecklist({\n  tasks,\n  onToggle,\n  heading,\n  className,\n  ref,\n}: TaskChecklistProps) {\n  const completed = tasks.filter((task) => task.done).length;\n  const progress = tasks.length > 0 ? (completed / tasks.length) * 100 : 0;\n\n  return (\n    <Stack\n      as=\"section\"\n      ref={ref}\n      gap=\"small\"\n      aria-label={heading ?? \"Task checklist\"}\n      className={className ? `sd-taskchecklist ${className}` : \"sd-taskchecklist\"}\n    >\n      {heading && (\n        <>\n          <h2 className=\"sd-taskchecklist__heading sd-type-title-medium\">{heading}</h2>\n        </>\n      )}\n      {/* \"3 of 5 complete\" is the bar's VALUE, not its name — so it goes to `valueLabel`, which\n          drives both the visible value and `aria-valuetext`. Putting it in `label` made the\n          visible text a label the accessible name (\"Progress\") did not contain. The section's\n          own heading already names this region, so the bar stays visually label-less. */}\n      <ProgressBar\n        value={progress}\n        showValue\n        aria-label=\"Progress\"\n        valueLabel={`${completed} of ${tasks.length} complete`}\n      />\n      {/* spacing: attachment — the progress line heads the tasks it counts */}\n      <Stack gap=\"small\" className=\"sd-taskchecklist__tasks\">\n        {tasks.map((task) => (\n          <Checkbox\n            key={task.id}\n            isSelected={Boolean(task.done)}\n            onChange={(done) => onToggle?.(task.id, done)}\n          >\n            {task.label}\n          </Checkbox>\n        ))}\n      </Stack>\n    </Stack>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/TaskChecklist.css",
+      "type": "registry:component",
+      "target": "src/blocks/TaskChecklist.css",
+      "content": ".sd-taskchecklist {\n  width: 100%;\n}\n\n.sd-taskchecklist__heading {\n  margin: 0;\n}\n"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "avatar",
+  "type": "registry:ui",
+  "title": "Avatar",
+  "description": "A user image with accessible fallback content. No headless primitive; built and owned entirely in Vanilla CSS.",
+  "registryDependencies": [
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/components/Avatar.tsx",
+      "type": "registry:component",
+      "target": "src/components/Avatar.tsx",
+      "content": "import { useEffect, useState } from \"react\";\nimport type { HTMLAttributes, ReactNode, Ref } from \"react\";\nimport \"./Avatar.css\";\n\ntype AvatarSize = \"small\" | \"medium\" | \"large\";\n\n/* `role` and `aria-label` are Omitted, not merely undocumented: the component DERIVES both from\n   `src`/`alt` (image → the <img> carries the semantics; initials → `role=\"img\"` + the alt as the\n   name; empty alt → hidden). They are written after `{...props}`, and an explicit `undefined` BEATS\n   a spread value — so leaving them in the surface silently dropped whatever a consumer passed\n   whenever an image was showing. Omitting says so in the type instead of failing at runtime. */\nexport interface AvatarProps\n  extends Omit<HTMLAttributes<HTMLDivElement>, \"className\" | \"children\" | \"role\" | \"aria-label\"> {\n  /**\n   * Avatar size.\n   *\n   * @default \"medium\"\n   */\n  size?: AvatarSize;\n  src?: string;\n  alt: string;\n  children?: ReactNode;\n  className?: string;\n  ref?: Ref<HTMLDivElement>;\n}\n\nexport function Avatar({\n  size = \"medium\",\n  src,\n  alt,\n  children,\n  className,\n  ...props\n}: AvatarProps) {\n  const [hasImageError, setHasImageError] = useState(false);\n  const shouldShowImage = Boolean(src) && !hasImageError;\n  // An empty alt marks the avatar as decorative (its meaning is carried by adjacent text):\n  // present it as an unnamed `img` would fail role-img-alt, so hide it from AT instead.\n  const isDecorative = !alt;\n\n  useEffect(() => {\n    setHasImageError(false);\n  }, [src]);\n\n  return (\n    <div\n      {...props}\n      role={shouldShowImage || isDecorative ? undefined : \"img\"}\n      aria-label={shouldShowImage || isDecorative ? undefined : alt}\n      aria-hidden={!shouldShowImage && isDecorative ? true : undefined}\n      data-size={size}\n      className={\n        className\n          ? `sd-avatar sd-type-label-medium ${className}`\n          : \"sd-avatar sd-type-label-medium\"\n      }\n    >\n      {shouldShowImage ? (\n        <img\n          src={src}\n          alt={alt}\n          className=\"sd-avatar__image\"\n          onError={() => setHasImageError(true)}\n        />\n      ) : (\n        <span aria-hidden={alt ? undefined : true} className=\"sd-avatar__fallback\">\n          {children}\n        </span>\n      )}\n    </div>\n  );\n}\n"
+    },
+    {
+      "path": "src/components/Avatar.css",
+      "type": "registry:component",
+      "target": "src/components/Avatar.css",
+      "content": ".sd-avatar {\n  display: inline-flex;\n  /* A glyph centred in its own box (naming-convention.md, a glyph in a painted box): the inset is for\n     text on a line, and here it would only shrink the box an image or initials fill. */\n  padding-inline: 0;\n  align-items: center;\n  justify-content: center;\n  overflow: hidden;\n  flex: 0 0 auto;\n  background: var(--sd-avatar-background);\n  color: var(--sd-avatar-foreground);\n  border: var(--sd-avatar-border-width) solid var(--sd-avatar-border);\n  border-radius: var(--sd-avatar-radius);\n  corner-shape: round;\n  user-select: none;\n}\n\n.sd-avatar[data-size=\"small\"] {\n  width: var(--sd-avatar-size-small);\n  height: var(--sd-avatar-size-small);\n  font-size: var(--sd-avatar-font-size-small);\n}\n\n.sd-avatar[data-size=\"medium\"] {\n  width: var(--sd-avatar-size-medium);\n  height: var(--sd-avatar-size-medium);\n  font-size: var(--sd-avatar-font-size-medium);\n}\n\n.sd-avatar[data-size=\"large\"] {\n  width: var(--sd-avatar-size-large);\n  height: var(--sd-avatar-size-large);\n  font-size: var(--sd-avatar-font-size-large);\n}\n\n.sd-avatar__image {\n  width: 100%;\n  height: 100%;\n  object-fit: cover;\n}\n\n.sd-avatar__fallback {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 100%;\n  height: 100%;\n}\n"
+    }
+  ]
+}

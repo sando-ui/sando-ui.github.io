@@ -1,0 +1,37 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "login-form",
+  "type": "registry:block",
+  "title": "Login Form",
+  "description": "A ready-to-use sign-in form: email + password fields, submit, and an inline form-level error. Composed from Form, TextField, Button, Alert, and Stack.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/form",
+    "@sando-ui/text-field",
+    "@sando-ui/button",
+    "@sando-ui/link",
+    "@sando-ui/alert",
+    "@sando-ui/stack",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/LoginForm.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/LoginForm.tsx",
+      "content": "// Block (composition) — a ready-to-use sign-in form assembled from Components.\n// Contract: docs/rules/block-contract.md. Arranges only (Stack for layout);\n// composes Form/TextField/Button/Alert. Owns no Component look; mints no tokens.\nimport type { FormEvent, Ref } from \"react\";\nimport { Form } from \"../components/Form\";\nimport { TextField } from \"../components/TextField\";\nimport { Button } from \"../components/Button\";\nimport { Link } from \"../components/Link\";\nimport { Alert } from \"../components/Alert\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./LoginForm.css\";\n\nexport interface LoginFormProps {\n  /** Heading shown above the fields. */\n  heading?: string;\n  /** Called with the entered credentials on submit. */\n  onSubmit?: (values: { email: string; password: string }) => void;\n  /** Form-level error (e.g. bad credentials), shown above the fields. */\n  errorMessage?: string;\n  /** Puts the submit button in a pending state and blocks re-submit. */\n  isPending?: boolean;\n  /** Where \"Forgot password?\" goes. Omit to show no recovery link. */\n  forgotPasswordHref?: string;\n  /** Where \"Sign up\" goes, offered under the submit for a person without an account. */\n  signUpHref?: string;\n  className?: string;\n  ref?: Ref<HTMLFormElement>;\n}\n\nexport function LoginForm({\n  heading = \"Sign in\",\n  onSubmit,\n  errorMessage,\n  isPending,\n  forgotPasswordHref,\n  signUpHref,\n  className,\n  ref,\n}: LoginFormProps) {\n  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {\n    event.preventDefault();\n    const data = new FormData(event.currentTarget);\n    onSubmit?.({\n      email: String(data.get(\"email\") ?? \"\"),\n      password: String(data.get(\"password\") ?? \"\"),\n    });\n  };\n\n  return (\n    <Form isPending={isPending}\n      ref={ref}\n      onSubmit={handleSubmit}\n      className={className ? `sd-loginform ${className}` : \"sd-loginform\"}\n    >\n      <Stack gap=\"large\" className=\"sd-loginform__content\">\n        {heading && (\n          <>\n            <h1 className=\"sd-loginform__heading sd-type-headline-medium\">{heading}</h1>\n          </>\n        )}\n        {/* live=\"assertive\": see `AlertProps.live` — submit failure is the case that earns it. */}\n        {errorMessage && (\n          <Alert variant=\"error\" live=\"assertive\">\n            {errorMessage}\n          </Alert>\n        )}\n        <Stack gap=\"medium\" className=\"sd-loginform__fields\">\n          <TextField label=\"Email\" name=\"email\" type=\"email\" autoComplete=\"email\" isRequired />\n          <TextField\n            label=\"Password\"\n            name=\"password\"\n            type=\"password\"\n            autoComplete=\"current-password\"\n            isRequired\n          />\n          {forgotPasswordHref && (\n            <>\n              <p className=\"sd-loginform__forgot sd-type-label-medium\">\n                <Link href={forgotPasswordHref}>Forgot password?</Link>\n              </p>\n            </>\n          )}\n        </Stack>\n        <Button size=\"large\" type=\"submit\" variant=\"primary\" isPending={isPending}>\n          Sign in\n        </Button>\n        {signUpHref && (\n          <p className=\"sd-loginform__signup sd-type-body-medium\">\n            {\"Don't have an account? \"}\n            <Link href={signUpHref}>Sign up</Link>\n          </p>\n        )}\n      </Stack>\n    </Form>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/LoginForm.css",
+      "type": "registry:component",
+      "target": "src/blocks/LoginForm.css",
+      "content": "/* LoginForm.css — .sd-loginform (Block)\n   Arrangement only: fills the column it is given; the page sets that column on the grid\n   (a Container span or a LayoutGrid item), never this Block.\n   Component look is owned by Form/TextField/Button/Alert; grouping is via Stack.\n   No new tokens. */\n.sd-loginform {\n  width: 100%;\n}\n\n.sd-loginform__heading {\n  margin: 0;\n}\n\n/* The sign-up line is centred under the full-width submit. */\n.sd-loginform__forgot,\n.sd-loginform__signup {\n  margin: 0;\n}\n.sd-loginform__signup {\n  text-align: center;\n}\n"
+    }
+  ]
+}

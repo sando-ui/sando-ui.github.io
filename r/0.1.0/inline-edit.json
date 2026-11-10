@@ -1,0 +1,33 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "inline-edit",
+  "type": "registry:block",
+  "title": "Inline Edit",
+  "description": "A compact text value that switches between display and editable states.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/button",
+    "@sando-ui/stack",
+    "@sando-ui/text-field",
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/InlineEdit.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/InlineEdit.tsx",
+      "content": "// Block (composition) — a value display that switches to an inline editing row.\n// TextField/Button own editing controls and behavior; Stack owns arrangement and this Block owns edit state.\nimport { useEffect, useState, type Ref } from \"react\";\nimport { Button } from \"../components/Button\";\nimport { Stack } from \"../layouts/Stack\";\nimport { TextField } from \"../components/TextField\";\nimport \"./InlineEdit.css\";\n\nexport interface InlineEditProps {\n  value: string;\n  onSave?: (value: string) => void;\n  label?: string;\n  className?: string;\n  ref?: Ref<HTMLDivElement>;\n}\n\nexport function InlineEdit({\n  value,\n  onSave,\n  label = \"Edit value\",\n  className,\n  ref,\n}: InlineEditProps) {\n  const [editing, setEditing] = useState(false);\n  const [draft, setDraft] = useState(value);\n\n  useEffect(() => {\n    if (!editing) setDraft(value);\n  }, [editing, value]);\n\n  const cancel = () => {\n    setDraft(value);\n    setEditing(false);\n  };\n\n  const save = () => {\n    onSave?.(draft);\n    setEditing(false);\n  };\n\n  return (\n    <div\n      ref={ref}\n      className={className ? `sd-inlineedit ${className}` : \"sd-inlineedit\"}\n    >\n      {/* usage: item-action — the whole Block edits one inline value, so its controls are small */}\n      {editing ? (\n        <Stack direction={{ small: \"column\", medium: \"row\" }} align={{ small: \"stretch\", medium: \"end\" }} gap=\"small\" className=\"sd-inlineedit__editor\">\n          <TextField\n            aria-label={label}\n            value={draft}\n            onChange={setDraft}\n            autoFocus\n            size=\"small\"\n            className=\"sd-inlineedit__field\"\n          />\n          <Stack direction=\"row\" gap=\"x-small\" className=\"sd-inlineedit__actions\">\n            <Button size=\"small\" onPress={save}>Save</Button>\n            <Button size=\"small\" variant=\"secondary\" onPress={cancel}>Cancel</Button>\n          </Stack>\n        </Stack>\n      ) : (\n        /* usage: item-action — the value it edits is shown beside it */\n        <Stack direction=\"row\" align=\"center\" justify=\"between\" gap=\"small\" className=\"sd-inlineedit__display\">\n          <span className=\"sd-inlineedit__value sd-type-body-medium\">{value}</span>\n          <Button size=\"small\" variant=\"secondary\" onPress={() => setEditing(true)}>\n            Edit\n          </Button>\n        </Stack>\n      )}\n    </div>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/InlineEdit.css",
+      "type": "registry:component",
+      "target": "src/blocks/InlineEdit.css",
+      "content": ".sd-inlineedit,\n.sd-inlineedit__field {\n  width: 100%;\n}\n"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "deal-card",
+  "type": "registry:block",
+  "title": "Deal Card",
+  "description": "A linked device deal with promotional discount, a device render on a plated well and list-price comparison.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/media",
+    "@sando-ui/badge",
+    "@sando-ui/card",
+    "@sando-ui/link",
+    "@sando-ui/text",
+    "@sando-ui/aspect-ratio",
+    "@sando-ui/stack",
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/DealCard.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/DealCard.tsx",
+      "content": "// Block (composition) — Panel: a deal-led sibling of ProductCard, with one destination and no nested action.\nimport type { Ref } from \"react\";\nimport { Badge } from \"../components/Badge\";\nimport { Card, CardMedia } from \"../components/Card\";\nimport { Link } from \"../components/Link\";\nimport { Text } from \"../components/Text\";\nimport { AspectRatio } from \"../layouts/AspectRatio\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./DealCard.css\";\n\nexport interface DealCardProps {\n  title: string;\n  href: string;\n  discount: string;\n  image: { src: string; alt: string };\n  price: string;\n  originalPrice: string;\n  originalPriceLabel?: string;\n  /**\n   * The picture band, which must contrast with the ground the CARD sits on: `well` (default) a grey\n   * plate for a card on a white page, `plain` no plate for a card on a grey `Band`, where the\n   * cut-out sits contained on the card's own white surface.\n   *\n   * @default \"well\"\n   */\n  mediaVariant?: \"well\" | \"plain\";\n  className?: string;\n  ref?: Ref<HTMLAnchorElement>;\n}\n\nexport function DealCard({ title, href, discount, image, price, originalPrice,\n  originalPriceLabel = \"List price\", mediaVariant = \"well\", className, ref }: DealCardProps) {\n  return (\n    // No aria-label: the Link is named by its content, so the name holds every word the card shows\n    // (WCAG 2.5.3 Label in Name), the picture's alt first and then the title, discount and prices.\n    <Link href={href} ref={ref} variant=\"quiet\"\n      className={className ? `sd-dealcard ${className}` : \"sd-dealcard\"}>\n      <Card className=\"sd-dealcard__surface\">\n        {/* The picture is the card's top, a band edge to edge: CardMedia plates the cut-out device\n            render on the well and contains it whole. */}\n        <CardMedia variant={mediaVariant}>\n          <AspectRatio ratio={4 / 3}>\n            <img src={image.src} alt={image.alt} />\n          </AspectRatio>\n        </CardMedia>\n        {/* The row wraps, as ProductCard's heading does: when the name and the discount do not fit side by\n            side the discount drops under the name, so a narrow column never squeezes the name mid-word. */}\n        <Stack direction=\"row\" align=\"center\" justify=\"between\" gap=\"small\" wrap>\n          {/* Two lines before the cut, so a long model name still reads; the Link's name is the whole text. */}\n          <Text elementType=\"h3\" variant=\"title\" size=\"medium\" maxLines={2} className=\"sd-dealcard__title\">\n            {title}\n          </Text>\n          {/* Badge law: a discount is a reason to act now with no status attached, `urgency`. */}\n          <Badge variant=\"urgency\" className=\"sd-dealcard__discount\">{discount}</Badge>\n        </Stack>\n        <Stack gap=\"x-small\" className=\"sd-dealcard__detail\">\n          {/* CONTRASTIVE: one rung above the model name it prices, as the card exists to show it. */}\n          <p className=\"sd-dealcard__price sd-type-title-large-emphasized\">{price}</p>\n          <p className=\"sd-dealcard__original sd-type-caption-medium\">\n            {originalPriceLabel} <s>{originalPrice}</s>\n          </p>\n        </Stack>\n      </Card>\n    </Link>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/DealCard.css",
+      "type": "registry:component",
+      "target": "src/blocks/DealCard.css",
+      "content": "/* Arrangement only; Link owns interaction and Card owns the surface. */\n.sd-dealcard {\n  display: flex;\n  min-width: 0;\n  width: 100%;\n}\n.sd-dealcard__surface {\n  flex: 1;\n  min-width: 0;\n}\n.sd-dealcard__title,\n.sd-dealcard__price,\n.sd-dealcard__original {\n  margin: 0;\n}\n.sd-dealcard__title {\n  min-width: 0;\n}\n.sd-dealcard__discount {\n  flex-shrink: 0;\n}\n.sd-dealcard__detail {\n  margin-block-start: auto;\n}\n.sd-dealcard__original {\n  color: var(--sd-color-text-muted);\n}\n"
+    }
+  ]
+}

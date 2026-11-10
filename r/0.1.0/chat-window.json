@@ -1,0 +1,36 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "chat-window",
+  "type": "registry:block",
+  "title": "Chat Window",
+  "description": "A bounded message feed with own-message alignment and a responsive composer.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/avatar",
+    "@sando-ui/button",
+    "@sando-ui/form",
+    "@sando-ui/scroll-area",
+    "@sando-ui/stack",
+    "@sando-ui/styles",
+    "@sando-ui/text-field"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/ChatWindow.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/ChatWindow.tsx",
+      "content": "// Block (composition) — a scrollable message history with a text composer.\n// ScrollArea/Stack own arrangement; Avatar/Form/TextField/Button own their Component behavior and look.\nimport type { FormEvent, ReactNode, Ref } from \"react\";\nimport { Avatar } from \"../components/Avatar\";\nimport { Button } from \"../components/Button\";\nimport { Form } from \"../components/Form\";\nimport { ScrollArea } from \"../components/ScrollArea\";\nimport { Stack } from \"../layouts/Stack\";\nimport { TextField } from \"../components/TextField\";\nimport \"./ChatWindow.css\";\n\nexport interface ChatWindowProps {\n  messages: {\n    id: string;\n    author: string;\n    avatarSrc?: string;\n    body: ReactNode;\n    timestamp?: string;\n    own?: boolean;\n  }[];\n  onSend?: (text: string) => void;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function ChatWindow({ messages, onSend, className, ref }: ChatWindowProps) {\n  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {\n    event.preventDefault();\n    const text = String(new FormData(event.currentTarget).get(\"message\") ?? \"\").trim();\n    if (text) onSend?.(text);\n    event.currentTarget.reset();\n  };\n\n  return (\n    <Stack\n      as=\"section\"\n      ref={ref}\n      gap=\"large\"\n      aria-label=\"Chat\"\n      className={className ? `sd-chatwindow ${className}` : \"sd-chatwindow\"}\n    >\n      {/* The message region scrolls under the Block's max-height but held nothing tabbable — a chat\n          history is text and avatars — so a keyboard user could not enter it to scroll (axe\n          scrollable-region-focusable / WCAG 2.1.1). ScrollArea is the scrollport and takes the tab\n          stop only while it overflows; the Stack inside stays the message arranger, and the live\n          region stays on the box whose contents change. */}\n      <ScrollArea className=\"sd-chatwindow__messages\" aria-live=\"polite\">\n        <Stack gap=\"small\" className=\"sd-chatwindow__list\">\n          {messages.map((message) => (\n            <Stack\n              key={message.id}\n              direction=\"row\"\n              gap=\"small\"\n              align=\"start\"\n              data-own={message.own || undefined}\n              className=\"sd-chatwindow__message\"\n            >\n              <Avatar src={message.avatarSrc} size=\"small\" alt={message.author}>\n                {message.author.charAt(0).toUpperCase()}\n              </Avatar>\n              <Stack\n                gap=\"2x-small\"\n                data-own={message.own || undefined}\n                className=\"sd-chatwindow__bubble\"\n              >\n                <strong className=\"sd-type-body-medium-emphasized\">{message.author}</strong>\n                <div className=\"sd-type-body-medium\">{message.body}</div>\n                {message.timestamp && (\n                  <span className=\"sd-type-caption-medium\">{message.timestamp}</span>\n                )}\n              </Stack>\n            </Stack>\n          ))}\n        </Stack>\n      </ScrollArea>\n      <Form onSubmit={handleSubmit}>\n        <Stack direction={{ small: \"column\", medium: \"row\" }} gap=\"small\" align={{ medium: \"end\" }} className=\"sd-chatwindow__composer-row\">\n          <TextField\n            aria-label=\"Message\"\n            name=\"message\"\n            placeholder=\"Write a message…\"\n            isRequired\n            className=\"sd-chatwindow__composer\"\n          />\n          <Button type=\"submit\">Send</Button>\n        </Stack>\n      </Form>\n    </Stack>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/ChatWindow.css",
+      "type": "registry:component",
+      "target": "src/blocks/ChatWindow.css",
+      "content": ".sd-chatwindow {\n  width: 100%;\n  max-height: 36rem;\n}\n\n/* The scrollport (a ScrollArea — it owns `overflow-y`, so this must not restate it). The explicit\n   `min-height` is also what lets it shrink at all: a flex item defaults to `min-height: auto`, which\n   would grow it back to its content instead of scrolling. So this is the floor AND the escape from\n   that default — do not add a `min-block-size` beside it, that is the same property and would win.\n   Its inline padding is ScrollArea's compensated gutter on both sides, so the messages stay on the\n   composer's line; a one-sided override here shifted them by the gutter. */\n.sd-chatwindow__messages {\n  min-height: 12rem;\n}\n\n.sd-chatwindow__message {\n  width: 100%;\n}\n\n.sd-chatwindow__message[data-own] {\n  justify-content: flex-end;\n}\n\n.sd-chatwindow__bubble {\n  max-width: min(32rem, 75%);\n  overflow-wrap: anywhere;\n}\n\n.sd-chatwindow__bubble[data-own] {\n  align-items: flex-end;\n}\n\n.sd-chatwindow__composer {\n  width: 100%;\n}\n"
+    }
+  ]
+}

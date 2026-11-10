@@ -1,0 +1,33 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "action-sheet",
+  "type": "registry:block",
+  "title": "Action Sheet",
+  "description": "An iOS-style action sheet rising from the bottom edge with a list of actions and a cancel control. Composed from Drawer, Button, and Stack.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/drawer",
+    "@sando-ui/button",
+    "@sando-ui/stack",
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/ActionSheet.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/ActionSheet.tsx",
+      "content": "// Block (composition) — an iOS-style action sheet rising from the bottom edge.\n// Contract: docs/rules/block-contract.md. Drawer owns open/close/focus/scrim;\n// this Block arranges the action list. Self-contained overlay; mints no tokens.\nimport type { ReactNode } from \"react\";\nimport { Button } from \"../components/Button\";\nimport { DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from \"../components/Drawer\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./ActionSheet.css\";\n\nexport interface ActionSheetAction {\n  /** Action label. */\n  label: string;\n  /** Called when the action is chosen (the sheet also closes). */\n  onPress?: () => void;\n  /** Renders the action with the destructive Button variant (e.g. Delete). */\n  isDestructive?: boolean;\n}\n\nexport interface ActionSheetProps {\n  /** Control that opens the sheet. */\n  trigger: ReactNode;\n  /** Actions listed in the sheet. */\n  actions: ActionSheetAction[];\n  /** Sheet heading. **Required** — it is the drawer's accessible name (WCAG 4.1.2). */\n  title: string;\n  /** Dismiss label. */\n  cancelLabel?: string;\n  /** What the actions act on, shown above them (a link card, the photo being shared). Optional;\n   *  the sheet is the list alone without it. */\n  preview?: ReactNode;\n}\n\nexport function ActionSheet({\n  trigger,\n  actions,\n  title,\n  cancelLabel = \"Cancel\",\n  preview,\n}: ActionSheetProps) {\n  const list = (\n    // A list of alternatives read top to bottom with Cancel last, so a plain Stack at the\n    // action-row rung (`x-small`, the `button-group.gap` value). NOT a ButtonGroup: its `stack`\n    // layout is column-reverse, a footer's order that puts the forward action on top, which here\n    // moved Cancel to the top and parted the visual order from the focus order.\n    <Stack gap=\"x-small\" className=\"sd-actionsheet__actions\">\n      {actions.map((action) => (\n        <Button\n          key={action.label}\n          slot=\"close\"\n          variant={action.isDestructive ? \"destructive\" : \"secondary\"}\n          onPress={action.onPress}\n          className=\"sd-actionsheet__action\"\n        >\n          {action.label}\n        </Button>\n      ))}\n      <Button slot=\"close\" variant=\"secondary\" className=\"sd-actionsheet__cancel\">\n        {cancelLabel}\n      </Button>\n    </Stack>\n  );\n  return (\n    <DrawerTrigger>\n      {trigger}\n      <DrawerContent side=\"bottom\" className=\"sd-actionsheet\"\n        header={\n          <DrawerHeader>\n            <DrawerTitle>{title}</DrawerTitle>\n          </DrawerHeader>\n        }\n      >\n        {preview ? (\n          // The actions after the content they act on: the `actions` row of\n          // token-contract.md § By relationship, a step looser than the list's own gap.\n          <Stack gap=\"large\" className=\"sd-actionsheet__body\">\n            <div className=\"sd-actionsheet__preview\">{preview}</div>\n            {list}\n          </Stack>\n        ) : (\n          list\n        )}\n      </DrawerContent>\n    </DrawerTrigger>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/ActionSheet.css",
+      "type": "registry:component",
+      "target": "src/blocks/ActionSheet.css",
+      "content": "/* ActionSheet.css — .sd-actionsheet (Block)\n   Arrangement only: the action list fills the sheet width; Drawer owns the sheet\n   surface, scrim, and slide-in. No look, no tokens. */\n.sd-actionsheet__body,\n.sd-actionsheet__actions {\n  width: 100%;\n}\n\n.sd-actionsheet__action,\n.sd-actionsheet__cancel {\n  width: 100%;\n}\n"
+    }
+  ]
+}

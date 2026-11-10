@@ -1,0 +1,34 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "notification-menu",
+  "type": "registry:block",
+  "title": "Notification Menu",
+  "description": "A notification trigger with an unread badge that opens a rich notification list popover.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/badge",
+    "@sando-ui/button",
+    "@sando-ui/popover",
+    "@sando-ui/notification-list",
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/NotificationMenu.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/NotificationMenu.tsx",
+      "content": "// Block (composition) — a notification trigger opening a rich notification popover.\n// Popover owns overlay behavior; NotificationList owns the notification composition.\nimport { Badge } from \"../components/Badge\";\nimport { Text } from \"react-aria-components\";\nimport { Button } from \"../components/Button\";\nimport { PopoverContent, PopoverTrigger } from \"../components/Popover\";\nimport { NotificationList } from \"./NotificationList\";\nimport \"./NotificationMenu.css\";\n\nexport interface NotificationMenuProps {\n  items: { id: string; title: string; description?: string }[];\n  unreadCount?: number;\n  triggerLabel?: string;\n  className?: string;\n}\n\nexport function NotificationMenu({\n  items,\n  unreadCount = 0,\n  triggerLabel = \"Notifications\",\n  className,\n}: NotificationMenuProps) {\n  return (\n    <PopoverTrigger>\n      <Button\n        variant=\"secondary\"\n        size=\"small\"\n        aria-label={triggerLabel}\n        className={className ? `sd-notificationmenu ${className}` : \"sd-notificationmenu\"}\n      >\n        {/* A word and its Badge are Button's own content row (button.gap, and <Text> takes\n            the text padding), so the Block adds no gap of its own. */}\n        <Text>{triggerLabel}</Text>\n        {unreadCount > 0 && <Badge variant=\"tonal\">{unreadCount}</Badge>}\n      </Button>\n      <PopoverContent placement=\"bottom end\" className=\"sd-notificationmenu__content\">\n        <NotificationList items={items} />\n      </PopoverContent>\n    </PopoverTrigger>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/NotificationMenu.css",
+      "type": "registry:component",
+      "target": "src/blocks/NotificationMenu.css",
+      "content": "/* NotificationMenu.css — .sd-notificationmenu (Block)\n   Arrangement only: sizes the rich notification panel for narrow and wide viewports. */\n.sd-notificationmenu {\n  flex-shrink: 0;\n}\n\n.sd-notificationmenu__content {\n  width: min(24rem, 90vw);\n}\n"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "mobile-nav",
+  "type": "registry:block",
+  "title": "Mobile Nav",
+  "description": "A Drawer-based navigation for compact viewports with a Button trigger and vertical links. Composed from Drawer, Button, Link, and Stack.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/drawer",
+    "@sando-ui/button",
+    "@sando-ui/link",
+    "@sando-ui/stack",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/MobileNav.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/MobileNav.tsx",
+      "content": "// Block (composition) — a Drawer-based navigation for compact viewports.\n// Contract: docs/rules/block-contract.md. Drawer owns all open/close behavior;\n// this Block only arranges Button, Link, and Stack. Mints no tokens.\nimport { Button } from \"../components/Button\";\nimport { DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from \"../components/Drawer\";\nimport { Link } from \"../components/Link\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./MobileNav.css\";\n\nexport interface MobileNavProps {\n  /** Navigation destinations shown in the drawer. */\n  links: { label: string; href: string }[];\n  /** Trigger text. */\n  label?: string;\n  /** Drawer heading. */\n  title?: string;\n}\n\nexport function MobileNav({ links, label = \"Menu\", title = \"Navigation\" }: MobileNavProps) {\n  return (\n    <DrawerTrigger>\n      <Button variant=\"secondary\" size=\"small\" className=\"sd-mobilenav\">\n        {label}\n      </Button>\n      <DrawerContent side=\"start\" className=\"sd-mobilenav__drawer\"\n        header={\n          <DrawerHeader>\n            <DrawerTitle>{title}</DrawerTitle>\n          </DrawerHeader>\n        }\n      >\n        <>\n          <Stack as=\"nav\" gap=\"small\" aria-label={title} className=\"sd-mobilenav__links\">\n            {links.map((link, index) => (\n              <Link key={`${link.label}-${index}`} href={link.href} variant=\"quiet\" className=\"sd-mobilenav__link sd-type-label-medium\">\n                {link.label}\n              </Link>\n            ))}\n          </Stack>\n        </>\n      </DrawerContent>\n    </DrawerTrigger>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/MobileNav.css",
+      "type": "registry:component",
+      "target": "src/blocks/MobileNav.css",
+      "content": "/* MobileNav.css — .sd-mobilenav (Block)\n   Arrangement only: the trigger stays compact while the Drawer navigation fills\n   its available panel width. Drawer owns the overlay, panel, and interactions. */\n.sd-mobilenav {\n  flex-shrink: 0;\n}\n\n.sd-mobilenav__links,\n.sd-mobilenav__link {\n  width: 100%;\n}\n"
+    }
+  ]
+}

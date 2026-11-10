@@ -1,0 +1,30 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "step-header",
+  "type": "registry:ui",
+  "title": "StepHeader",
+  "description": "The header that opens a step screen: an optional eyebrow in the brand ink, the step's title as a heading (a span of it can be stressed with StepHeaderEmphasis), and an optional description. Aligned to the start in a staff panel or centred on a customer screen.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/components/StepHeader.tsx",
+      "type": "registry:component",
+      "target": "src/components/StepHeader.tsx",
+      "content": "// Category B — a heading group with no behaviour: an optional eyebrow, the step's title, and an optional\n// description. It opens a customer-facing step in an ordering flow (a counter, a kiosk, a payment\n// terminal, a table order), and the blocks built on those steps reuse it.\n//\n// The eyebrow takes the `body` role, emphasized, not a dedicated eyebrow role: in these screens it is\n// the first clause of the message the title finishes (\"825 P 적립을 위해\" + \"휴대폰 번호를 입력해주세요\"),\n// which is reading content (naming-convention.md § type roles, row 3), so no eyebrow role is needed.\n//\n// Two firsts, both deliberate. This is the first consumer of an emphasized title rung and the first\n// of the body-emphasized eyebrow: a step screen sets the title heavier than body text and the\n// eyebrow as a stressed clause of the same sentence.\n//\n// The root is a div, not <header>: outside sectioning content <header> is a banner landmark, and a\n// step screen already sits in an app shell that has one (PageHeader does the same).\n//\n// The slots are named by role, not position, because a step template may swap which line is the\n// title and which the subtitle.\nimport { Heading } from \"react-aria-components\";\nimport type { ReactNode, Ref } from \"react\";\nimport \"./StepHeader.css\";\n\ntype StepHeaderSize = \"small\" | \"medium\" | \"large\";\n\nexport interface StepHeaderProps {\n  /**\n   * Size axis: the type rung of every part.\n   *\n   * @default \"medium\"\n   */\n  size?: StepHeaderSize;\n  /**\n   * Alignment. `center` for a customer screen, `start` inside a staff dialog or panel.\n   *\n   * @default \"start\"\n   */\n  align?: \"start\" | \"center\";\n  /** The context line above the title, e.g. the amount due. Rendered in the brand ink. */\n  eyebrow?: ReactNode;\n  /** The step's title: what the person is asked to do. Wrap a part in `StepHeaderEmphasis` to stress it. */\n  title: ReactNode;\n  /** One or two lines under the title. */\n  description?: ReactNode;\n  /**\n   * Heading level of the title.\n   *\n   * @default 2\n   */\n  level?: 1 | 2 | 3;\n  /** Id of the title heading, so a surrounding section can be named by the title alone. */\n  id?: string;\n  /** Additional class (optional). sd-step-header is always preserved. */\n  className?: string;\n  /** Forwarded to the root element. */\n  ref?: Ref<HTMLDivElement>;\n}\n\nexport function StepHeader({\n  size = \"medium\",\n  align = \"start\",\n  eyebrow,\n  title,\n  description,\n  level = 2,\n  id,\n  className,\n  ref,\n}: StepHeaderProps) {\n  return (\n    <div\n      ref={ref}\n      data-align={align}\n      className={className ? `sd-step-header ${className}` : \"sd-step-header\"}\n    >\n      <div className=\"sd-step-header__heading\" data-align={align}>\n        {eyebrow != null && <p className={`sd-step-header__eyebrow sd-type-body-${size}-emphasized`}>{eyebrow}</p>}\n        <Heading id={id} level={level} className={`sd-step-header__title sd-type-title-${size}-emphasized`}>\n          {title}\n        </Heading>\n      </div>\n      {description != null && <p className={`sd-step-header__description sd-type-body-${size}`}>{description}</p>}\n    </div>\n  );\n}\n\nexport interface StepHeaderEmphasisProps {\n  children?: ReactNode;\n  /** Additional class (optional). sd-step-header__emphasis is always preserved. */\n  className?: string;\n}\n\n/** Stresses a span of the title in the brand ink, e.g. the points in \"825P를 적립할게요\". */\nexport function StepHeaderEmphasis({ children, className }: StepHeaderEmphasisProps) {\n  return (\n    <span className={className ? `sd-step-header__emphasis ${className}` : \"sd-step-header__emphasis\"}>{children}</span>\n  );\n}\n"
+    },
+    {
+      "path": "src/components/StepHeader.css",
+      "type": "registry:component",
+      "target": "src/components/StepHeader.css",
+      "content": "/* A heading group: the eyebrow and title read as one unit, so they share a parent and a tighter gap\n   than the gap to the description (heading-pair rule, check-heading-pair.mjs). */\n.sd-step-header {\n  display: flex;\n  flex-direction: column;\n  gap: var(--sd-step-header-gap);\n  margin: 0;\n}\n\n.sd-step-header[data-align=\"center\"] {\n  align-items: center;\n  text-align: center;\n}\n\n.sd-step-header__heading {\n  display: flex;\n  flex-direction: column;\n  gap: var(--sd-step-header-heading-gap);\n}\n\n.sd-step-header__heading[data-align=\"center\"] {\n  align-items: center;\n}\n\n.sd-step-header__eyebrow {\n  margin: 0;\n  color: var(--sd-step-header-eyebrow-foreground);\n}\n\n.sd-step-header__title {\n  margin: 0;\n  color: var(--sd-step-header-title-foreground);\n  text-wrap: balance;\n}\n\n.sd-step-header__description {\n  margin: 0;\n  color: var(--sd-step-header-description-foreground);\n}\n\n.sd-step-header__emphasis {\n  color: var(--sd-step-header-emphasis-foreground);\n}\n"
+    }
+  ]
+}

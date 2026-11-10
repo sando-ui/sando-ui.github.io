@@ -1,0 +1,27 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "spinner",
+  "type": "registry:ui",
+  "title": "Spinner",
+  "description": "A status indicator for loading work. No headless primitive; built and owned entirely in Vanilla CSS.",
+  "registryDependencies": [
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/components/Spinner.tsx",
+      "type": "registry:component",
+      "target": "src/components/Spinner.tsx",
+      "content": "import type { HTMLAttributes, Ref } from \"react\";\nimport \"./Spinner.css\";\n\ntype SpinnerSize = \"small\" | \"medium\" | \"large\";\ntype SpinnerTone = \"neutral\" | \"current\";\n\nexport interface SpinnerProps extends Omit<HTMLAttributes<HTMLSpanElement>, \"className\"> {\n  /**\n   * Spinner size.\n   *\n   * @default \"medium\"\n   */\n  size?: SpinnerSize;\n  /**\n   * Color model. `neutral` = draws a two-tone track + indicator from its own tokens (for neutral\n   * surfaces). `current` = monochrome inheriting currentColor — for contexts over a colored fill or\n   * where it must follow text color (for example, inside a button). The vocabulary freeze forbids\n   * `default` as a name, so this uses `neutral` (the same word as Badge's default variant).\n   *\n   * @default \"neutral\"\n   */\n  tone?: SpinnerTone;\n  /** Decorative. When the parent already announces the loading/pending state (for example, a\n   *  button's `isPending`), hide it from AT — remove `role=\"status\"` and add `aria-hidden` to\n   *  prevent a duplicate announcement. */\n  isDecorative?: boolean;\n  \"aria-label\"?: string;\n  className?: string;\n  ref?: Ref<HTMLSpanElement>;\n}\n\nexport function Spinner({\n  size = \"medium\",\n  tone = \"neutral\",\n  isDecorative = false,\n  \"aria-label\": ariaLabel = \"Loading\",\n  className,\n  ...props\n}: SpinnerProps) {\n  const a11y = isDecorative\n    ? { \"aria-hidden\": true }\n    : { role: \"status\", \"aria-label\": ariaLabel };\n  return (\n    <span\n      {...props}\n      {...a11y}\n      data-size={size}\n      data-tone={tone}\n      className={className ? `sd-spinner ${className}` : \"sd-spinner\"}\n    />\n  );\n}\n"
+    },
+    {
+      "path": "src/components/Spinner.css",
+      "type": "registry:component",
+      "target": "src/components/Spinner.css",
+      "content": ".sd-spinner {\n  display: inline-block;\n  flex: 0 0 auto;\n  border: var(--sd-spinner-stroke-width) solid var(--sd-spinner-track);\n  border-block-start-color: var(--sd-spinner-indicator);\n  border-radius: var(--sd-spinner-radius);\n  corner-shape: round;\n  animation: sd-spinner-rotate var(--sd-spinner-animation-duration) linear infinite;\n}\n\n/* current tone — inherit currentColor (mono) instead of the 2-tone track/indicator, so the\n   spinner stays visible on a colored fill and matches the surrounding text (e.g. inside a\n   Button). Same ring structure: a translucent track + a solid leading segment. The track can't\n   be a colour token here — it has to be mixed from whatever `currentColor` happens to be — so\n   the mix ratio is the token instead, which keeps this tone as tunable as the neutral one\n   rather than leaving it a hardcoded percentage. */\n.sd-spinner[data-tone=\"current\"] {\n  border-color: color-mix(\n    in srgb,\n    currentColor calc(var(--sd-spinner-track-opacity) * 100%),\n    transparent\n  );\n  border-block-start-color: currentColor;\n}\n\n.sd-spinner[data-size=\"small\"] {\n  width: var(--sd-spinner-size-small);\n  height: var(--sd-spinner-size-small);\n}\n\n.sd-spinner[data-size=\"medium\"] {\n  width: var(--sd-spinner-size-medium);\n  height: var(--sd-spinner-size-medium);\n}\n\n.sd-spinner[data-size=\"large\"] {\n  width: var(--sd-spinner-size-large);\n  height: var(--sd-spinner-size-large);\n}\n\n@keyframes sd-spinner-rotate {\n  to {\n    transform: rotate(360deg);\n  }\n}\n\n@media (prefers-reduced-motion: reduce) {\n  .sd-spinner {\n    animation-duration: var(--sd-spinner-animation-duration-reduced);\n  }\n}\n"
+    }
+  ]
+}

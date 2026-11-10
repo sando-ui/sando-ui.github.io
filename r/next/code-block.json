@@ -1,0 +1,33 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "code-block",
+  "type": "registry:block",
+  "title": "Code Block",
+  "description": "A dependency-free source display with an optional language label and clipboard action.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/button",
+    "@sando-ui/scroll-area",
+    "@sando-ui/stack",
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/CodeBlock.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/CodeBlock.tsx",
+      "content": "// Block (composition) — dependency-free source display with clipboard action.\n// Button owns interaction and look; Stack owns the header and vertical arrangement.\nimport type { Ref } from \"react\";\nimport { Button } from \"../components/Button\";\nimport { ScrollArea } from \"../components/ScrollArea\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./CodeBlock.css\";\n\nexport interface CodeBlockProps {\n  /** Source text rendered verbatim. */\n  code: string;\n  /** Optional language label; no syntax highlighting is performed. */\n  language?: string;\n  /** Called after the source has been written to the clipboard. */\n  onCopy?: () => void;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function CodeBlock({ code, language, onCopy, className, ref }: CodeBlockProps) {\n  const copyCode = async () => {\n    await navigator.clipboard.writeText(code);\n    onCopy?.();\n  };\n\n  return (\n    <Stack\n      ref={ref}\n      gap=\"2x-small\"\n      className={className ? `sd-codeblock ${className}` : \"sd-codeblock\"}\n    >\n      {/* usage: chrome — the code block's header bar */}\n      <Stack direction=\"row\" align=\"center\" justify=\"between\" gap=\"small\" className=\"sd-codeblock__header\">\n        {language && (\n          <span className=\"sd-codeblock__language sd-type-caption-medium\">{language}</span>\n        )}\n        <Button\n          type=\"button\"\n          variant=\"secondary\"\n          size=\"small\"\n          className=\"sd-codeblock__copy\"\n          onPress={() => void copyCode()}\n        >\n          Copy\n        </Button>\n      </Stack>\n      {/* The `<pre>` used to be the scrollport with a hardcoded `tabIndex={0}`, which is the same\n          rule stated in the wrong direction: a snippet that FITS then owns an inert tab stop and\n          draws a focus ring on something that cannot scroll. ScrollArea measures instead, so the tab\n          stop appears exactly when there is somewhere to go. */}\n      <ScrollArea orientation=\"horizontal\" className=\"sd-codeblock__scroll\">\n        <pre className=\"sd-codeblock__pre sd-type-code-medium\">\n          <code className=\"sd-codeblock__code\">{code}</code>\n        </pre>\n      </ScrollArea>\n    </Stack>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/CodeBlock.css",
+      "type": "registry:component",
+      "target": "src/blocks/CodeBlock.css",
+      "content": "/* CodeBlock.css — .sd-codeblock (Block)\n   Arrangement only, plus horizontal overflow. */\n.sd-codeblock {\n  width: 100%;\n}\n\n.sd-codeblock__language,\n.sd-codeblock__pre {\n  margin: 0;\n}\n\n.sd-codeblock__copy {\n  margin-inline-start: auto;\n}\n\n/* The scrollport is the ScrollArea around it, not this element. The `<pre>` must size to its own\n   CONTENT so its border box is what grows: left at the container's width it would stay put while\n   only its text overflowed, and the ResizeObserver watching it would never see the change. */\n.sd-codeblock__scroll {\n  min-width: 0;\n  width: 100%;\n}\n\n.sd-codeblock__pre {\n  width: max-content;\n  min-width: 100%;\n}\n"
+    }
+  ]
+}

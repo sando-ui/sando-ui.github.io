@@ -1,0 +1,27 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "show",
+  "type": "registry:ui",
+  "title": "Show",
+  "description": "A layout primitive that shows its children only from, or only below, a breakpoint step, so one control can sit in two places by width. Arrangement only, owns no look.",
+  "registryDependencies": [
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/layouts/Show.tsx",
+      "type": "registry:component",
+      "target": "src/layouts/Show.tsx",
+      "content": "// Layout primitive (Category B) — arrangement only, owns no look.\n// Carve-out 5 (component-contract.md §6): no Cmp token layer, reads no tokens at all.\n//\n// Shows its children only from, or only below, a step of the breakpoint ladder, so a page can\n// place one control in two spots by width (a docked action on a phone, the same action inline on\n// a wide screen) and exactly one copy is ever in use. It renders no content and adds no box:\n// shown, its wrapper is `display: contents`, so its children take part in the parent's flex or\n// grid as if the wrapper were absent; hidden, it is `display: none`, which also takes the\n// children out of the accessibility tree, the right outcome when the other copy is the live one.\n//\n// Prop words: `from` / `below` read as the sentence \"show from large\", \"show below large\", and\n// take the Sys breakpoint step names (`medium` 768 · `large` 1024) verbatim, the same values as\n// AppShell's `breakpoint`. `small` is not offered: it is the base, so \"from small\" is always and\n// \"below small\" is never.\nimport type { CSSProperties, HTMLAttributes, ReactNode, Ref } from \"react\";\nimport \"./Show.css\";\n\ntype Step = \"medium\" | \"large\";\n\ninterface ShowChildrenProps {\n  children?: ReactNode;\n  /** Show the children from this step up (min-width, mobile-first); hidden below it. */\n  from?: Step;\n  /**\n   * Hide the children from this step up; shown below it. Given with `from`, the children show\n   * only in the band between the two (`from=\"medium\" below=\"large\"`).\n   */\n  below?: Step;\n}\n\ninterface ShowHostProps extends Omit<HTMLAttributes<HTMLDivElement>, \"className\" | \"role\" | \"children\"> {\n  className?: string;\n  style?: CSSProperties;\n  ref?: Ref<HTMLDivElement>;\n}\n\nexport type ShowProps = ShowChildrenProps &\n  // At least one of the two is required.\n  ({ from: Step } | { below: Step }) &\n  ShowHostProps;\n\nexport function Show({ from, below, className, ...props }: ShowProps) {\n  // `role` is omitted from the props on purpose: `display: contents` drops the wrapper's own box,\n  // and some engines drop a role along with it. A role-less div exposes nothing, so nothing is lost.\n  return (\n    <div\n      {...props}\n      data-from={from}\n      data-below={below}\n      className={className ? `sd-show ${className}` : \"sd-show\"}\n    />\n  );\n}\n"
+    },
+    {
+      "path": "src/layouts/Show.css",
+      "type": "registry:component",
+      "target": "src/layouts/Show.css",
+      "content": "/* Show.css — .sd-show\n   Layout primitive: shows its children from, or below, a breakpoint step. Carve-out 5 — reads no\n   tokens. Shown is `display: contents` (no box of its own, children join the parent's layout);\n   hidden is `display: none`. Widths are the Sys breakpoint ladder (tokens/sys/breakpoint.json),\n   hardcoded because @media cannot read var(). Mobile-first: the `below` rules sit after the\n   `from` rules at each width, so a band (`from` + `below`) hides once its upper step is reached.\n   Single class, no descendant combinators. */\n.sd-show {\n  display: contents;\n}\n\n.sd-show[data-from] {\n  display: none;\n}\n\n@media (min-width: 768px) {\n  .sd-show[data-from=\"medium\"] {\n    display: contents;\n  }\n\n  .sd-show[data-below=\"medium\"] {\n    display: none;\n  }\n}\n\n@media (min-width: 1024px) {\n  .sd-show[data-from=\"large\"] {\n    display: contents;\n  }\n\n  .sd-show[data-below=\"large\"] {\n    display: none;\n  }\n}\n"
+    }
+  ]
+}

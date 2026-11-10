@@ -1,0 +1,30 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "file-trigger",
+  "type": "registry:ui",
+  "title": "File Trigger",
+  "description": "A behavior-only wrapper that opens the OS file picker from a child button. Behavior borrowed from react-aria-components; no owned CSS (no wrapper DOM to style).",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/components/FileTrigger.tsx",
+      "type": "registry:component",
+      "target": "src/components/FileTrigger.tsx",
+      "content": "import { FileTrigger as AriaFileTrigger } from \"react-aria-components\";\nimport type { FileTriggerProps as AriaFileTriggerProps } from \"react-aria-components\";\nimport type { Ref } from \"react\";\nimport \"./FileTrigger.css\";\n\nexport interface FileTriggerProps extends AriaFileTriggerProps {\n  /** Passed to RAC's hidden input element. */\n  ref?: Ref<HTMLInputElement>;\n}\n\nexport function FileTrigger(props: FileTriggerProps) {\n  return <AriaFileTrigger {...props} />;\n}\n"
+    },
+    {
+      "path": "src/components/FileTrigger.css",
+      "type": "registry:component",
+      "target": "src/components/FileTrigger.css",
+      "content": "/* RAC FileTrigger clones its child and renders a hidden input, so there is no wrapper DOM to style. */\n"
+    }
+  ]
+}

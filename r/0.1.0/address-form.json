@@ -1,0 +1,38 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "address-form",
+  "type": "registry:block",
+  "title": "Address Form",
+  "description": "A structured shipping address form with a responsive city, state, and ZIP row plus country selection.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/form",
+    "@sando-ui/text-field",
+    "@sando-ui/select",
+    "@sando-ui/grid",
+    "@sando-ui/button",
+    "@sando-ui/stack",
+    "@sando-ui/alert",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/AddressForm.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/AddressForm.tsx",
+      "content": "// Block (composition) — a structured shipping address form.\n// Arranges only; composes Form/TextField/Select/Grid/Button/Alert/Stack.\nimport type { FormEvent, Ref } from \"react\";\nimport { Form } from \"../components/Form\";\nimport { TextField } from \"../components/TextField\";\nimport { Select, SelectItem } from \"../components/Select\";\nimport { Grid } from \"../layouts/Grid\";\nimport { Button } from \"../components/Button\";\nimport { Alert } from \"../components/Alert\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./AddressForm.css\";\n\nexport interface AddressFormProps {\n  /** Heading shown above the address fields. */\n  heading?: string;\n  /** Called with the submitted address. */\n  onSubmit?: (data: Record<string, string>) => void;\n  /** Form-level error, shown above the fields. */\n  errorMessage?: string;\n  /** Puts the submit button in a pending state and blocks re-submit. */\n  isPending?: boolean;\n  className?: string;\n  ref?: Ref<HTMLFormElement>;\n}\n\nexport function AddressForm({\n  heading,\n  onSubmit,\n  errorMessage,\n  isPending,\n  className,\n  ref,\n}: AddressFormProps) {\n  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {\n    event.preventDefault();\n    const data = new FormData(event.currentTarget);\n    onSubmit?.({\n      name: String(data.get(\"name\") ?? \"\"),\n      streetAddress: String(data.get(\"streetAddress\") ?? \"\"),\n      city: String(data.get(\"city\") ?? \"\"),\n      state: String(data.get(\"state\") ?? \"\"),\n      postalCode: String(data.get(\"postalCode\") ?? \"\"),\n      country: String(data.get(\"country\") ?? \"\"),\n    });\n  };\n\n  return (\n    <Form isPending={isPending}\n      ref={ref}\n      onSubmit={handleSubmit}\n      className={className ? `sd-addressform ${className}` : \"sd-addressform\"}\n    >\n      <Stack gap=\"large\" className=\"sd-addressform__content\">\n        {heading && (\n          <>\n            <h1 className=\"sd-addressform__heading sd-type-headline-medium\">{heading}</h1>\n          </>\n        )}\n        {/* live=\"assertive\": see `AlertProps.live` — submit failure is the case that earns it. */}\n        {errorMessage && (\n          <Alert variant=\"error\" live=\"assertive\">\n            {errorMessage}\n          </Alert>\n        )}\n        <Stack gap=\"medium\" className=\"sd-addressform__fields\">\n          <TextField label=\"Full name\" name=\"name\" autoComplete=\"name\" isRequired />\n          <TextField\n            label=\"Street address\"\n            name=\"streetAddress\"\n            autoComplete=\"street-address\"\n            isRequired\n          />\n          <Grid columns={{ small: 1, medium: 3 }} gap=\"medium\">\n            <TextField label=\"City\" name=\"city\" autoComplete=\"address-level2\" isRequired />\n            <TextField label=\"State\" name=\"state\" autoComplete=\"address-level1\" isRequired />\n            <TextField label=\"ZIP\" name=\"postalCode\" autoComplete=\"postal-code\" isRequired />\n          </Grid>\n          <Select label=\"Country\" name=\"country\" defaultSelectedKey=\"us\" isRequired>\n            <SelectItem id=\"us\">United States</SelectItem>\n            <SelectItem id=\"ca\">Canada</SelectItem>\n            <SelectItem id=\"gb\">United Kingdom</SelectItem>\n            <SelectItem id=\"au\">Australia</SelectItem>\n            <SelectItem id=\"kr\">South Korea</SelectItem>\n          </Select>\n        </Stack>\n        <Button size=\"large\" type=\"submit\" variant=\"primary\" isPending={isPending}>\n          Save\n        </Button>\n      </Stack>\n    </Form>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/AddressForm.css",
+      "type": "registry:component",
+      "target": "src/blocks/AddressForm.css",
+      "content": "/* AddressForm.css — arrangement only; responsive fields use Grid props. */\n/* Fills the column it is given. Its city, state and ZIP share one row from the medium step, so the\n   page gives it a wider span than a single-purpose form. */\n.sd-addressform {\n  width: 100%;\n}\n\n.sd-addressform__heading {\n  margin: 0;\n}\n"
+    }
+  ]
+}

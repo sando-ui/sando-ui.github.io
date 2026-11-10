@@ -1,0 +1,29 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "maintenance-page",
+  "type": "registry:block",
+  "title": "Maintenance Page",
+  "description": "A full-screen centered maintenance or coming-soon state.",
+  "registryDependencies": [
+    "@sando-ui/container",
+    "@sando-ui/stack",
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/MaintenancePage.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/MaintenancePage.tsx",
+      "content": "// Block (composition) — a centered maintenance message with optional icon and actions.\n// Stack owns centering and spacing; this Block owns the title, description, and supplied-content structure.\nimport { useId, type ReactNode, type Ref } from \"react\";\nimport { Container } from \"../layouts/Container\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./MaintenancePage.css\";\n\nexport interface MaintenancePageProps {\n  title: string;\n  description?: string;\n  icon?: ReactNode;\n  actions?: ReactNode;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function MaintenancePage({\n  title,\n  description,\n  icon,\n  actions,\n  className,\n  ref,\n}: MaintenancePageProps) {\n  const titleId = useId();\n\n  return (\n    /* The whole page, so it takes the page frame itself: a column of the page grid, its edges on\n       column lines (Container takes the grid margin and the span). */\n    <Container\n      as=\"section\"\n      ref={ref}\n      span={{ small: 4, medium: 6, large: 6 }}\n      aria-labelledby={titleId}\n      className={className ? `sd-maintenancepage ${className}` : \"sd-maintenancepage\"}\n    >\n    <Stack align=\"center\" justify=\"center\" gap=\"small\">\n      {icon}\n      {/* spacing: attachment — the glyph heads the title under it.\n          The name and its supporting line are ONE unit, so they group at `x-small` while the\n          page around them sits a rung looser. */}\n      <Stack align=\"center\" gap=\"x-small\" className=\"sd-maintenancepage__heading\">\n        <h1 id={titleId} className=\"sd-maintenancepage__title sd-type-headline-medium\">{title}</h1>\n        {description && (\n          <p className=\"sd-maintenancepage__description sd-type-body-medium\">{description}</p>\n        )}\n      </Stack>\n      {actions}\n    </Stack>\n    </Container>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/MaintenancePage.css",
+      "type": "registry:component",
+      "target": "src/blocks/MaintenancePage.css",
+      "content": "/* The page frame's inline half (margin, span) is the Container it renders; the block axis has no\n   purpose family, so it takes a space rung. */\n.sd-maintenancepage {\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  min-height: 100dvh;\n  padding-block: var(--sd-space-medium);\n  text-align: center;\n}\n\n.sd-maintenancepage__title,\n.sd-maintenancepage__description {\n  margin: 0;\n}\n\n.sd-maintenancepage__description {\n  color: var(--sd-color-text-muted);\n}\n"
+    }
+  ]
+}

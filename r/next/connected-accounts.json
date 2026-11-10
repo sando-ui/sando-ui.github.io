@@ -1,0 +1,36 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "connected-accounts",
+  "type": "registry:block",
+  "title": "Connected Accounts",
+  "description": "A full-width list of linked third-party identities with connect and disconnect actions.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/badge",
+    "@sando-ui/button",
+    "@sando-ui/card",
+    "@sando-ui/separator",
+    "@sando-ui/stack",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/ConnectedAccounts.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/ConnectedAccounts.tsx",
+      "content": "// Block (composition) — linked third-party identities with connect and disconnect actions.\n// Card, Badge, Button, and Separator own look; Stack owns arrangement.\nimport { Fragment } from \"react\";\nimport type { Ref } from \"react\";\nimport { Badge } from \"../components/Badge\";\nimport { Button } from \"../components/Button\";\nimport { Card } from \"../components/Card\";\nimport { Separator } from \"../components/Separator\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./ConnectedAccounts.css\";\n\nexport interface ConnectedAccountsProps {\n  accounts: {\n    id: string;\n    provider: string;\n    email?: string;\n    connected?: boolean;\n  }[];\n  onConnect?: (id: string) => void;\n  onDisconnect?: (id: string) => void;\n  className?: string;\n  ref?: Ref<HTMLDivElement>;\n}\n\nexport function ConnectedAccounts({\n  accounts,\n  onConnect,\n  onDisconnect,\n  className,\n  ref,\n}: ConnectedAccountsProps) {\n  return (\n    <Card\n      ref={ref}\n      role=\"region\"\n      aria-label=\"Connected accounts\"\n      className={className ? `sd-connectedaccounts ${className}` : \"sd-connectedaccounts\"}\n    >\n      <Stack gap=\"small\" className=\"sd-connectedaccounts__list\">\n        {accounts.map((account, index) => (\n          <Fragment key={account.id}>\n            {index > 0 && <Separator />}\n            <Stack\n              direction=\"row\"\n              justify=\"between\"\n              align=\"center\"\n              gap=\"small\"\n              className=\"sd-connectedaccounts__row\"\n            >\n              <Stack gap=\"x-small\" className=\"sd-connectedaccounts__details\">\n                <Stack direction=\"row\" align=\"center\" gap=\"x-small\" wrap className=\"sd-connectedaccounts__head\">\n                  <>\n                    <span className=\"sd-connectedaccounts__provider sd-type-body-medium\">\n                      {account.provider}\n                    </span>\n                  </>\n                  {account.connected && <Badge>Connected</Badge>}\n                </Stack>\n                {account.email && (\n                  <>\n                    <span className=\"sd-connectedaccounts__email sd-type-caption-medium\">\n                      {account.email}\n                    </span>\n                  </>\n                )}\n              </Stack>\n              {account.connected ? (\n                <Button\n                  type=\"button\"\n                  variant=\"secondary\"\n                  size=\"small\"\n                  onPress={() => onDisconnect?.(account.id)}\n                >\n                  Disconnect\n                </Button>\n              ) : (\n                <Button type=\"button\" variant=\"secondary\" size=\"small\" onPress={() => onConnect?.(account.id)}>\n                  Connect\n                </Button>\n              )}\n            </Stack>\n          </Fragment>\n        ))}\n      </Stack>\n    </Card>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/ConnectedAccounts.css",
+      "type": "registry:component",
+      "target": "src/blocks/ConnectedAccounts.css",
+      "content": "/* ConnectedAccounts.css — arrangement only; composed Components own all visual treatment. */\n.sd-connectedaccounts {\n  width: 100%;\n}\n\n.sd-connectedaccounts__row,\n.sd-connectedaccounts__details {\n  min-width: 0;\n}\n\n.sd-connectedaccounts__email {\n  color: var(--sd-color-text-muted);\n}\n"
+    }
+  ]
+}

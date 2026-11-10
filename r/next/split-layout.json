@@ -1,0 +1,27 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "split-layout",
+  "type": "registry:ui",
+  "title": "Split Layout",
+  "description": "A responsive two-pane list and detail layout with a configurable list width.",
+  "registryDependencies": [
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/layouts/SplitLayout.tsx",
+      "type": "registry:component",
+      "target": "src/layouts/SplitLayout.tsx",
+      "content": "// Layout (arrangement-only) — a responsive list/detail grid with consumer-owned slots.\n// A frame-with-open-slots is Layout, NOT a Block (docs/rules/tier-convention.md § Tiers): it owns arrangement\n// only. No Cmp token layer — references the Sys layout scales directly (component-contract\n// §6 carve-out 5).\nimport type { CSSProperties, HTMLAttributes, ReactNode, Ref } from \"react\";\nimport \"./SplitLayout.css\";\n\nexport interface SplitLayoutProps extends Omit<HTMLAttributes<HTMLDivElement>, \"className\"> {\n  /**\n   * The list slot owns its own scrolling; SplitLayout deliberately does not scroll because a Layout\n   * must not own focus behaviour for content it does not render. Wrap an independently scrolling\n   * pane in ScrollArea, which measures overflow and takes a tab stop only when it actually overflows.\n   */\n  list: ReactNode;\n  /**\n   * The detail slot is responsible for its scrolling; SplitLayout leaves it unscrolled because a\n   * Layout must not own focus behaviour for content it does not render. For independent pane scrolling,\n   * wrap the detail in ScrollArea; it measures overflow and takes a tab stop only when it actually overflows.\n   */\n  detail: ReactNode;\n  /** Width of the list pane from the medium step up, as a CSS length. The detail takes the rest. */\n  listWidth?: string;\n  /**\n   * Fix the DETAIL pane instead, at this CSS length, and let the list take the rest: for a list\n   * that is the working surface (a grid of items) beside a narrower inspector. When set,\n   * `listWidth` is ignored, since only one pane can be fixed.\n   */\n  detailWidth?: string;\n  className?: string;\n  style?: CSSProperties;\n  ref?: Ref<HTMLDivElement>;\n}\n\nexport function SplitLayout({\n  list,\n  detail,\n  listWidth = \"20rem\",\n  detailWidth,\n  className,\n  style,\n  ref,\n  ...rest\n}: SplitLayoutProps) {\n  return (\n    <div\n      {...rest}\n      ref={ref}\n      className={className ? `sd-split-layout ${className}` : \"sd-split-layout\"}\n      data-fixed-pane={detailWidth ? \"detail\" : \"list\"}\n      style={\n        {\n          ...(detailWidth\n            ? { \"--sd-layout-detail-width\": detailWidth }\n            : { \"--sd-layout-list-width\": listWidth }),\n          ...style,\n        } as CSSProperties\n      }\n    >\n      <div className=\"sd-split-layout__list\">{list}</div>\n      <div className=\"sd-split-layout__detail\">{detail}</div>\n    </div>\n  );\n}\n"
+    },
+    {
+      "path": "src/layouts/SplitLayout.css",
+      "type": "registry:component",
+      "target": "src/layouts/SplitLayout.css",
+      "content": "/* SplitLayout.css — structural list/detail grid; slots retain their own look. */\n/* Mobile-first: a single stacked column by default; the list/detail split appears at the\n   md breakpoint (min-width, per the DS ladder). --sd-layout-list-width is a local\n   intermediate (set inline from the `listWidth` prop), not a token. */\n.sd-split-layout {\n  /* Block inheritance of the inline per-instance --sd-layout-* var (see Container.css). */\n  --sd-layout-list-width: initial;\n  --sd-layout-detail-width: initial;\n  display: grid;\n  width: 100%;\n  min-width: 0;\n  min-height: 0;\n  grid-template-columns: minmax(0, 1fr);\n}\n\n.sd-split-layout__list,\n.sd-split-layout__detail {\n  /* Layout tier rule: no overflow here; slot content owns its own scrolling and focus. */\n  min-width: 0;\n  min-height: 0;\n}\n\n@media (min-width: 768px) {\n  /* `:where()` keeps the default at one class's weight, as before the attribute existed, so a\n     consumer's own single-class override of the columns still wins. */\n  .sd-split-layout:where([data-fixed-pane=\"list\"]) {\n    grid-template-columns: minmax(0, var(--sd-layout-list-width, 20rem)) minmax(0, 1fr);\n  }\n  /* The mirror: the list is the fluid working surface, the detail a fixed inspector at the end. */\n  .sd-split-layout[data-fixed-pane=\"detail\"] {\n    grid-template-columns: minmax(0, 1fr) minmax(0, var(--sd-layout-detail-width));\n  }\n}\n"
+    }
+  ]
+}

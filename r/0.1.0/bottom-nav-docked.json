@@ -1,0 +1,33 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "bottom-nav-docked",
+  "type": "registry:block",
+  "title": "Bottom Nav Docked",
+  "description": "A bottom navigation bar docked full-width to the bottom edge, with an edge above and 3–5 icon+label items with a current-page highlight. The docked take of Bottom Nav. Composed from DockedBar, NavItem, and Grid.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/docked-bar",
+    "@sando-ui/grid",
+    "@sando-ui/nav-item",
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/BottomNavDocked.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/BottomNavDocked.tsx",
+      "content": "// Block (composition) — a bottom navigation bar docked to the bottom edge: full width, on the page's\n// fill with an edge above, 3–5 icon+label items in equal columns. The docked take of BottomNav\n// (block-contract.md §2: a later take is a sibling, the base is never renamed), for a product whose\n// tab bar reads as part of the page rather than floating over it. DockedBar supplies the surface, the\n// fixed position and the safe area; NavItem (orientation=\"vertical\") each item and its current\n// highlight; Grid the columns. The Block owns no look and mints no tokens. Posture: page chrome.\nimport type { ReactNode, Ref } from \"react\";\nimport { DockedBar } from \"../components/DockedBar\";\nimport { NavItem } from \"../components/NavItem\";\nimport { Grid } from \"../layouts/Grid\";\nimport \"./BottomNavDocked.css\";\n\nexport interface BottomNavDockedItemBase {\n  /** Visible label under the icon. */\n  label: string;\n  /** Item icon (sized to the icon slot; inherits the item's text color). */\n  icon: ReactNode;\n  /** Marks the active tab — applies aria-current + the selected highlight. */\n  isCurrent?: boolean;\n}\n\n/** Link or button, never both, mirroring NavItem's own mode union. */\nexport type BottomNavDockedItem = BottomNavDockedItemBase &\n  (\n    | {\n        /** Destination. Present → renders a link. */\n        href: string;\n        onPress?: never;\n      }\n    | {\n        href?: never;\n        /** Press handler — button mode (no `href`). */\n        onPress?: () => void;\n      }\n  );\n\nexport interface BottomNavDockedProps {\n  /**\n   * How the current destination is marked, forwarded to each NavItem: `item` fills its tile, `ink`\n   * paints no fill and marks it by ink and weight alone.\n   *\n   * @default \"item\"\n   */\n  indicator?: \"item\" | \"ink\";\n  /** Navigation destinations — intended for 3–5 top-level sections. */\n  items: BottomNavDockedItem[];\n  /** Accessible name for the navigation landmark. */\n  \"aria-label\"?: string;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function BottomNavDocked({\n  indicator = \"item\",\n  items,\n  \"aria-label\": ariaLabel = \"Primary\",\n  className,\n  ref,\n}: BottomNavDockedProps) {\n  return (\n    <DockedBar padding=\"none\">\n      <nav\n        ref={ref}\n        aria-label={ariaLabel}\n        className={className ? `sd-bottomnav-docked ${className}` : \"sd-bottomnav-docked\"}\n      >\n        <Grid columns={items.length} gap=\"small\" className=\"sd-bottomnav-docked__items\">\n          {items.map((item, index) =>\n            item.href != null ? (\n              <NavItem\n                key={`${item.label}-${index}`}\n                orientation=\"vertical\"\n                indicator={indicator}\n                icon={item.icon}\n                isCurrent={item.isCurrent}\n                href={item.href}\n              >\n                {item.label}\n              </NavItem>\n            ) : (\n              <NavItem\n                key={`${item.label}-${index}`}\n                orientation=\"vertical\"\n                indicator={indicator}\n                icon={item.icon}\n                isCurrent={item.isCurrent}\n                onPress={item.onPress}\n              >\n                {item.label}\n              </NavItem>\n            ),\n          )}\n        </Grid>\n      </nav>\n    </DockedBar>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/BottomNavDocked.css",
+      "type": "registry:component",
+      "target": "src/blocks/BottomNavDocked.css",
+      "content": "/* BottomNavDocked.css — .sd-bottomnav-docked (Block)\n   Arrangement only: the inset between the bar's edge and its items. DockedBar owns the surface, the\n   edge, the fixed position and the safe area, and is set `padding=\"none\"` so this inset is the only\n   one; NavItem each item's look. */\n.sd-bottomnav-docked {\n  padding-block: var(--sd-space-x-small);\n}\n\n/* A NavItem is 4:3, narrower than a column on a wide bar: it sits in the middle of its column. */\n.sd-bottomnav-docked__items {\n  justify-items: center;\n}\n"
+    }
+  ]
+}

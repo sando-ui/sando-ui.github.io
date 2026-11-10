@@ -1,0 +1,33 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "steps-how-it-works",
+  "type": "registry:block",
+  "title": "Steps: How It Works",
+  "description": "A responsive sequence of numbered or illustrated explanatory steps.",
+  "registryDependencies": [
+    "@sando-ui/badge",
+    "@sando-ui/card",
+    "@sando-ui/grid",
+    "@sando-ui/responsive",
+    "@sando-ui/stack",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/StepsHowItWorks.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/StepsHowItWorks.tsx",
+      "content": "// Block (composition) — responsive numbered steps for explaining a process.\n// Card and Badge own their look; Grid and Stack own arrangement.\nimport type { ReactNode, Ref } from \"react\";\nimport { Badge } from \"../components/Badge\";\nimport { Card } from \"../components/Card\";\nimport { Grid } from \"../layouts/Grid\";\nimport type { Responsive } from \"../layouts/responsive\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./StepsHowItWorks.css\";\n\nexport interface StepsHowItWorksProps {\n  steps: {\n    title: string;\n    description: string;\n    icon?: ReactNode;\n  }[];\n  columns?: Responsive<number>;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function StepsHowItWorks({\n  steps,\n  columns = { small: 1, medium: 3 },\n  className,\n  ref,\n}: StepsHowItWorksProps) {\n  return (\n    <Grid\n      as=\"section\"\n      ref={ref}\n      aria-label=\"How it works\"\n      columns={columns}\n      gap=\"medium\"\n      className={className ? `sd-stepshowitworks ${className}` : \"sd-stepshowitworks\"}\n    >\n      {steps.map((step, index) => (\n        <Card key={`${step.title}-${index}`}>\n          <Stack gap=\"small\" className=\"sd-stepshowitworks__content\">\n            {step.icon ?? <Badge className=\"sd-stepshowitworks__number\">{index + 1}</Badge>}\n            {/* spacing: attachment — the glyph heads the title under it.\n              The name and its supporting line are ONE unit, so they group at `x-small` while the\n              section around them sits at least a rung looser — otherwise the same gap\n              separates the pair as separates it from everything else. */}\n            <>\n              <Stack gap=\"x-small\" className=\"sd-stepshowitworks__heading\">\n                <h3 className=\"sd-stepshowitworks__title sd-type-title-medium\">{step.title}</h3>\n                <p className=\"sd-stepshowitworks__description sd-type-body-medium\">\n                  {step.description}\n                </p>\n              </Stack>\n            </>\n          </Stack>\n        </Card>\n      ))}\n    </Grid>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/StepsHowItWorks.css",
+      "type": "registry:component",
+      "target": "src/blocks/StepsHowItWorks.css",
+      "content": "/* StepsHowItWorks.css — .sd-stepshowitworks (Block)\n   Arrangement only: fills its section and resets native text margins. */\n.sd-stepshowitworks {\n  width: 100%;\n}\n\n.sd-stepshowitworks__title,\n.sd-stepshowitworks__description {\n  margin: 0;\n}\n\n.sd-stepshowitworks__description {\n  color: var(--sd-color-text-muted);\n}\n\n/* A Badge is a chip: content-sized. The Stack around it is a column and a Stack's `align` defaults\n   to stretch, which pulled the step number to the card's full width. Same statement as\n   `.sd-agendalist__time`, which is the other Block that puts a chip in a column. */\n.sd-stepshowitworks__number {\n  align-self: start;\n}\n"
+    }
+  ]
+}

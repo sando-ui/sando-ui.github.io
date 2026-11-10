@@ -1,0 +1,37 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "signup-form",
+  "type": "registry:block",
+  "title": "Signup Form",
+  "description": "A ready-to-use account creation form: name, email, password, terms acceptance, submit, and an inline form-level error. Composed from Form, TextField, Checkbox, Button, Alert, and Stack.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/form",
+    "@sando-ui/text-field",
+    "@sando-ui/checkbox",
+    "@sando-ui/button",
+    "@sando-ui/alert",
+    "@sando-ui/stack",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/SignupForm.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/SignupForm.tsx",
+      "content": "// Block (composition) — a ready-to-use sign-up form assembled from Components.\n// Contract: docs/rules/block-contract.md. Arranges only (Stack for layout);\n// composes Form/TextField/Checkbox/Button/Alert. Owns no Component look; mints no tokens.\nimport type { FormEvent, Ref } from \"react\";\nimport { Form } from \"../components/Form\";\nimport { TextField } from \"../components/TextField\";\nimport { Checkbox } from \"../components/Checkbox\";\nimport { Button } from \"../components/Button\";\nimport { Alert } from \"../components/Alert\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./SignupForm.css\";\n\nexport interface SignupFormProps {\n  /** Heading shown above the fields. */\n  heading?: string;\n  /** Called with the entered account details on submit. */\n  onSubmit?: (values: { name: string; email: string; password: string }) => void;\n  /** Form-level error, shown above the fields. */\n  errorMessage?: string;\n  /** Puts the submit button in a pending state and blocks re-submit. */\n  isPending?: boolean;\n  className?: string;\n  ref?: Ref<HTMLFormElement>;\n}\n\nexport function SignupForm({\n  heading = \"Create account\",\n  onSubmit,\n  errorMessage,\n  isPending,\n  className,\n  ref,\n}: SignupFormProps) {\n  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {\n    event.preventDefault();\n    const data = new FormData(event.currentTarget);\n    onSubmit?.({\n      name: String(data.get(\"name\") ?? \"\"),\n      email: String(data.get(\"email\") ?? \"\"),\n      password: String(data.get(\"password\") ?? \"\"),\n    });\n  };\n\n  return (\n    <Form isPending={isPending}\n      ref={ref}\n      onSubmit={handleSubmit}\n      className={className ? `sd-signupform ${className}` : \"sd-signupform\"}\n    >\n      <Stack gap=\"large\" className=\"sd-signupform__content\">\n        {heading && (\n          <>\n            <h1 className=\"sd-signupform__heading sd-type-headline-medium\">{heading}</h1>\n          </>\n        )}\n        {/* live=\"assertive\": see `AlertProps.live` — submit failure is the case that earns it. */}\n        {errorMessage && (\n          <Alert variant=\"error\" live=\"assertive\">\n            {errorMessage}\n          </Alert>\n        )}\n        <Stack gap=\"medium\" className=\"sd-signupform__fields\">\n          <TextField label=\"Name\" name=\"name\" autoComplete=\"name\" isRequired />\n          <TextField label=\"Email\" name=\"email\" type=\"email\" autoComplete=\"email\" isRequired />\n          <TextField\n            label=\"Password\"\n            name=\"password\"\n            type=\"password\"\n            autoComplete=\"new-password\"\n            isRequired\n          />\n          {/* The box sits on the fields' box line (component-contract.md §6 rule 8). */}\n          <Checkbox name=\"terms\" isRequired>\n            I agree to the terms\n          </Checkbox>\n        </Stack>\n        <Button size=\"large\" type=\"submit\" variant=\"primary\" isPending={isPending}>\n          Create account\n        </Button>\n      </Stack>\n    </Form>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/SignupForm.css",
+      "type": "registry:component",
+      "target": "src/blocks/SignupForm.css",
+      "content": "/* SignupForm.css — .sd-signupform (Block)\n   Arrangement only: fills the column it is given; the page sets that column on the grid\n   (a Container span or a LayoutGrid item), never this Block.\n   Component look is owned by Form/TextField/Checkbox/Button/Alert; grouping is via Stack.\n   No new tokens. */\n.sd-signupform {\n  width: 100%;\n}\n\n.sd-signupform__heading {\n  margin: 0;\n}\n"
+    }
+  ]
+}

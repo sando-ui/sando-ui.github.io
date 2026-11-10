@@ -1,0 +1,34 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "form-dialog",
+  "type": "registry:block",
+  "title": "Form Dialog",
+  "description": "A modal form with consumer-supplied fields and cancel and submit actions. Composed from Dialog, Form, Button, and Stack.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/dialog",
+    "@sando-ui/form",
+    "@sando-ui/button",
+    "@sando-ui/stack",
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/FormDialog.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/FormDialog.tsx",
+      "content": "// Block (composition) — consumer-supplied form fields arranged inside the Dialog Component.\n// Dialog owns overlay behavior; Form owns form semantics and validation context.\nimport { useId } from \"react\";\nimport type { FormEvent, ReactNode } from \"react\";\nimport {\n  DialogContent,\n  DialogFooter,\n  DialogHeader,\n  DialogTitle,\n  DialogTrigger,\n} from \"../components/Dialog\";\nimport { Form } from \"../components/Form\";\nimport { Button } from \"../components/Button\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./FormDialog.css\";\n\nexport interface FormDialogProps {\n  /** Control that opens the dialog. */\n  trigger: ReactNode;\n  /** Dialog heading. */\n  title: string;\n  /** Form fields supplied by the consumer. */\n  children: ReactNode;\n  /** Submit action label. */\n  submitLabel?: string;\n  /** Called with string-normalized form values on submit. */\n  onSubmit?: (data: Record<string, string>) => void;\n  /** Puts the submit action in a pending state and blocks re-submit. */\n  isPending?: boolean;\n}\n\nexport function FormDialog({\n  trigger,\n  title,\n  children,\n  submitLabel = \"Save\",\n  onSubmit,\n  isPending,\n}: FormDialogProps) {\n  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {\n    event.preventDefault();\n    const formData = new FormData(event.currentTarget);\n    const data: Record<string, string> = {};\n\n    formData.forEach((value, key) => {\n      data[key] = String(value);\n    });\n\n    onSubmit?.(data);\n  };\n\n  const formId = useId();\n  return (\n    <DialogTrigger>\n      {trigger}\n      <DialogContent\n        className=\"sd-formdialog\"\n        header={\n          <DialogHeader>\n            <DialogTitle>{title}</DialogTitle>\n          </DialogHeader>\n        }\n        footer={\n          // The footer renders below the scrolling body, outside the <Form>, so `form=` keeps the\n          // submit button wired to it (DrawerForm's shape). DialogFooter renders a ButtonGroup,\n          // which right-aligns the actions and stacks them full-width on a narrow screen.\n          <DialogFooter>\n            <Button size=\"large\" type=\"button\" variant=\"secondary\" slot=\"close\">\n              Cancel\n            </Button>\n            <Button size=\"large\" type=\"submit\" form={formId} variant=\"primary\" isPending={isPending}>\n              {submitLabel}\n            </Button>\n          </DialogFooter>\n        }\n      >\n        <Form isPending={isPending} id={formId} onSubmit={handleSubmit}>\n          <Stack gap=\"medium\" className=\"sd-formdialog__fields\">\n            {children}\n          </Stack>\n        </Form>\n      </DialogContent>\n    </DialogTrigger>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/FormDialog.css",
+      "type": "registry:component",
+      "target": "src/blocks/FormDialog.css",
+      "content": "/* FormDialog.css — .sd-formdialog (Block)\n   Arrangement is handled by Stack and DialogFooter; Components own all chrome and look.\n   This Block defines no tokens and does not reach into Component internals. */\n"
+    }
+  ]
+}

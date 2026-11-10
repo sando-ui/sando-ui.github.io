@@ -1,0 +1,37 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "product-card",
+  "type": "registry:block",
+  "title": "Product Card",
+  "description": "A product preview card with optional media and badge, price, and a primary add-to-cart action.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/card",
+    "@sando-ui/button",
+    "@sando-ui/badge",
+    "@sando-ui/aspect-ratio",
+    "@sando-ui/stack",
+    "@sando-ui/media",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/ProductCard.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/ProductCard.tsx",
+      "content": "// Block (composition) — a commerce product preview, with a primary add action when one is given.\n// Card, Badge, Button, and Stack own their look; this Block only arranges them.\nimport type { ReactNode, Ref } from \"react\";\nimport { AspectRatio } from \"../layouts/AspectRatio\";\nimport { Badge } from \"../components/Badge\";\nimport { Button } from \"../components/Button\";\nimport { Card, CardMedia } from \"../components/Card\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./ProductCard.css\";\n\nexport interface ProductCardProps {\n  title: string;\n  price: string;\n  /** The price before the discount, struck through under `price` (a factory or list price). */\n  originalPrice?: string;\n  image?: ReactNode;\n  badge?: string;\n  /** The add action. Without it the card draws no Button: a browsing card whose whole tile leads on. */\n  onAdd?: () => void;\n  addLabel?: string;\n  /**\n   * The picture band, which must contrast with the ground the CARD sits on: `well` (default) a grey\n   * plate for a card on a white page, `plain` no plate for a card on a grey `Band`, where the\n   * cut-out sits contained on the card's own white surface.\n   *\n   * @default \"well\"\n   */\n  mediaVariant?: \"well\" | \"plain\";\n  className?: string;\n  ref?: Ref<HTMLDivElement>;\n}\n\nexport function ProductCard({\n  title,\n  price,\n  originalPrice,\n  image,\n  badge,\n  onAdd,\n  addLabel = \"Add to cart\",\n  mediaVariant = \"well\",\n  className,\n  ref,\n}: ProductCardProps) {\n  return (\n    <Card\n      ref={ref}\n      className={className ? `sd-productcard ${className}` : \"sd-productcard\"}\n    >\n      {/* The picture is the card's top, a band edge to edge (CardMedia, a direct child so it can meet\n          the card's corners). 4 / 3 so a row of product tiles keeps one silhouette regardless of the\n          source image; the ratio is passed, AspectRatio being the Layout that owns it. CardMedia's\n          well plates a cut-out render and contains an `img` whole. */}\n      {image && (\n        <CardMedia variant={mediaVariant}>\n          <AspectRatio ratio={4 / 3} className=\"sd-productcard__media\">\n            {image}\n          </AspectRatio>\n        </CardMedia>\n      )}\n      <Stack gap=\"small\" className=\"sd-productcard__content\">\n        <Stack gap=\"x-small\" className=\"sd-productcard__detail\">\n          <Stack direction=\"row\" align=\"center\" gap=\"x-small\" wrap className=\"sd-productcard__heading\">\n            <>\n              <h3 className=\"sd-productcard__title sd-type-title-medium\">{title}</h3>\n            </>\n            {badge && <Badge>{badge}</Badge>}\n          </Stack>\n          <>\n            <p className=\"sd-productcard__price sd-type-body-medium-emphasized\">{price}</p>\n          </>\n          {originalPrice && (\n            <p className=\"sd-productcard__original\">\n              <s className=\"sd-type-caption-medium\">{originalPrice}</s>\n            </p>\n          )}\n        </Stack>\n        {onAdd && (\n          <Button variant=\"primary\" onPress={onAdd}>\n            {addLabel}\n          </Button>\n        )}\n      </Stack>\n    </Card>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/ProductCard.css",
+      "type": "registry:component",
+      "target": "src/blocks/ProductCard.css",
+      "content": "/* ProductCard.css — .sd-productcard (Block)\n   Arrangement only: fills its cell and provides a bounded media slot. The height is left to the row:\n   a flex or grid row stretches its items to the tallest, and a `height: 100%` here would opt the card\n   OUT of that stretch (a percentage against a row with no definite height), so one card came out\n   short in a row of four. */\n.sd-productcard {\n  width: 100%;\n}\n\n/* The box, the ratio and the clipping come from AspectRatio (the Layout primitive); this rule\n   keeps only what is this Block's own arrangement — centring artwork that is not an img/svg/video\n   inside the frame (Media fills and fits those itself). */\n.sd-productcard__media {\n  place-items: center;\n}\n\n.sd-productcard__title,\n.sd-productcard__price,\n.sd-productcard__original {\n  margin: 0;\n}\n\n/* The struck price is a supporting line under the price it was cut to (text colour row 4). */\n.sd-productcard__original {\n  color: var(--sd-color-text-muted);\n}\n\n/* In a row of tiles the cards stretch to the tallest, so the content fills the card and the detail\n   takes the slack: every Add button sits on the card's bottom edge, whatever the name's length. */\n.sd-productcard__content {\n  flex: 1;\n}\n\n.sd-productcard__detail {\n  flex: 1;\n}\n"
+    }
+  ]
+}

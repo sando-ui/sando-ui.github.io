@@ -1,0 +1,31 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "description-list",
+  "type": "registry:block",
+  "title": "Description List",
+  "description": "A responsive semantic list of term and description pairs. Composed from Grid and Stack.",
+  "registryDependencies": [
+    "@sando-ui/grid",
+    "@sando-ui/responsive",
+    "@sando-ui/stack",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/DescriptionList.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/DescriptionList.tsx",
+      "content": "// Block (composition) — a responsive semantic list of key/value details.\n// Grid owns columns; Stack owns spacing within each description pair.\nimport type { ReactNode, Ref } from \"react\";\nimport { Grid } from \"../layouts/Grid\";\nimport type { Responsive } from \"../layouts/responsive\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./DescriptionList.css\";\n\nexport interface DescriptionListProps {\n  /**\n   * Term and description pairs to display. A term is usually words; a node is for a term that must\n   * hold its own shape, such as a long name kept to one line (`<Text variant=\"label\" maxLines={1}>`).\n   */\n  items: {\n    term: ReactNode;\n    description: ReactNode;\n  }[];\n  /** Responsive number of equal-width detail columns. */\n  columns?: Responsive<number>;\n  /**\n   * How each pair is laid out: `vertical` puts the term above its value (a summary read top to\n   * bottom), `horizontal` puts the term at the start and its value at the end of one line (a\n   * property list read down its terms, as a tool's inspector is).\n   *\n   * @default \"vertical\"\n   */\n  orientation?: \"vertical\" | \"horizontal\";\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function DescriptionList({\n  items,\n  columns = { small: 1, medium: 2 },\n  orientation = \"vertical\",\n  className,\n  ref,\n}: DescriptionListProps) {\n  const horizontal = orientation === \"horizontal\";\n  const pairs = items.map((item, index) => {\n    /* The term and a plain-text value share their start with any box a value renders (a Badge), so\n       they take the text inset; a node value is the consumer's to place (component-contract.md §6\n       rule 8). */\n    const term = <dt className=\"sd-descriptionlist__term sd-type-label-medium\">{item.term}</dt>;\n    const value =\n      typeof item.description === \"string\" || typeof item.description === \"number\" ? (\n        <dd className=\"sd-descriptionlist__value sd-type-body-medium\">{item.description}</dd>\n      ) : (\n        <dd className=\"sd-descriptionlist__value sd-type-body-medium\">{item.description}</dd>\n      );\n    return horizontal ? (\n      <Stack as=\"div\" key={index} direction=\"row\" justify=\"between\" align=\"baseline\" gap=\"medium\" className=\"sd-descriptionlist__item\">\n        {term}\n        {value}\n      </Stack>\n    ) : (\n      <Stack as=\"div\" key={index} gap=\"2x-small\" className=\"sd-descriptionlist__item\">\n        {term}\n        {value}\n      </Stack>\n    );\n  });\n  const cls = className ? `sd-descriptionlist ${className}` : \"sd-descriptionlist\";\n  /* A line per pair reads as one list, so its lines sit closer than stacked pairs do. */\n  return horizontal ? (\n    <Grid as=\"dl\" ref={ref} columns={columns} gap=\"small\" className={cls}>\n      {pairs}\n    </Grid>\n  ) : (\n    <Grid as=\"dl\" ref={ref} columns={columns} gap=\"medium\" className={cls}>\n      {pairs}\n    </Grid>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/DescriptionList.css",
+      "type": "registry:component",
+      "target": "src/blocks/DescriptionList.css",
+      "content": "/* DescriptionList.css — .sd-descriptionlist (Block)\n   Arrangement only: Grid owns columns and Stack owns pair spacing. */\n.sd-descriptionlist {\n  width: 100%;\n  margin: 0;\n}\n\n.sd-descriptionlist__value {\n  margin: 0;\n}\n"
+    }
+  ]
+}

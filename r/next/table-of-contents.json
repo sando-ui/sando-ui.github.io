@@ -1,0 +1,32 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "table-of-contents",
+  "type": "registry:block",
+  "title": "Table of Contents",
+  "description": "An accessible in-page navigation list with heading-level indentation and active-section context.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/link",
+    "@sando-ui/stack",
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/TableOfContents.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/TableOfContents.tsx",
+      "content": "// Block (composition) — in-page navigation for editorial headings.\n// Link owns interaction and typography; Stack owns the vertical flow.\nimport type { CSSProperties, Ref } from \"react\";\nimport { Link } from \"../components/Link\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./TableOfContents.css\";\n\nexport interface TableOfContentsProps {\n  /** Anchor targets in document order. */\n  items: {\n    id: string;\n    label: string;\n    level?: number;\n  }[];\n  /** ID of the section currently being read. */\n  activeId?: string;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function TableOfContents({\n  items,\n  activeId,\n  className,\n  ref,\n}: TableOfContentsProps) {\n  return (\n    <Stack\n      as=\"nav\"\n      ref={ref}\n      aria-label=\"Table of contents\"\n      gap=\"x-small\"\n      className={className ? `sd-tableofcontents ${className}` : \"sd-tableofcontents\"}\n    >\n      {items.map((item) => {\n        const level = Math.max(1, item.level ?? 1);\n        return (\n          <Link\n            key={item.id}\n            variant=\"quiet\"\n            href={`#${item.id}`}\n            aria-current={activeId === item.id ? \"true\" : undefined}\n            data-level={level}\n            className=\"sd-tableofcontents__link sd-type-label-medium\"\n            style={{ \"--sd-layout-toc-depth\": level - 1 } as CSSProperties}\n          >\n            {item.label}\n          </Link>\n        );\n      })}\n    </Stack>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/TableOfContents.css",
+      "type": "registry:component",
+      "target": "src/blocks/TableOfContents.css",
+      "content": "/* TableOfContents.css — .sd-tableofcontents (Block)\n   Arrangement only: fills the available navigation column. A top-level link starts on the content\n   edge (component-contract.md §6 rule 8) and each heading level below the first steps in one space\n   rung; the depth arrives inline as a local intermediate, not a token. */\n.sd-tableofcontents {\n  width: 100%;\n}\n\n.sd-tableofcontents__link {\n  --sd-layout-toc-depth: initial;\n  display: block;\n  margin-inline-start: calc(var(--sd-layout-toc-depth, 0) * var(--sd-space-medium));\n}\n"
+    }
+  ]
+}

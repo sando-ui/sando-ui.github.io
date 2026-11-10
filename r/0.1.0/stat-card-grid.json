@@ -1,0 +1,34 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "stat-card-grid",
+  "type": "registry:block",
+  "title": "Stat Card Grid",
+  "description": "A responsive grid of KPI cards with optional trend badges. Composed from Card, Badge, Grid, and Stack.",
+  "registryDependencies": [
+    "@sando-ui/card",
+    "@sando-ui/badge",
+    "@sando-ui/grid",
+    "@sando-ui/responsive",
+    "@sando-ui/stack",
+    "@sando-ui/icons",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/StatCardGrid.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/StatCardGrid.tsx",
+      "content": "// Block (composition) — a responsive grid of KPI cards.\n// Card and Badge own their look; Grid and Stack own arrangement.\nimport type { Ref } from \"react\";\nimport { ArrowDown, ArrowUp } from \"../components/icons\";\nimport { Badge } from \"../components/Badge\";\nimport { Card } from \"../components/Card\";\nimport { Grid } from \"../layouts/Grid\";\nimport type { Responsive } from \"../layouts/responsive\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./StatCardGrid.css\";\n\nexport interface StatCardGridProps {\n  /** KPI values to display as individual cards. */\n  stats: {\n    label: string;\n    value: string;\n    /** The change, with its sign (\"+12%\", \"-8%\"): the arrow is decorative, so the sign is what a\n     *  screen reader hears, and the label and delta together must say whether it is bad news. */\n    delta?: string;\n    /** Which way the value moved. Direction only: it draws the arrow, never the colour. */\n    trend?: \"up\" | \"down\" | \"neutral\";\n    /**\n     * Whether the move is good or bad news, which direction cannot say (falling refunds is good).\n     * `negative` takes the `error` Badge, a change to act on. `positive` and unset both stay\n     * `neutral`: good news needs no alarm, and `positive` records the meaning for the data's sake.\n     */\n    sentiment?: \"positive\" | \"negative\";\n  }[];\n  /** Responsive number of equal-width card columns. */\n  columns?: Responsive<number>;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function StatCardGrid({\n  stats,\n  columns = { small: 1, medium: 3 },\n  className,\n  ref,\n}: StatCardGridProps) {\n  return (\n    <Grid\n      ref={ref}\n      columns={columns}\n      gap=\"medium\"\n      className={className ? `sd-statcardgrid ${className}` : \"sd-statcardgrid\"}\n    >\n      {stats.map((stat) => (\n        <Card key={stat.label}>\n          <Stack gap=\"2x-small\" align=\"start\" className=\"sd-statcardgrid__content\">\n            <>\n              <span className=\"sd-statcardgrid__label sd-type-label-medium\">{stat.label}</span>\n            </>\n            <>\n              <span className=\"sd-statcardgrid__value sd-type-headline-medium\">{stat.value}</span>\n            </>\n            {stat.delta && (\n              <Badge\n                variant={stat.sentiment === \"negative\" ? \"error\" : \"neutral\"}\n                icon={stat.trend === \"up\" ? <ArrowUp size=\"1em\" /> : stat.trend === \"down\" ? <ArrowDown size=\"1em\" /> : undefined}\n              >\n                {stat.delta}\n              </Badge>\n            )}\n          </Stack>\n        </Card>\n      ))}\n    </Grid>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/StatCardGrid.css",
+      "type": "registry:component",
+      "target": "src/blocks/StatCardGrid.css",
+      "content": "/* StatCardGrid.css — .sd-statcardgrid (Block)\n   Arrangement only: Grid owns columns and gap; Card and Badge own their look. */\n.sd-statcardgrid {\n  width: 100%;\n}\n\n.sd-statcardgrid__value {\n  /* A value that changes in place (a count, a percentage) keeps its width, so it does not jitter as\n     its digits change. */\n  font-variant-numeric: tabular-nums;\n}\n"
+    }
+  ]
+}

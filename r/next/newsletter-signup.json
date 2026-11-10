@@ -1,0 +1,36 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "newsletter-signup",
+  "type": "registry:block",
+  "title": "Newsletter Signup",
+  "description": "A compact responsive email capture form with pending and form-level error states.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/form",
+    "@sando-ui/text-field",
+    "@sando-ui/button",
+    "@sando-ui/stack",
+    "@sando-ui/alert",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/NewsletterSignup.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/NewsletterSignup.tsx",
+      "content": "// Block (composition) — a newsletter subscription section with pending and error states.\n// Stack owns arrangement; Form/TextField/Button/Alert own form behavior, controls, and feedback look.\nimport { useId } from \"react\";\nimport type { FormEvent, Ref } from \"react\";\nimport { Alert } from \"../components/Alert\";\nimport { Button } from \"../components/Button\";\nimport { Form } from \"../components/Form\";\nimport { Stack } from \"../layouts/Stack\";\nimport { TextField } from \"../components/TextField\";\nimport \"./NewsletterSignup.css\";\n\nexport interface NewsletterSignupProps {\n  heading?: string;\n  description?: string;\n  onSubmit?: (email: string) => void;\n  isPending?: boolean;\n  errorMessage?: string;\n  buttonLabel?: string;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function NewsletterSignup({\n  heading = \"Subscribe\",\n  description,\n  onSubmit,\n  isPending,\n  errorMessage,\n  buttonLabel = \"Subscribe\",\n  className,\n  ref,\n}: NewsletterSignupProps) {\n  const headingId = useId();\n\n  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {\n    event.preventDefault();\n    const data = new FormData(event.currentTarget);\n    onSubmit?.(String(data.get(\"email\") ?? \"\"));\n  };\n\n  return (\n    <section\n      ref={ref}\n      aria-labelledby={heading ? headingId : undefined}\n      className={className ? `sd-newslettersignup ${className}` : \"sd-newslettersignup\"}\n    >\n      <Stack gap=\"small\" className=\"sd-newslettersignup__content\">\n        {/* The name and its supporting line are ONE unit, so they group at a tighter rung than the\n          section's own — otherwise the same gap separates the pair as separates it from everything\n          else, and two things read as three (`PageHeader` is the reference). */}\n        <>\n          <Stack gap=\"x-small\" className=\"sd-newslettersignup__header\">\n            {heading && (\n              <h2 id={headingId} className=\"sd-newslettersignup__heading sd-type-title-medium\">\n                {heading}\n              </h2>\n            )}\n            {description && (\n              <p className=\"sd-newslettersignup__description sd-type-body-medium\">{description}</p>\n            )}\n          </Stack>\n        </>\n        {/* live=\"assertive\": see `AlertProps.live` — submit failure is the case that earns it. */}\n        {errorMessage && (\n          <Alert variant=\"error\" live=\"assertive\">\n            {errorMessage}\n          </Alert>\n        )}\n        <Form isPending={isPending} onSubmit={handleSubmit} className=\"sd-newslettersignup__form\">\n          <Stack\n            direction={{ small: \"column\", medium: \"row\" }}\n            align={{ small: \"stretch\", medium: \"center\" }}\n            gap=\"small\"\n            className=\"sd-newslettersignup__fields\"\n          >\n            <TextField\n              className=\"sd-newslettersignup__field\"\n              name=\"email\"\n              type=\"email\"\n              aria-label=\"Email\"\n              placeholder=\"Email address\"\n              autoComplete=\"email\"\n              isRequired\n            />\n            <Button type=\"submit\" variant=\"primary\" isPending={isPending}>\n              {buttonLabel}\n            </Button>\n          </Stack>\n        </Form>\n      </Stack>\n    </section>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/NewsletterSignup.css",
+      "type": "registry:component",
+      "target": "src/blocks/NewsletterSignup.css",
+      "content": ".sd-newslettersignup {\n  width: 100%;\n}\n\n.sd-newslettersignup__heading,\n.sd-newslettersignup__description {\n  margin: 0;\n}\n\n.sd-newslettersignup__description {\n  color: var(--sd-color-text-muted);\n}\n\n.sd-newslettersignup__form,\n.sd-newslettersignup__field {\n  width: 100%;\n}\n\n.sd-newslettersignup__field {\n  flex: 1;\n  min-width: 0;\n}\n"
+    }
+  ]
+}

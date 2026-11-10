@@ -1,0 +1,37 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "members-list",
+  "type": "registry:block",
+  "title": "Members List",
+  "description": "A full-width team member table with avatars, role badges, and row action menus.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/avatar",
+    "@sando-ui/badge",
+    "@sando-ui/button",
+    "@sando-ui/menu",
+    "@sando-ui/scroll-area",
+    "@sando-ui/stack",
+    "@sando-ui/styles",
+    "@sando-ui/table"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/MembersList.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/MembersList.tsx",
+      "content": "// Block (composition) — a team member table with role metadata and row actions.\n// Table and Menu own their behavior/look; this Block wires their collections.\nimport type { Ref } from \"react\";\nimport { Avatar } from \"../components/Avatar\";\nimport { Badge } from \"../components/Badge\";\nimport { Button } from \"../components/Button\";\nimport { Menu, MenuItem } from \"../components/Menu\";\nimport { Stack } from \"../layouts/Stack\";\nimport { ScrollArea } from \"../components/ScrollArea\";\nimport {\n  Table,\n  TableBody,\n  TableCell,\n  TableColumn,\n  TableHeader,\n  TableRow,\n} from \"../components/Table\";\nimport \"./MembersList.css\";\n\nexport interface MembersListProps {\n  members: {\n    id: string;\n    name: string;\n    email: string;\n    role: string;\n    avatarSrc?: string;\n  }[];\n  onAction?: (id: string, action: string) => void;\n  className?: string;\n  /* The root is the ScrollArea (a div), not the Table — see the JSX. Note that `tsc` cannot\n     police this: HTMLTableElement structurally satisfies HTMLDivElement, so the two are mutually\n     assignable and a wrong element type here compiles clean. */\n  ref?: Ref<HTMLDivElement>;\n}\n\nconst columns = [\n  { id: \"member\", label: \"Member\" },\n  { id: \"role\", label: \"Role\" },\n  { id: \"actions\", label: \"Actions\" },\n];\n\nconst initials = (name: string) =>\n  name\n    .split(/\\s+/)\n    .filter(Boolean)\n    .slice(0, 2)\n    .map((part) => part[0]?.toUpperCase())\n    .join(\"\") || \"U\";\n\nexport function MembersList({ members, onAction, className, ref }: MembersListProps) {\n  return (\n    /* A `<table>` is `display: table`: it will not shrink below its min-content width and its own\n       `overflow` cannot constrain it, so this Block spilled out of any region narrower than its\n       columns — silently, since the box stays put and only the paint crosses. The scrollport is the\n       root now, which is why it takes the Block class and the forwarded `ref`; the Table keeps its\n       own look untouched (arrange, never re-style — block-contract.md §3). */\n    <ScrollArea\n      ref={ref}\n      orientation=\"horizontal\"\n      className={className ? `sd-memberslist ${className}` : \"sd-memberslist\"}\n    >\n      <Table aria-label=\"Team members\" className=\"sd-memberslist__table\">\n        <TableHeader columns={columns}>\n          {(column) => (\n            <TableColumn id={column.id} isRowHeader={column.id === \"member\"}>\n              {column.label}\n            </TableColumn>\n          )}\n        </TableHeader>\n        <TableBody items={members} renderEmptyState={() => \"No team members\"}>\n          {(member) => (\n            <TableRow id={member.id} columns={columns}>\n              {(column) => {\n                if (column.id === \"member\") {\n                  return (\n                    <TableCell>\n                      <Stack direction=\"row\" align=\"center\" gap=\"small\" className=\"sd-memberslist__identity\">\n                        <Avatar src={member.avatarSrc} alt={member.name} size=\"small\">\n                          {initials(member.name)}\n                        </Avatar>\n                        <Stack gap=\"2x-small\" className=\"sd-memberslist__details\">\n                          <span className=\"sd-memberslist__name sd-type-body-medium\">\n                            {member.name}\n                          </span>\n                          <span className=\"sd-memberslist__email sd-type-caption-medium\">\n                            {member.email}\n                          </span>\n                        </Stack>\n                      </Stack>\n                    </TableCell>\n                  );\n                }\n\n                if (column.id === \"role\") {\n                  return (\n                    <TableCell>\n                      <Badge>{member.role}</Badge>\n                    </TableCell>\n                  );\n                }\n\n                return (\n                  <TableCell>\n                    <Menu\n                      aria-label={`Actions for ${member.name}`}\n                      onAction={(key) => onAction?.(member.id, String(key))}\n                      trigger={\n                        <Button\n                          variant=\"secondary\"\n                          size=\"small\"\n                          aria-label={`Open actions for ${member.name}`}\n                        >\n                          Actions\n                        </Button>\n                      }\n                    >\n                      <MenuItem id=\"change-role\">Change role</MenuItem>\n                      <MenuItem id=\"remove\">Remove member</MenuItem>\n                    </Menu>\n                  </TableCell>\n                );\n              }}\n            </TableRow>\n          )}\n        </TableBody>\n      </Table>\n    </ScrollArea>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/MembersList.css",
+      "type": "registry:component",
+      "target": "src/blocks/MembersList.css",
+      "content": "/* MembersList.css — .sd-memberslist (Block)\n   Arrangement only: the team table fills its available region — and the root is the SCROLLPORT\n   holding it (see the tsx), so it must be allowed to be narrower than the table: a flex/grid item\n   defaults to `min-width: auto` and would grow back to the table's min-content width. */\n.sd-memberslist {\n  width: 100%;\n  min-width: 0;\n}\n\n.sd-memberslist__table {\n  width: 100%;\n}\n\n.sd-memberslist__email {\n  color: var(--sd-color-text-muted);\n}\n"
+    }
+  ]
+}

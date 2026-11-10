@@ -1,0 +1,36 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "review-list",
+  "type": "registry:block",
+  "title": "Review List",
+  "description": "A separated list of customer reviews with avatars, dates, and five-star rating badges.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/avatar",
+    "@sando-ui/rating",
+    "@sando-ui/separator",
+    "@sando-ui/skeleton-list",
+    "@sando-ui/stack",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/ReviewList.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/ReviewList.tsx",
+      "content": "// Block (composition) — a separated list of customer review summaries.\n// Avatar, Rating, Separator, and Stack own their look; this Block owns only arrangement.\nimport type { ReactNode } from \"react\";\nimport { Avatar } from \"../components/Avatar\";\nimport { Rating } from \"../components/Rating\";\nimport { Separator } from \"../components/Separator\";\nimport { Stack } from \"../layouts/Stack\";\nimport { SkeletonList } from \"./SkeletonList\";\nimport \"./ReviewList.css\";\n\nexport interface ReviewListProps {\n  reviews: {\n    id: string;\n    author: string;\n    avatarSrc?: string;\n    rating: number;\n    body: ReactNode;\n    date?: string;\n  }[];\n  /** Renders skeleton placeholders while reviews are loading. */\n  isLoading?: boolean;\n  /** Message shown when there are no reviews. */\n  emptyLabel?: string;\n}\n\nfunction initials(name: string) {\n  return name\n    .split(/\\s+/)\n    .filter(Boolean)\n    .slice(0, 2)\n    .map((part) => part[0]?.toUpperCase())\n    .join(\"\");\n}\n\nexport function ReviewList({\n  reviews,\n  isLoading,\n  emptyLabel = \"No reviews yet\",\n}: ReviewListProps) {\n  if (isLoading) {\n    return <SkeletonList rows={3} showAvatar />;\n  }\n  if (reviews.length === 0) {\n    return (\n      <p role=\"status\" className=\"sd-reviewlist__empty sd-type-caption-medium\">\n        {emptyLabel}\n      </p>\n    );\n  }\n  return (\n    <Stack as=\"section\" gap=\"medium\" className=\"sd-reviewlist\" aria-label=\"Customer reviews\">\n      {reviews.map((review, index) => {\n        return (\n          <div key={review.id} className=\"sd-reviewlist__entry\">\n            {/* `small`: the byline row wraps at narrow widths, and its own row gap is then inside the\n                byline, so the body it names sits no closer than that (the attachment law). */}\n            <Stack gap=\"small\" as=\"article\" className=\"sd-reviewlist__review\">\n              <Stack direction=\"row\" align=\"center\" gap=\"small\" wrap className=\"sd-reviewlist__header\">\n                <Avatar size=\"small\" src={review.avatarSrc} alt={review.author}>\n                  {initials(review.author)}\n                </Avatar>\n                {/* The author↔date pair IS this container's whole content, which\n                    `token-contract.md` § Choosing a Sys rung answers with `2x-small`;\n                    `grid-list.item.content.gap` is the reference and `ActivityFeed` already\n                    spends it on the same name-over-meta pair. Without it the pair runs on the\n                    two line-heights alone. */}\n                <Stack gap=\"2x-small\" className=\"sd-reviewlist__identity\">\n                  <h3 className=\"sd-reviewlist__author sd-type-body-medium\">{review.author}</h3>\n                  {review.date && (\n                    <span className=\"sd-reviewlist__date sd-type-caption-medium\">{review.date}</span>\n                  )}\n                </Stack>\n                {/* Read-only: one image named by the score, so a fraction shows as a part-filled star. */}\n                <Rating isReadOnly value={review.rating} size=\"small\" aria-label={`${review.rating} out of 5 stars`} />\n              </Stack>\n              {/* spacing: attachment — the byline names whose review follows */}\n              <>\n                <div className=\"sd-reviewlist__body sd-type-body-medium\">{review.body}</div>\n              </>\n            </Stack>\n            {index < reviews.length - 1 && (\n              <Separator className=\"sd-reviewlist__separator\" />\n            )}\n          </div>\n        );\n      })}\n    </Stack>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/ReviewList.css",
+      "type": "registry:component",
+      "target": "src/blocks/ReviewList.css",
+      "content": "/* ReviewList.css — .sd-reviewlist (Block)\n   Arrangement only: each review owns a full-width flow and separated footer edge. */\n.sd-reviewlist,\n.sd-reviewlist__entry {\n  width: 100%;\n}\n\n.sd-reviewlist__identity {\n  min-width: 0;\n  flex: 1 1 auto;\n}\n\n.sd-reviewlist__author {\n  margin: 0;\n}\n\n.sd-reviewlist__body {\n  width: 100%;\n}\n\n.sd-reviewlist__separator {\n  margin-top: var(--sd-space-medium);\n}\n\n/* empty state — layout only (muted color inherits default; blocks own no color) */\n.sd-reviewlist__empty {\n  padding: var(--sd-space-large);\n  text-align: center;\n}\n"
+    }
+  ]
+}

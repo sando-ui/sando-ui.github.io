@@ -1,0 +1,32 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "feature-grid",
+  "type": "registry:block",
+  "title": "Feature Grid",
+  "description": "A responsive full-width grid of feature cards with optional icons, titles, and supporting descriptions.",
+  "registryDependencies": [
+    "@sando-ui/card",
+    "@sando-ui/grid",
+    "@sando-ui/responsive",
+    "@sando-ui/stack",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/FeatureGrid.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/FeatureGrid.tsx",
+      "content": "// Block (composition) — responsive feature cards for a marketing page.\n// Card owns surface look; Grid and Stack own arrangement.\nimport type { ReactNode, Ref } from \"react\";\nimport { Card } from \"../components/Card\";\nimport { Grid } from \"../layouts/Grid\";\nimport type { Responsive } from \"../layouts/responsive\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./FeatureGrid.css\";\n\nexport interface FeatureGridProps {\n  /** Features shown as individual cards. */\n  features: {\n    icon?: ReactNode;\n    title: string;\n    description: string;\n  }[];\n  /** Responsive number of equal-width feature columns. */\n  columns?: Responsive<number>;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function FeatureGrid({\n  features,\n  columns = { small: 1, medium: 3 },\n  className,\n  ref,\n}: FeatureGridProps) {\n  return (\n    <Grid\n      as=\"section\"\n      ref={ref}\n      columns={columns}\n      gap=\"medium\"\n      aria-label=\"Features\"\n      className={className ? `sd-featuregrid ${className}` : \"sd-featuregrid\"}\n    >\n      {features.map((feature) => (\n        <Card key={feature.title}>\n          <Stack gap=\"small\" className=\"sd-featuregrid__content\">\n            {feature.icon}\n            {/* spacing: attachment — the glyph heads the title under it.\n                The name and its supporting line are ONE unit, so they group at `x-small` while\n                the card around them sits a rung looser. */}\n            <>\n              <Stack gap=\"x-small\" className=\"sd-featuregrid__heading\">\n                <h3 className=\"sd-featuregrid__title sd-type-title-medium\">{feature.title}</h3>\n                <p className=\"sd-featuregrid__description sd-type-body-medium\">\n                  {feature.description}\n                </p>\n              </Stack>\n            </>\n          </Stack>\n        </Card>\n      ))}\n    </Grid>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/FeatureGrid.css",
+      "type": "registry:component",
+      "target": "src/blocks/FeatureGrid.css",
+      "content": "/* FeatureGrid.css — .sd-featuregrid (Block)\n   Arrangement only: fills the available section width and resets text margins. */\n.sd-featuregrid {\n  width: 100%;\n}\n\n.sd-featuregrid__title,\n.sd-featuregrid__description {\n  margin: 0;\n}\n\n.sd-featuregrid__description {\n  color: var(--sd-color-text-muted);\n}\n"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "two-factor-setup",
+  "type": "registry:block",
+  "title": "Two-Factor Setup",
+  "description": "A two-factor authentication setup form with QR and manual secret display, code verification, pending state, and errors.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/alert",
+    "@sando-ui/button",
+    "@sando-ui/form",
+    "@sando-ui/stack",
+    "@sando-ui/text-field",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/TwoFactorSetup.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/TwoFactorSetup.tsx",
+      "content": "// Block (composition) — a two-factor setup section with secret display and code verification.\n// Form controls own behavior/look; this Block only arranges setup content and submission.\nimport type { FormEvent, ReactNode, Ref } from \"react\";\nimport { Alert } from \"../components/Alert\";\nimport { Button } from \"../components/Button\";\nimport { Form } from \"../components/Form\";\nimport { Stack } from \"../layouts/Stack\";\nimport { TextField } from \"../components/TextField\";\nimport \"./TwoFactorSetup.css\";\n\nexport interface TwoFactorSetupProps {\n  secret?: string;\n  qrCode?: ReactNode;\n  heading?: string;\n  onVerify?: (code: string) => void;\n  isPending?: boolean;\n  errorMessage?: string;\n  className?: string;\n  ref?: Ref<HTMLFormElement>;\n}\n\nexport function TwoFactorSetup({\n  secret,\n  qrCode,\n  heading = \"Two-factor authentication\",\n  onVerify,\n  isPending,\n  errorMessage,\n  className,\n  ref,\n}: TwoFactorSetupProps) {\n  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {\n    event.preventDefault();\n    const data = new FormData(event.currentTarget);\n    onVerify?.(String(data.get(\"code\") ?? \"\"));\n  };\n\n  return (\n    <Form isPending={isPending}\n      ref={ref}\n      onSubmit={handleSubmit}\n      className={className ? `sd-twofactorsetup ${className}` : \"sd-twofactorsetup\"}\n    >\n      {/* `large`, because the columns it parts use `small` inside: the secret column and, below 768,\n          the code-and-Verify column. At `small` here the secret line sat as close to the code field\n          as to its own parts, a ratio of 1.0 in every brand. It matches `InviteForm`'s root. NOT\n          from a heading-role ladder: `block-contract.md` §4a records why there is none. */}\n      <Stack gap=\"large\" className=\"sd-twofactorsetup__content\">\n        {/* The heading and its instructions are ONE unit, so they take their own parent at a rung\n            tighter than the section's — `PageHeader` is the reference and uses `x-small` for the\n            same section-level pair. Flat among this stack's children, the heading would sit as\n            far from its own instructions as they sit from the QR plate: two things reading as three. */}\n        <>\n          <Stack gap=\"x-small\" className=\"sd-twofactorsetup__intro\">\n            {heading && (\n              <h2 className=\"sd-twofactorsetup__heading sd-type-title-medium\">{heading}</h2>\n            )}\n            <p className=\"sd-twofactorsetup__instructions sd-type-body-medium\">\n              Scan the QR code with your authenticator app, or enter the setup key manually. Then\n              enter the verification code to finish setup.\n            </p>\n          </Stack>\n        </>\n        {(qrCode || secret) && (\n          <Stack gap=\"small\" align=\"start\" className=\"sd-twofactorsetup__setup\">\n            {qrCode && <div className=\"sd-twofactorsetup__qr-code\">{qrCode}</div>}\n            {secret && (\n              <>\n                <span className=\"sd-twofactorsetup__secret sd-type-code-medium\">{secret}</span>\n              </>\n            )}\n          </Stack>\n        )}\n        {/* live=\"assertive\": see `AlertProps.live` — submit failure is the case that earns it. */}\n        {errorMessage && (\n          <Alert variant=\"error\" live=\"assertive\">\n            {errorMessage}\n          </Alert>\n        )}\n        <Stack direction={{ small: \"column\", medium: \"row\" }} gap=\"small\" align={{ medium: \"end\" }} className=\"sd-twofactorsetup__verify\">\n          <TextField\n            className=\"sd-twofactorsetup__code\"\n            name=\"code\"\n            label=\"Verification code\"\n            inputMode=\"numeric\"\n            autoComplete=\"one-time-code\"\n            isRequired\n          />\n          <Button type=\"submit\" variant=\"primary\" isPending={isPending}>\n            Verify\n          </Button>\n        </Stack>\n      </Stack>\n    </Form>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/TwoFactorSetup.css",
+      "type": "registry:component",
+      "target": "src/blocks/TwoFactorSetup.css",
+      "content": "/* TwoFactorSetup.css — .sd-twofactorsetup (Block)\n   Arrangement only: caps setup width and lets the verification field fill its row. */\n.sd-twofactorsetup {\n  width: 100%;\n}\n\n.sd-twofactorsetup__heading,\n.sd-twofactorsetup__instructions {\n  margin: 0;\n}\n\n.sd-twofactorsetup__instructions {\n  color: var(--sd-color-text-muted);\n}\n\n.sd-twofactorsetup__qr-code {\n  max-width: 100%;\n}\n\n.sd-twofactorsetup__secret {\n  max-width: 100%;\n  overflow-wrap: anywhere;\n}\n\n.sd-twofactorsetup__code {\n  flex: 1;\n  min-width: 0;\n}\n"
+    }
+  ]
+}

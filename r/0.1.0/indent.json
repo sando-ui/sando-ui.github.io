@@ -1,0 +1,27 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "indent",
+  "type": "registry:ui",
+  "title": "Indent",
+  "description": "A layout primitive that applies the text inset to the text a Block or consumer places beside a rounded box or on a painted surface: start (default), end or both. Arrangement only, owns no look.",
+  "registryDependencies": [
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/layouts/Indent.tsx",
+      "type": "registry:component",
+      "target": "src/layouts/Indent.tsx",
+      "content": "// Layout primitive (Category B): arrangement only, owns no look.\n// Carve-out 5 (component-contract.md §6): reads the Sys `text-inset` directly, no Cmp token layer.\n// Offsets its children by `text-inset.inline` (component-contract.md §6 rule 8): this is how a Block\n// or a consumer applies the inset to text it places beside a rounded box or directly on a painted\n// surface. `edge` picks the side: the start (default), the end for end-aligned text (a total\n// beside a badge or a button), or both for a line spanning its container.\nimport type { CSSProperties, ElementType, HTMLAttributes, Ref } from \"react\";\nimport \"./Indent.css\";\n\ntype Edge = \"start\" | \"end\" | \"both\";\n\nexport interface IndentProps extends Omit<HTMLAttributes<HTMLElement>, \"className\"> {\n  /**\n   * Which inline side takes the inset: start, end for end-aligned text, or both.\n   *\n   * @default \"start\"\n   */\n  edge?: Edge;\n  /** Render as a different element (e.g. \"section\", \"ul\"). */\n  as?: ElementType;\n  className?: string;\n  style?: CSSProperties;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function Indent({ edge = \"start\", as: Component = \"div\", className, ...props }: IndentProps) {\n  return (\n    <Component\n      {...props}\n      data-edge={edge === \"start\" ? undefined : edge}\n      className={className ? `sd-indent ${className}` : \"sd-indent\"}\n    />\n  );\n}\n"
+    },
+    {
+      "path": "src/layouts/Indent.css",
+      "type": "registry:component",
+      "target": "src/layouts/Indent.css",
+      "content": "/* Indent.css — .sd-indent\n   Layout primitive: arrangement only. Carve-out 5 — reads the Sys text-inset directly (no Cmp\n   layer). Moves its children one `text-inset.inline` in from the line (component-contract.md §6\n   rule 8): on the start side by default, the end side for end-aligned text (a total beside a\n   button), or both for a line spanning its container. Inline only: rule 8 gives\n   `text-inset.block` to no part, Indent included. Single class, no descendant combinators. */\n.sd-indent {\n  padding-inline-start: var(--sd-text-inset-inline);\n}\n\n.sd-indent[data-edge=\"end\"] {\n  padding-inline-start: 0;\n  padding-inline-end: var(--sd-text-inset-inline);\n}\n\n.sd-indent[data-edge=\"both\"] {\n  padding-inline: var(--sd-text-inset-inline);\n}\n"
+    }
+  ]
+}

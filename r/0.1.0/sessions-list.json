@@ -1,0 +1,36 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "sessions-list",
+  "type": "registry:block",
+  "title": "Sessions List",
+  "description": "A full-width responsive list of active device sessions with current-device status and revoke actions.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/badge",
+    "@sando-ui/button",
+    "@sando-ui/card",
+    "@sando-ui/stack",
+    "@sando-ui/skeleton-list",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/SessionsList.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/SessionsList.tsx",
+      "content": "// Block (composition) — a responsive list of active device sessions and revoke actions.\n// Card owns row chrome; Badge/Button own status and action look; Stack owns arrangement.\nimport type { Ref } from \"react\";\nimport { Badge } from \"../components/Badge\";\nimport { Button } from \"../components/Button\";\nimport { Card } from \"../components/Card\";\nimport { Stack } from \"../layouts/Stack\";\nimport { SkeletonList } from \"./SkeletonList\";\nimport \"./SessionsList.css\";\n\nexport interface SessionsListProps {\n  sessions: {\n    id: string;\n    device: string;\n    location?: string;\n    lastActive?: string;\n    current?: boolean;\n  }[];\n  onRevoke?: (id: string) => void;\n  /** Renders skeleton placeholders while sessions are loading. */\n  isLoading?: boolean;\n  /** Message shown when there are no active sessions. */\n  emptyLabel?: string;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function SessionsList({\n  sessions,\n  onRevoke,\n  isLoading,\n  emptyLabel = \"No active sessions\",\n  className,\n  ref,\n}: SessionsListProps) {\n  if (isLoading) {\n    return <SkeletonList rows={3} className={className} />;\n  }\n  if (sessions.length === 0) {\n    return (\n      <p role=\"status\" className={`sd-sessionslist__empty sd-type-caption-medium${className ? ` ${className}` : \"\"}`}>\n        {emptyLabel}\n      </p>\n    );\n  }\n  return (\n    <Stack\n      as=\"section\"\n      ref={ref}\n      aria-label=\"Active sessions\"\n      gap=\"small\"\n      className={className ? `sd-sessionslist ${className}` : \"sd-sessionslist\"}\n    >\n      {sessions.map((session) => (\n        <Card key={session.id} className=\"sd-sessionslist__row\">\n          <Stack\n            direction={{ small: \"column\", medium: \"row\" }}\n            justify=\"between\"\n            align={{ small: \"stretch\", medium: \"center\" }}\n            gap=\"small\"\n            className=\"sd-sessionslist__content\"\n          >\n            <Stack gap=\"x-small\" className=\"sd-sessionslist__details\">\n              <Stack direction=\"row\" align=\"center\" gap=\"x-small\" wrap className=\"sd-sessionslist__head\">\n                <>\n                  <h3 className=\"sd-sessionslist__device sd-type-title-medium\">{session.device}</h3>\n                </>\n                {session.current && <Badge>This device</Badge>}\n              </Stack>\n              {(session.location || session.lastActive) && (\n                <>\n                  <span className=\"sd-sessionslist__metadata sd-type-caption-medium\">\n                    {[session.location, session.lastActive].filter(Boolean).join(\" · \")}\n                  </span>\n                </>\n              )}\n            </Stack>\n            <Button\n              type=\"button\"\n              variant=\"secondary\"\n              size=\"small\"\n              isDisabled={session.current}\n              aria-label={`Revoke session on ${session.device}`}\n              onPress={() => onRevoke?.(session.id)}\n            >\n              Revoke\n            </Button>\n          </Stack>\n        </Card>\n      ))}\n    </Stack>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/SessionsList.css",
+      "type": "registry:component",
+      "target": "src/blocks/SessionsList.css",
+      "content": "/* SessionsList.css — .sd-sessionslist (Block)\n   Arrangement only: rows fill the region and metadata can shrink without overflow. */\n.sd-sessionslist {\n  width: 100%;\n}\n\n.sd-sessionslist__row,\n.sd-sessionslist__details {\n  min-width: 0;\n}\n\n.sd-sessionslist__device {\n  margin: 0;\n}\n\n.sd-sessionslist__metadata {\n  overflow-wrap: anywhere;\n}\n\n/* empty state — layout only (muted color inherits default; blocks own no color) */\n.sd-sessionslist__empty {\n  padding: var(--sd-space-large);\n  text-align: center;\n}\n"
+    }
+  ]
+}

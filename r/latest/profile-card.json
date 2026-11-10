@@ -1,0 +1,30 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "profile-card",
+  "type": "registry:block",
+  "title": "Profile Card",
+  "description": "A compact user summary card with avatar, role, optional stats, and consumer-supplied actions.",
+  "registryDependencies": [
+    "@sando-ui/avatar",
+    "@sando-ui/card",
+    "@sando-ui/stack",
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/ProfileCard.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/ProfileCard.tsx",
+      "content": "// Block (composition) — a compact user summary card with optional stats and actions.\n// Card and Avatar own their look; Stack owns grouping and alignment.\nimport type { ReactNode, Ref } from \"react\";\nimport { Avatar } from \"../components/Avatar\";\nimport { Card } from \"../components/Card\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./ProfileCard.css\";\n\nexport interface ProfileCardProps {\n  name: string;\n  role?: string;\n  avatarSrc?: string;\n  stats?: { label: string; value: string }[];\n  actions?: ReactNode;\n  className?: string;\n  ref?: Ref<HTMLDivElement>;\n}\n\nconst initials = (name: string) =>\n  name\n    .split(/\\s+/)\n    .filter(Boolean)\n    .slice(0, 2)\n    .map((part) => part[0]?.toUpperCase())\n    .join(\"\") || \"U\";\n\nexport function ProfileCard({\n  name,\n  role,\n  avatarSrc,\n  stats,\n  actions,\n  className,\n  ref,\n}: ProfileCardProps) {\n  return (\n    <Card\n      ref={ref}\n      className={className ? `sd-profilecard ${className}` : \"sd-profilecard\"}\n    >\n      <Stack align=\"center\" gap=\"small\" className=\"sd-profilecard__content\">\n        <Avatar src={avatarSrc} alt={name} size=\"large\">\n          {initials(name)}\n        </Avatar>\n        {/* Name and role are ONE unit, at `x-small` because what follows them is a stat row and\n            the actions slot — `token-contract.md` § Choosing a Sys rung, the pair's THIRD case.\n            `2x-small` is for a pair that is all its container holds beside an avatar\n            (`TestimonialGrid`, `SocialProof`, `MembersList`); here the pair is bounded by\n            siblings, which is `TeamGrid`'s case and the same rung. */}\n        <Stack align=\"center\" gap=\"x-small\" className=\"sd-profilecard__heading\">\n          <h2 className=\"sd-profilecard__name sd-type-title-medium\">{name}</h2>\n          {role && <p className=\"sd-profilecard__role sd-type-caption-medium\">{role}</p>}\n        </Stack>\n        {stats && stats.length > 0 && (\n          <Stack\n            direction=\"row\"\n            align=\"center\"\n            justify=\"around\"\n            gap=\"small\"\n            wrap\n            className=\"sd-profilecard__stats\"\n          >\n            {stats.map((stat) => (\n              <Stack key={stat.label} align=\"center\" gap=\"2x-small\" className=\"sd-profilecard__stat\">\n                <span className=\"sd-profilecard__value sd-type-body-medium\">{stat.value}</span>\n                {/* CONTRASTIVE: the stat's name reads one rung below the value it names (`__value`) above it. */}\n                <span className=\"sd-profilecard__label sd-type-label-small\">{stat.label}</span>\n              </Stack>\n            ))}\n          </Stack>\n        )}\n        {/* spacing: attachment — the actions slot holds what acts on this profile (follow, message) */}\n        {actions && (\n          <Stack direction=\"row\" justify=\"center\" gap=\"small\" wrap className=\"sd-profilecard__actions\">\n            {actions}\n          </Stack>\n        )}\n      </Stack>\n    </Card>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/ProfileCard.css",
+      "type": "registry:component",
+      "target": "src/blocks/ProfileCard.css",
+      "content": "/* ProfileCard.css — .sd-profilecard (Block)\n   Arrangement only: fills the column it is given (the page sets it on the grid) and normalizes\n   native text spacing. */\n.sd-profilecard {\n  width: 100%;\n}\n\n.sd-profilecard__name,\n.sd-profilecard__role {\n  margin: 0;\n}\n\n.sd-profilecard__role {\n  color: var(--sd-color-text-muted);\n}\n\n.sd-profilecard__stats {\n  width: 100%;\n}\n"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "list-controls",
+  "type": "registry:block",
+  "title": "List Controls",
+  "description": "The controls above a result list: a scope Select with its label inside beside a search button, then refine actions (filter, sort) and an optional narrowing toggle. Composed from Select, Button, Switch, and Stack.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/button",
+    "@sando-ui/icons",
+    "@sando-ui/select",
+    "@sando-ui/stack",
+    "@sando-ui/styles",
+    "@sando-ui/switch",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/ListControls.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/ListControls.tsx",
+      "content": "// Block (composition) — the controls above a result list: a scope Select with its label inside the\n// box beside a search button, then a row of refine actions (filter, sort) and an optional toggle that\n// narrows the list. Distinct from FilterBar, which lays out one labelled Select per facet with the\n// active tags and a Clear action; here the facets live behind the refine actions (a sheet or menu the\n// page opens) and only the scope stays on screen. Select, Button, Switch and Stack own all look and\n// arrangement; the Block defines no tokens. Panel posture: it sits above the list it controls.\nimport type { ReactNode, Ref } from \"react\";\nimport { Text, type Key } from \"react-aria-components\";\nimport { Button } from \"../components/Button\";\nimport { Search } from \"../components/icons\";\nimport { Select, SelectItem } from \"../components/Select\";\nimport { Switch } from \"../components/Switch\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./ListControls.css\";\n\nexport interface ListControlsAction {\n  /** Visible label, e.g. \"Filter\" or \"Sort\". */\n  label: string;\n  /** Leading icon; pass `size=\"1em\"`. */\n  icon?: ReactNode;\n  onPress?: () => void;\n}\n\nexport interface ListControlsProps {\n  /** The scope the list shows, chosen from a short set (a network, a category). */\n  scope: {\n    label: string;\n    options: { id: string; label: string }[];\n    selectedKey?: Key | null;\n    onSelectionChange?: (key: Key | null) => void;\n  };\n  /** Opens a search; renders the search button when given. */\n  onSearchPress?: () => void;\n  /** Accessible name of the search button. */\n  searchLabel?: string;\n  /** Refine actions in the second row, e.g. Filter and Sort. */\n  actions?: ListControlsAction[];\n  /** A toggle that narrows the list, at the end of the second row. */\n  toggle?: { label: string; isSelected?: boolean; onChange?: (isSelected: boolean) => void };\n  className?: string;\n  ref?: Ref<HTMLDivElement>;\n}\n\nexport function ListControls({\n  scope,\n  onSearchPress,\n  searchLabel = \"Search\",\n  actions = [],\n  toggle,\n  className,\n  ref,\n}: ListControlsProps) {\n  return (\n    <Stack ref={ref} direction=\"column\" gap=\"small\" className={className ? `sd-listcontrols ${className}` : \"sd-listcontrols\"}>\n      <Stack direction=\"row\" gap=\"small\" align=\"stretch\">\n        <Select\n          className=\"sd-listcontrols__scope\"\n          label={scope.label}\n          labelPlacement=\"inside\"\n          selectedKey={scope.selectedKey}\n          onSelectionChange={scope.onSelectionChange}\n        >\n          {scope.options.map((option) => (\n            <SelectItem key={option.id} id={option.id}>\n              {option.label}\n            </SelectItem>\n          ))}\n        </Select>\n        {onSearchPress && (\n          <Button variant=\"secondary\" isIconOnly aria-label={searchLabel} onPress={onSearchPress}>\n            <Search aria-hidden size=\"1em\" />\n          </Button>\n        )}\n      </Stack>\n      {(actions.length > 0 || toggle) && (\n        <Stack direction=\"row\" justify=\"between\" align=\"center\" gap=\"small\" wrap>\n          <Stack direction=\"row\" gap=\"x-small\" align=\"center\">\n            {actions.map((action) => (\n              <Button key={action.label} variant=\"secondary\" onPress={action.onPress}>\n                {action.icon}\n                <Text>{action.label}</Text>\n              </Button>\n            ))}\n          </Stack>\n          {/* Its label ends the row under the search button's end edge, so it takes the end inset. */}\n          {toggle && (\n            <>\n              <Switch size=\"small\" isSelected={toggle.isSelected} onChange={toggle.onChange}>\n                {toggle.label}\n              </Switch>\n            </>\n          )}\n        </Stack>\n      )}\n    </Stack>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/ListControls.css",
+      "type": "registry:component",
+      "target": "src/blocks/ListControls.css",
+      "content": "/* ListControls.css — .sd-listcontrols (Block)\n   Arrangement only: the scope Select takes the row's free width beside the search button. */\n.sd-listcontrols__scope {\n  flex: 1 1 auto;\n  min-inline-size: 0;\n}\n"
+    }
+  ]
+}

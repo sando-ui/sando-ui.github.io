@@ -1,0 +1,37 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "gallery",
+  "type": "registry:block",
+  "title": "Gallery",
+  "description": "An image gallery with two layouts: showcase (main image + selectable thumbnails) and grid (tiles that open a lightbox). Composed from Button, Stack, Grid, and Dialog.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/button",
+    "@sando-ui/stack",
+    "@sando-ui/grid",
+    "@sando-ui/dialog",
+    "@sando-ui/aspect-ratio",
+    "@sando-ui/media",
+    "@sando-ui/icons",
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/Gallery.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/Gallery.tsx",
+      "content": "// Block (composition) — an image gallery with two layouts: \"showcase\" (a large main\n// image + a selectable thumbnail strip, for product/detail views) and \"grid\" (uniform\n// tiles that open a lightbox). Contract: docs/rules/block-contract.md. Button/Stack/\n// Grid/Dialog own their look + behavior; this Block only arranges the media slots and\n// tracks the showcase selection. Mints no tokens. Replaces the former ProductGallery\n// (= layout \"showcase\") and MediaGallery (= layout \"grid\").\nimport { useState } from \"react\";\nimport type { ReactNode, Ref } from \"react\";\nimport { Expand } from \"../components/icons\";\nimport { Button } from \"../components/Button\";\nimport { DialogContent, DialogHeader, DialogTitle, DialogTrigger } from \"../components/Dialog\";\nimport { Media } from \"../components/Media\";\nimport { AspectRatio } from \"../layouts/AspectRatio\";\nimport { Grid } from \"../layouts/Grid\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./Gallery.css\";\n\nexport interface GalleryImage {\n  /** Stable key. */\n  id: string;\n  /** The media element (usually an <img>). */\n  node: ReactNode;\n  /** Accessible description used for thumbnail / lightbox labels. */\n  alt?: string;\n}\n\nexport interface GalleryProps {\n  /** Images to display. */\n  images: GalleryImage[];\n  /** \"showcase\" = main image + thumbnail strip; \"grid\" = tiles + lightbox. */\n  layout?: \"showcase\" | \"grid\";\n  /** Thumbnail columns in grid layout (responsive value supported). */\n  columns?: number | { small: number; medium: number };\n  /** Initially selected image (showcase layout). */\n  defaultIndex?: number;\n  /** Called when the showcase selection changes. */\n  onIndexChange?: (index: number) => void;\n  /** Accessible name for the gallery region. */\n  \"aria-label\"?: string;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nfunction clampIndex(index: number, count: number) {\n  if (count === 0) return 0;\n  return Math.min(Math.max(index, 0), count - 1);\n}\n\nexport function Gallery({\n  images,\n  layout = \"showcase\",\n  columns = { small: 2, medium: 3 },\n  defaultIndex = 0,\n  onIndexChange,\n  \"aria-label\": ariaLabel = \"Gallery\",\n  className,\n  ref,\n}: GalleryProps) {\n  const [selectedIndex, setSelectedIndex] = useState(() => clampIndex(defaultIndex, images.length));\n\n  const cls = className ? `sd-gallery ${className}` : \"sd-gallery\";\n\n  if (layout === \"grid\") {\n    return (\n      <section ref={ref} aria-label={ariaLabel} className={cls}>\n        <Grid columns={columns} gap=\"small\" className=\"sd-gallery__grid\">\n          {images.map((image) => (\n            <div key={image.id} className=\"sd-gallery__tile\">\n              {/* The lightbox button stays outside the Media clip, so its focus ring is not cut. */}\n              <Media aria-hidden=\"true\">\n                <AspectRatio ratio={1} className=\"sd-gallery__tile-media\">\n                  {image.node}\n                </AspectRatio>\n              </Media>\n              <DialogTrigger>\n                <Button\n                  variant=\"outline\"\n                  size=\"small\"\n                  isIconOnly\n                  className=\"sd-gallery__view\"\n                  aria-label={`View ${image.alt ?? \"image\"}`}\n                >\n                  <Expand aria-hidden size=\"1em\" />\n                </Button>\n                <DialogContent\n                  className=\"sd-gallery__lightbox\"\n                  // Explicit: an image without alt text has no header, and a lightbox keeps its\n                  // close floating over the media either way.\n                  showCloseButton\n                  header={\n                    image.alt ? (\n                      <DialogHeader>\n                        <DialogTitle>{image.alt}</DialogTitle>\n                      </DialogHeader>\n                    ) : undefined\n                  }\n                >\n                  <Media className=\"sd-gallery__lightbox-media\">{image.node}</Media>\n                </DialogContent>\n              </DialogTrigger>\n            </div>\n          ))}\n        </Grid>\n      </section>\n    );\n  }\n\n  const activeIndex = clampIndex(selectedIndex, images.length);\n  const selectImage = (index: number) => {\n    setSelectedIndex(index);\n    onIndexChange?.(index);\n  };\n\n  return (\n    <Stack ref={ref} gap=\"small\" aria-label={ariaLabel} className={cls}>\n      <Media>\n        <AspectRatio ratio={1} className=\"sd-gallery__main\">\n          {images[activeIndex]?.node}\n        </AspectRatio>\n      </Media>\n      {images.length > 0 && (\n        <Stack direction=\"row\" gap=\"x-small\" wrap className=\"sd-gallery__thumbnails\">\n          {images.map((image, index) => (\n            <Button\n              key={image.id}\n              variant=\"outline\"\n              size=\"large\"\n              isMediaOnly\n              aria-current={index === activeIndex ? \"true\" : undefined}\n              aria-label={`View ${image.alt ?? `image ${index + 1}`}`}\n              onPress={() => selectImage(index)}\n            >\n              <span aria-hidden=\"true\" className=\"sd-gallery__thumbnail-media\">\n                {image.node}\n              </span>\n            </Button>\n          ))}\n        </Stack>\n      )}\n    </Stack>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/Gallery.css",
+      "type": "registry:component",
+      "target": "src/blocks/Gallery.css",
+      "content": "/* Gallery.css — .sd-gallery (Block)\n   Arrangement only: two layouts. \"showcase\" shows a square main picture + a thumbnail row; \"grid\"\n   lays out square tiles each with an overlaid lightbox trigger. Media owns each picture's corner and\n   clip and AspectRatio its square, so nothing here clips: a tile that clipped itself cut the lightbox\n   button's focus ring. Dialog owns the lightbox; Button/Grid/Stack own their look. No tokens. */\n.sd-gallery {\n  width: 100%;\n  min-width: 0;\n}\n\n/* showcase layout */\n.sd-gallery__main {\n  place-items: center;\n}\n\n.sd-gallery__thumbnails {\n  width: 100%;\n}\n\n.sd-gallery__thumbnail-media {\n  display: grid;\n  width: 100%;\n  height: 100%;\n  overflow: hidden;\n  place-items: center;\n}\n\n/* grid layout */\n.sd-gallery__tile {\n  position: relative;\n}\n\n.sd-gallery__tile-media {\n  place-items: center;\n}\n\n.sd-gallery__view {\n  position: absolute;\n  inset-block-start: var(--sd-space-2x-small);\n  inset-inline-end: var(--sd-space-2x-small);\n}\n\n.sd-gallery__lightbox-media {\n  display: grid;\n  place-items: center;\n  max-height: 80vh;\n  overflow: hidden;\n}\n"
+    }
+  ]
+}

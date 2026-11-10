@@ -1,0 +1,37 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "payment-form",
+  "type": "registry:block",
+  "title": "Payment Form",
+  "description": "A card payment form with cardholder, card number, expiry, CVC, submit, and form-level error states.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/form",
+    "@sando-ui/text-field",
+    "@sando-ui/grid",
+    "@sando-ui/button",
+    "@sando-ui/alert",
+    "@sando-ui/stack",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/PaymentForm.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/PaymentForm.tsx",
+      "content": "// Block (composition) — card payment fields assembled from form Components.\n// Arranges only; composes Form/TextField/Grid/Button/Alert/Stack.\nimport type { FormEvent, Ref } from \"react\";\nimport { Form } from \"../components/Form\";\nimport { TextField } from \"../components/TextField\";\nimport { Grid } from \"../layouts/Grid\";\nimport { Button } from \"../components/Button\";\nimport { Alert } from \"../components/Alert\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./PaymentForm.css\";\n\nexport interface PaymentFormProps {\n  /** Heading shown above the payment fields. */\n  heading?: string;\n  /** Called with the submitted card details. */\n  onSubmit?: (data: Record<string, string>) => void;\n  /** Form-level payment error, shown above the fields. */\n  errorMessage?: string;\n  /** Puts the pay button in a pending state and blocks re-submit. */\n  isPending?: boolean;\n  className?: string;\n  ref?: Ref<HTMLFormElement>;\n}\n\nexport function PaymentForm({\n  heading,\n  onSubmit,\n  errorMessage,\n  isPending,\n  className,\n  ref,\n}: PaymentFormProps) {\n  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {\n    event.preventDefault();\n    const data = new FormData(event.currentTarget);\n    onSubmit?.({\n      cardholderName: String(data.get(\"cardholderName\") ?? \"\"),\n      cardNumber: String(data.get(\"cardNumber\") ?? \"\"),\n      expiry: String(data.get(\"expiry\") ?? \"\"),\n      cvc: String(data.get(\"cvc\") ?? \"\"),\n    });\n  };\n\n  return (\n    <Form isPending={isPending}\n      ref={ref}\n      onSubmit={handleSubmit}\n      className={className ? `sd-paymentform ${className}` : \"sd-paymentform\"}\n    >\n      <Stack gap=\"large\" className=\"sd-paymentform__content\">\n        {heading && (\n          <>\n            <h1 className=\"sd-paymentform__heading sd-type-headline-medium\">{heading}</h1>\n          </>\n        )}\n        {/* live=\"assertive\": see `AlertProps.live` — submit failure is the case that earns it. */}\n        {errorMessage && (\n          <Alert variant=\"error\" live=\"assertive\">\n            {errorMessage}\n          </Alert>\n        )}\n        <Stack gap=\"medium\" className=\"sd-paymentform__fields\">\n          <TextField\n            label=\"Cardholder name\"\n            name=\"cardholderName\"\n            autoComplete=\"cc-name\"\n            isRequired\n          />\n          <TextField\n            label=\"Card number\"\n            name=\"cardNumber\"\n            autoComplete=\"cc-number\"\n            inputMode=\"numeric\"\n            isRequired\n          />\n          <Grid columns={{ small: 1, medium: 2 }} gap=\"medium\">\n            <TextField\n              label=\"Expiry\"\n              name=\"expiry\"\n              autoComplete=\"cc-exp\"\n              inputMode=\"numeric\"\n              placeholder=\"MM/YY\"\n              isRequired\n            />\n            <TextField\n              label=\"CVC\"\n              name=\"cvc\"\n              autoComplete=\"cc-csc\"\n              inputMode=\"numeric\"\n              isRequired\n            />\n          </Grid>\n        </Stack>\n        <Button size=\"large\" type=\"submit\" variant=\"primary\" isPending={isPending}>\n          Pay\n        </Button>\n      </Stack>\n    </Form>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/PaymentForm.css",
+      "type": "registry:component",
+      "target": "src/blocks/PaymentForm.css",
+      "content": "/* PaymentForm.css — arrangement only; Component look stays with its owners. */\n.sd-paymentform {\n  width: 100%;\n}\n\n.sd-paymentform__heading {\n  margin: 0;\n}\n"
+    }
+  ]
+}

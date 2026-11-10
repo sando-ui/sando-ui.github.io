@@ -1,0 +1,36 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "multi-select-list",
+  "type": "registry:block",
+  "title": "Multi-Select List",
+  "description": "A searchable multi-select panel — Autocomplete filtering over a ListBox in multiple selection mode, for a filter, tag, or audience selector (an always-open panel, not a dropdown).",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/autocomplete",
+    "@sando-ui/list-box",
+    "@sando-ui/search-field",
+    "@sando-ui/stack",
+    "@sando-ui/styles",
+    "@sando-ui/indent",
+    "@sando-ui/scroll-area"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/MultiSelectList.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/MultiSelectList.tsx",
+      "content": "// Block (composition) — a searchable multi-select list panel. Autocomplete adds live filtering\n// over a ListBox in `multiple` selection mode; SearchField, ListBox, and Stack own all look and\n// arrangement. This Block defines no tokens.\n//\n// Distinct from ComboBox (a searchable *dropdown* that reports a single value): this is an\n// always-open panel for picking *several* flat options — a filter, tag, or audience selector.\n// Panel posture: it sits inside a page, so width comes from the parent (block-contract §1b).\nimport { useId, type ReactNode, type Ref } from \"react\";\nimport { useFilter } from \"react-aria-components\";\nimport type { Selection } from \"react-aria-components\";\nimport { Autocomplete } from \"../components/Autocomplete\";\nimport { SearchField } from \"../components/SearchField\";\nimport { ListBox, ListBoxItem } from \"../components/ListBox\";\nimport { ScrollArea } from \"../components/ScrollArea\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./MultiSelectList.css\";\n\nexport interface MultiSelectListItem {\n  id: string;\n  label: string;\n  /** Leading icon (optional). */\n  icon?: ReactNode;\n}\n\nexport interface MultiSelectListProps {\n  /** Options to search and select. */\n  items: MultiSelectListItem[];\n  /** Optional section label. A Panel never defaults a page title (block-contract §1b). */\n  heading?: string;\n  placeholder?: string;\n  /** Controlled selection (a Set of ids, or \"all\"). */\n  selectedKeys?: Selection;\n  /** Uncontrolled initial selection. */\n  defaultSelectedKeys?: Selection;\n  onSelectionChange?: (keys: Selection) => void;\n  /** Accessible name for the list when there is no visible `heading`. */\n  \"aria-label\"?: string;\n  /** Message shown when the filter matches nothing. */\n  emptyMessage?: string;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function MultiSelectList({\n  items,\n  heading,\n  placeholder = \"Search…\",\n  selectedKeys,\n  defaultSelectedKeys,\n  onSelectionChange,\n  \"aria-label\": ariaLabel,\n  emptyMessage = \"No options that match the search.\",\n  className,\n  ref,\n}: MultiSelectListProps) {\n  const { contains } = useFilter({ sensitivity: \"base\" });\n  const headingId = useId();\n  const label = ariaLabel ?? heading ?? \"Options\";\n  // The outer gap is `medium` because at `small` this stack and the inner one were BOTH 12px, so the\n  // heading sat in one rhythm with the search field and the list and read as a third member rather\n  // than as their heading. Judged on THIS Block's render, which is the only ground it has: a\n  // tier-wide rule does not hold (`block-contract.md` §4a records why, including a counter-case\n  // where raising the gap would be wrong). Nothing here generalises to another Block.\n  return (\n    <Stack\n      as=\"section\"\n      ref={ref}\n      gap=\"medium\"\n      aria-labelledby={heading ? headingId : undefined}\n      aria-label={heading ? undefined : label}\n      className={className ? `sd-multiselectlist ${className}` : \"sd-multiselectlist\"}\n    >\n      {heading && (\n        <>\n          <h2 id={headingId} className=\"sd-multiselectlist__heading sd-type-title-medium\">\n            {heading}\n          </h2>\n        </>\n      )}\n      <Autocomplete filter={contains}>\n        <Stack gap=\"small\" className=\"sd-multiselectlist__body\">\n          <SearchField\n            aria-label={heading ? `Search ${heading}` : \"Search\"}\n            placeholder={placeholder}\n          />\n          {/* The rows' fills bleed past the list (rule 8), so the bounded height scrolls in a ScrollArea,\n              whose gutter keeps the bleed and the rings uncut, rather than on the ListBox, which clipped\n              them. `both`: under the search field, the row text takes the inset and each fill spans\n              the field's box line. No tab stop of its own: the ListBox inside is the keyboard's way\n              in and scrolls its focused row into view (axe passes a region holding focusable content). */}\n          <ScrollArea tabIndex={-1} className=\"sd-multiselectlist__list\">\n            <>\n              <ListBox\n                aria-label={label}\n                selectionMode=\"multiple\"\n                selectedKeys={selectedKeys}\n                defaultSelectedKeys={defaultSelectedKeys}\n                onSelectionChange={onSelectionChange}\n                renderEmptyState={() => emptyMessage}\n              >\n                {items.map((item) => (\n                  <ListBoxItem key={item.id} id={item.id} icon={item.icon}>\n                    {item.label}\n                  </ListBoxItem>\n                ))}\n              </ListBox>\n            </>\n          </ScrollArea>\n        </Stack>\n      </Autocomplete>\n    </Stack>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/MultiSelectList.css",
+      "type": "registry:component",
+      "target": "src/blocks/MultiSelectList.css",
+      "content": "/* MultiSelectList.css — .sd-multiselectlist (Block)\n   Stack arranges the heading, search field, and options; SearchField and ListBox own all\n   chrome, selection, and interaction. This Block defines no tokens.\n\n   Real layout the primitives can't express: the options scroll within a bounded height so a\n   long, filtered option set never grows the panel past a comfortable size (the search field\n   stays put and the list scrolls under it). The ScrollArea owns the overflow and the compensated\n   gutter that keeps the rows' bled fills uncut; this sets only the bound. */\n.sd-multiselectlist__list {\n  max-height: min(50vh, 22rem);\n}\n"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "search-list",
+  "type": "registry:block",
+  "title": "Search List",
+  "description": "A searchable list of rich rows (leading visual + title + description) — Autocomplete filtering over a GridList, for a directory, resource picker, or result list.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/autocomplete",
+    "@sando-ui/grid-list",
+    "@sando-ui/search-field",
+    "@sando-ui/stack",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/SearchList.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/SearchList.tsx",
+      "content": "// Block (composition) — a searchable list of rich rows. Autocomplete adds live filtering over a\n// GridList whose rows carry a leading visual + title + secondary description; SearchField, GridList,\n// and Stack own all look and arrangement. This Block defines no tokens.\n//\n// Distinct from CommandMenu (Autocomplete + Menu = a command palette of onAction commands): the\n// collection here is a GridList, so rows are rich, selectable entities — a searchable directory,\n// resource picker, or result list — not a flat list of actions. Panel posture: it sits inside a\n// page, so width and any page title come from the parent (block-contract §1b).\nimport { useId, type ReactNode, type Ref } from \"react\";\nimport { useFilter } from \"react-aria-components\";\nimport { Autocomplete } from \"../components/Autocomplete\";\nimport { SearchField } from \"../components/SearchField\";\nimport { GridList, GridListItem } from \"../components/GridList\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./SearchList.css\";\n\nexport interface SearchListItem {\n  id: string;\n  title: string;\n  /** Secondary line under the title (optional). */\n  description?: string;\n  /** Leading visual — an icon, FeaturedIcon, avatar, or image (optional). */\n  leading?: ReactNode;\n}\n\nexport interface SearchListProps {\n  /** Rows to search and display. */\n  items: SearchListItem[];\n  /** Optional section label. A Panel never defaults a page title (block-contract §1b). */\n  heading?: string;\n  placeholder?: string;\n  /** Selection model. Defaults to `none` — rows activate via `onAction`. */\n  selectionMode?: \"none\" | \"single\" | \"multiple\";\n  /** Called when a row is activated (Enter / click). */\n  onAction?: (id: string) => void;\n  /** Accessible name for the list when there is no visible `heading`. */\n  \"aria-label\"?: string;\n  /** Message shown when the filter matches nothing. */\n  emptyMessage?: string;\n  className?: string;\n  ref?: Ref<HTMLElement>;\n}\n\nexport function SearchList({\n  items,\n  heading,\n  placeholder = \"Search…\",\n  selectionMode = \"none\",\n  onAction,\n  \"aria-label\": ariaLabel,\n  emptyMessage = \"No results that match the search.\",\n  className,\n  ref,\n}: SearchListProps) {\n  const { contains } = useFilter({ sensitivity: \"base\" });\n  const headingId = useId();\n  const label = ariaLabel ?? heading ?? \"Search results\";\n  // The outer gap is `medium` because at `small` this stack and the inner one were BOTH 12px, so the\n  // heading sat in one rhythm with the search field and the list and read as a third member rather\n  // than as their heading. Judged on THIS Block's render, which is the only ground it has: a\n  // tier-wide rule does not hold (`block-contract.md` §4a records why, including a counter-case\n  // where raising the gap would be wrong). Nothing here generalises to another Block.\n  return (\n    <Stack\n      as=\"section\"\n      ref={ref}\n      gap=\"medium\"\n      aria-labelledby={heading ? headingId : undefined}\n      aria-label={heading ? undefined : label}\n      className={className ? `sd-searchlist ${className}` : \"sd-searchlist\"}\n    >\n      {heading && (\n        <>\n          <h2 id={headingId} className=\"sd-searchlist__heading sd-type-title-medium\">\n            {heading}\n          </h2>\n        </>\n      )}\n      <Autocomplete filter={contains}>\n        <Stack gap=\"small\" className=\"sd-searchlist__body\">\n          <SearchField\n            aria-label={heading ? `Search ${heading}` : \"Search\"}\n            placeholder={placeholder}\n          />\n          <GridList\n            aria-label={label}\n            selectionMode={selectionMode}\n            onAction={onAction ? (key) => onAction(String(key)) : undefined}\n            renderEmptyState={() => emptyMessage}\n            className=\"sd-searchlist__list\"\n          >\n            {items.map((item) => (\n              <GridListItem\n                key={item.id}\n                id={item.id}\n                leading={item.leading}\n                description={item.description}\n              >\n                {item.title}\n              </GridListItem>\n            ))}\n          </GridList>\n        </Stack>\n      </Autocomplete>\n    </Stack>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/SearchList.css",
+      "type": "registry:component",
+      "target": "src/blocks/SearchList.css",
+      "content": "/* SearchList.css — .sd-searchlist (Block)\n   Stack arranges the heading, search field, and results; SearchField, GridList, and the\n   leading visuals own all chrome and interaction. This Block defines no tokens.\n\n   Real layout the primitives can't express: the results scroll within a bounded height so a\n   long, filtered list never grows the section past a comfortable panel size (the search field\n   stays put and the list scrolls under it). */\n.sd-searchlist__list {\n  max-height: min(50vh, 22rem);\n  overflow-y: auto;\n}\n"
+    }
+  ]
+}

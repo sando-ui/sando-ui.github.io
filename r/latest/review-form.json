@@ -1,0 +1,38 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "review-form",
+  "type": "registry:block",
+  "title": "Review Form",
+  "description": "A form for writing a product review: a star score, a title and the review text, with submit and form-level error states.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/form",
+    "@sando-ui/rating",
+    "@sando-ui/text-field",
+    "@sando-ui/textarea",
+    "@sando-ui/button",
+    "@sando-ui/stack",
+    "@sando-ui/alert",
+    "@sando-ui/styles",
+    "@sando-ui/indent"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/ReviewForm.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/ReviewForm.tsx",
+      "content": "// Block (composition) — a form for writing a product review: a star score, a title and the review.\n// Arranges only; composes Form/Rating/TextField/Textarea/Button/Alert/Stack. Posture: Panel (it sits\n// under a product's reviews), so it takes the width it is given and its heading is a section label.\nimport type { FormEvent, Ref } from \"react\";\nimport { Form } from \"../components/Form\";\nimport { Rating } from \"../components/Rating\";\nimport { TextField } from \"../components/TextField\";\nimport { Textarea } from \"../components/Textarea\";\nimport { Button } from \"../components/Button\";\nimport { Alert } from \"../components/Alert\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./ReviewForm.css\";\n\nexport interface ReviewFormProps {\n  /** Section heading above the fields. */\n  heading?: string;\n  /** Called with the score (1 to 5), the title and the review text. */\n  onSubmit?: (review: { rating: number; title: string; body: string }) => void;\n  /** Form-level error, shown above the fields. */\n  errorMessage?: string;\n  /** Puts the submit button in a pending state and blocks re-submit. */\n  isPending?: boolean;\n  className?: string;\n  ref?: Ref<HTMLFormElement>;\n}\n\nexport function ReviewForm({\n  heading = \"Write a review\",\n  onSubmit,\n  errorMessage,\n  isPending,\n  className,\n  ref,\n}: ReviewFormProps) {\n  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {\n    event.preventDefault();\n    const data = new FormData(event.currentTarget);\n    onSubmit?.({\n      rating: Number(data.get(\"rating\") ?? 0),\n      title: String(data.get(\"title\") ?? \"\"),\n      body: String(data.get(\"body\") ?? \"\"),\n    });\n  };\n\n  return (\n    <Form isPending={isPending} ref={ref} onSubmit={handleSubmit} className={className ? `sd-reviewform ${className}` : \"sd-reviewform\"}>\n      <Stack gap=\"large\" className=\"sd-reviewform__content\">\n        {heading && (\n          <>\n            <h2 className=\"sd-reviewform__heading sd-type-title-medium\">{heading}</h2>\n          </>\n        )}\n        {/* live=\"assertive\": see `AlertProps.live` — submit failure is the case that earns it. */}\n        {errorMessage && (\n          <Alert variant=\"error\" live=\"assertive\">\n            {errorMessage}\n          </Alert>\n        )}\n        <Stack gap=\"medium\" className=\"sd-reviewform__fields\">\n          <Rating label=\"Your rating\" name=\"rating\" isRequired />\n          <TextField label=\"Title\" name=\"title\" isRequired />\n          <Textarea label=\"Review\" name=\"body\" rows={5} isRequired />\n        </Stack>\n        <Button size=\"large\" type=\"submit\" variant=\"primary\" isPending={isPending}>\n          Submit review\n        </Button>\n      </Stack>\n    </Form>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/ReviewForm.css",
+      "type": "registry:component",
+      "target": "src/blocks/ReviewForm.css",
+      "content": "/* ReviewForm.css — arrangement only; Component look stays with its owners. A Panel: no width of its\n   own, the page decides it. */\n.sd-reviewform__heading {\n  margin: 0;\n}\n"
+    }
+  ]
+}

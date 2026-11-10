@@ -1,0 +1,36 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "plan-card-compact",
+  "type": "registry:block",
+  "title": "Plan Card Compact",
+  "description": "A compact carrier-plan offer with visible benefits and a bottom-aligned price.",
+  "dependencies": [
+    "react-aria-components"
+  ],
+  "registryDependencies": [
+    "@sando-ui/avatar",
+    "@sando-ui/badge",
+    "@sando-ui/card",
+    "@sando-ui/link",
+    "@sando-ui/separator",
+    "@sando-ui/stack",
+    "@sando-ui/styles"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/PlanCardCompact.tsx",
+      "type": "registry:component",
+      "target": "src/blocks/PlanCardCompact.tsx",
+      "content": "// Block (composition) — Panel: carrier identity belongs above the row; benefits stay visible inside each offer.\nimport type { Ref } from \"react\";\nimport { Heading } from \"react-aria-components\";\nimport { Avatar } from \"../components/Avatar\";\nimport { Badge } from \"../components/Badge\";\nimport { Card } from \"../components/Card\";\nimport { Link } from \"../components/Link\";\nimport { Separator } from \"../components/Separator\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./PlanCardCompact.css\";\n\nexport interface PlanCardCompactBenefit {\n  label: string;\n  /** A complete logo image, not initials on Avatar's subtle fallback plate. */\n  logo: string;\n}\n\nexport interface PlanCardCompactProps {\n  planName: string;\n  title: string;\n  /**\n   * Heading level of the title, so the card sits at the right depth in the page outline: `2` for a\n   * list placed directly under the page's h1. Card's `headingLevel`, and the same default.\n   *\n   * @default 3\n   */\n  headingLevel?: 1 | 2 | 3 | 4 | 5 | 6;\n  href?: string;\n  specs: string[];\n  /** Up to three visible benefits, in priority order. */\n  benefits: readonly PlanCardCompactBenefit[];\n  price: string;\n  tag?: string;\n  className?: string;\n  ref?: Ref<HTMLDivElement>;\n}\n\nexport function PlanCardCompact({ planName, title, headingLevel = 3, href, specs, benefits, price, tag,\n  className, ref }: PlanCardCompactProps) {\n  return (\n    <Card ref={ref} className={className ? `sd-plancardcompact ${className}` : \"sd-plancardcompact\"}>\n      <Stack gap=\"x-small\">\n        <p className=\"sd-plancardcompact__name sd-type-caption-medium\">{planName}</p>\n        {/* React Aria's Heading, as CardTitle uses: safe inside a Dialog's heading context. */}\n        <Heading level={headingLevel} className=\"sd-plancardcompact__title sd-type-title-medium-emphasized\">\n          {href ? <Link href={href} variant=\"quiet\">{title}</Link> : title}\n        </Heading>\n        <ul className=\"sd-plancardcompact__specs\">\n          {specs.map((spec, index) => (\n            /* CONTRASTIVE: one rung below the title it describes, a spec line under its plan. */\n            <li key={`${index}-${spec}`} className=\"sd-plancardcompact__spec sd-type-body-small\">\n              <Separator isDecorative orientation=\"vertical\" className=\"sd-plancardcompact__rule\" />\n              {spec}\n            </li>\n          ))}\n        </ul>\n      </Stack>\n      <Card variant=\"sunken\" className=\"sd-plancardcompact__benefits\">\n        <Stack as=\"ul\" gap=\"small\" className=\"sd-plancardcompact__list\">\n          {benefits.slice(0, 3).map((benefit, index) => (\n            <Stack as=\"li\" key={`${index}-${benefit.label}`} direction=\"row\" align=\"center\" gap=\"small\">\n              <Avatar size=\"small\" src={benefit.logo} alt=\"\" />\n              {/* CONTRASTIVE: one rung below the title, as the specs, so the panel reads as support. */}\n              <p className=\"sd-plancardcompact__benefit sd-type-body-small-emphasized\">{benefit.label}</p>\n            </Stack>\n          ))}\n        </Stack>\n      </Card>\n      <Stack direction=\"row\" justify=\"end\" align=\"center\" gap=\"small\" wrap>\n        {tag && <Badge variant=\"neutral\">{tag}</Badge>}\n        <p className=\"sd-plancardcompact__price sd-type-title-medium-emphasized\">{price}</p>\n      </Stack>\n    </Card>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/PlanCardCompact.css",
+      "type": "registry:component",
+      "target": "src/blocks/PlanCardCompact.css",
+      "content": "/* Arrangement and the Block's own text ink; composed Components own all surfaces and shapes. */\n.sd-plancardcompact {\n  min-width: 0;\n  width: 100%;\n}\n.sd-plancardcompact__name,\n.sd-plancardcompact__title,\n.sd-plancardcompact__price,\n.sd-plancardcompact__benefit {\n  margin: 0;\n}\n.sd-plancardcompact__name,\n.sd-plancardcompact__specs {\n  color: var(--sd-color-text-muted);\n}\n.sd-plancardcompact__price {\n  color: var(--sd-color-text-brand);\n}\n.sd-plancardcompact__benefits {\n  flex: 1;\n}\n.sd-plancardcompact__list {\n  margin: 0;\n  padding: 0;\n  list-style: none;\n}\n.sd-plancardcompact__benefit {\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n/* Like PlanCard: wrapping clips the leading divider instead of leaving one at a line edge. */\n.sd-plancardcompact__specs {\n  display: flex;\n  flex-wrap: wrap;\n  gap: var(--sd-space-2x-small) var(--sd-space-medium);\n  margin: 0;\n  padding: 0;\n  overflow: hidden;\n  list-style: none;\n}\n.sd-plancardcompact__spec {\n  position: relative;\n}\n.sd-plancardcompact__rule {\n  position: absolute;\n  inset-block-start: 50%;\n  inset-inline-start: calc(var(--sd-space-medium) / -2);\n  block-size: 0.75em;\n  min-block-size: 0;\n  translate: -50% -50%;\n}\n"
+    }
+  ]
+}

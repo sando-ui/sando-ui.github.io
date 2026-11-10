@@ -1,0 +1,30 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "payment-method-picker",
+  "type": "registry:block",
+  "title": "PaymentMethodPicker",
+  "description": "The choice of how to pay, where pressing a method acts at once. Methods, labels and order are data; tiles on a wide screen, a list on a narrow one. Arranges ActionTiles in a grid or a stack: each method is its own Button.",
+  "registryDependencies": [
+    "@sando-ui/styles",
+    "@sando-ui/action-tile",
+    "@sando-ui/grid",
+    "@sando-ui/stack"
+  ],
+  "meta": {
+    "sandoVersion": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "src/blocks/PaymentMethodPicker.tsx",
+      "type": "registry:block",
+      "target": "src/blocks/PaymentMethodPicker.tsx",
+      "content": "// Block (composition) — the choice of how to pay, where pressing a method acts at once (opens the card\n// prompt, the cash screen, the QR scanner). Every device of a payment product has one (a POS's 결제하기, a\n// counter, a terminal, a kiosk, a table order), and unless one structure holds them they disagree on\n// layout, labels and order. One structure resolves that: the methods, their labels and\n// their order are data, and `layout` picks a grid (a POS, a kiosk, a terminal) or a stack (a counter screen, a phone).\n//\n// Each method is an ActionTile, a Button: a press acts and nothing stays selected, so this is neither a\n// radio group (no value persists) nor a GridList (a two-to-eight item grid would announce \"grid, row 1\n// of 5\" with no cue that a press proceeds). It is the same fork as the product grids\n// (component-usage.md § Product grids). A disabled method is skipped by the keyboard, so its reason goes\n// in its `description`, which the tile reads as part of its name.\n//\n// ponytail: the POS pager (two rows flowing by column) and the featured or wide method tiles are not\n// here; a long method list wraps. Add them when a device needs more methods than fit.\nimport type { ReactNode, Ref } from \"react\";\nimport { ActionTile } from \"../components/ActionTile\";\nimport { Grid } from \"../layouts/Grid\";\nimport { Stack } from \"../layouts/Stack\";\nimport \"./PaymentMethodPicker.css\";\n\nexport interface PaymentMethod {\n  /** Stable key, passed to `onAction`. */\n  id: string;\n  /** The method's name, e.g. \"신용카드\". */\n  label: string;\n  /** A second line, e.g. \"간편결제·지역화폐\" under \"QR 결제\", or why the method is disabled. */\n  description?: ReactNode;\n  /** The method's icon. Decorative: the label names the method. */\n  icon?: ReactNode;\n  /** When true the method shows but cannot be pressed. Say why in `description`. */\n  isDisabled?: boolean;\n}\n\nexport interface PaymentMethodPickerBaseProps {\n  /**\n   * Size of every method tile.\n   *\n   * @default \"medium\"\n   */\n  size?: \"small\" | \"medium\" | \"large\";\n  /** The methods, in the order they show. */\n  methods: PaymentMethod[];\n  /** Called with a method's id when it is pressed. */\n  onAction: (id: string) => void;\n  /**\n   * `grid` of vertical tiles on a wide or fixed screen (POS, kiosk, Terminal); `stack` of horizontal\n   * rows on a narrow one (a counter screen, a phone).\n   *\n   * @default \"grid\"\n   */\n  layout?: \"grid\" | \"stack\";\n  /**\n   * For `grid`: the narrowest a tile may get, as a CSS length. The grid fits as many columns as this\n   * allows. A POS method tile is typically 130 CSS px wide (`8.125rem`).\n   *\n   * @default \"8rem\"\n   */\n  minItemWidth?: string;\n  /**\n   * Where a grid tile sets its icon and label. `center` as a counter screen or a re-pay modal draws them;\n   * `start` as a POS 결제하기 grid does (icon and label top start).\n   *\n   * @default \"center\"\n   */\n  align?: \"center\" | \"start\";\n}\n\n/** The set needs a name: its own `aria-label`, or the id of a visible heading. */\nexport type PaymentMethodPickerProps = PaymentMethodPickerBaseProps &\n  (\n    | { \"aria-label\": string; \"aria-labelledby\"?: never }\n    | { \"aria-labelledby\": string; \"aria-label\"?: never }\n  ) & {\n    /** Additional class (optional). sd-payment-method-picker is always preserved. */\n    className?: string;\n    /** Forwarded to the root element. */\n    ref?: Ref<HTMLDivElement>;\n  };\n\nexport function PaymentMethodPicker({\n  size = \"medium\",\n  methods,\n  onAction,\n  layout = \"grid\",\n  minItemWidth = \"8rem\",\n  align,\n  className,\n  ref,\n  ...labelling\n}: PaymentMethodPickerProps) {\n  const tiles = methods.map((m) => (\n    <ActionTile\n      key={m.id}\n      size={size}\n      orientation={layout === \"grid\" ? \"vertical\" : \"horizontal\"}\n      align={align}\n      icon={m.icon}\n      label={m.label}\n      description={m.description}\n      isDisabled={m.isDisabled}\n      onPress={() => onAction(m.id)}\n    />\n  ));\n  const cls = className ? `sd-payment-method-picker ${className}` : \"sd-payment-method-picker\";\n  // Grid lays out the tiles (auto-fill at minItemWidth, so two methods keep a tile's width rather than\n  // stretching to halves); a list is a Stack of rows.\n  return layout === \"grid\" ? (\n    <Grid {...labelling} ref={ref as Ref<HTMLElement>} role=\"group\" minItemWidth={minItemWidth} minItemMode=\"fill\" gap=\"x-small\" className={cls}>\n      {tiles}\n    </Grid>\n  ) : (\n    <Stack {...labelling} ref={ref as Ref<HTMLElement>} role=\"group\" gap=\"x-small\" className={cls}>\n      {tiles}\n    </Stack>\n  );\n}\n"
+    },
+    {
+      "path": "src/blocks/PaymentMethodPicker.css",
+      "type": "registry:block",
+      "target": "src/blocks/PaymentMethodPicker.css",
+      "content": "/* Layout only (block-contract.md §3, §5): Grid or Stack arranges the tiles and the tiles draw\n   themselves; the Block spans its parent. */\n.sd-payment-method-picker {\n  inline-size: 100%;\n}\n"
+    }
+  ]
+}
